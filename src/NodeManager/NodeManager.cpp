@@ -406,7 +406,7 @@ void NodeManager::ATC_processing_thread(){
 			vector<uchar> block_kp_bitstream;
 
 			beg = i*atc_param.num_blocks;
-			end = min((int)(unsigned int)kpts.size(), (int)(beg+atc_param.num_blocks));
+			end = min((int)(unsigned int)kpts.size(), (int)(beg+feat_per_block));
 
 			Mat features_sub = features.rowRange(beg,end);
 
