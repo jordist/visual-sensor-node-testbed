@@ -380,6 +380,7 @@ void NodeManager::ATC_processing_thread(){
 	delete((ExtractKeypointsTask*)cur_task);
 
 	//Extract features
+	std::cout<<std::dec;
 	cur_task = new ExtractFeaturesTask(extractor,image,kpts,atc_param.max_features);
 	taskManager_ptr->addTask(cur_task);
 	cout << "NM: Waiting the end of the extract_features_task" << endl;
@@ -394,10 +395,8 @@ void NodeManager::ATC_processing_thread(){
 
 	if(kpts.size()>0){
 
-		int feat_per_block = ceil(double(features.rows) / double(atc_param.num_blocks));
-		int remaining_features = features.rows;
-		int start_f = 0;
-		int stop_f = feat_per_block-1;
+		int feat_per_block = ceil((float)kpts.size() / (float)atc_param.num_blocks);
+		int beg,end;
 
 		cout << "features per block: " << (int)feat_per_block << endl;
 
@@ -405,7 +404,11 @@ void NodeManager::ATC_processing_thread(){
 
 			vector<uchar> block_ft_bitstream;
 			vector<uchar> block_kp_bitstream;
-			Mat features_sub = features.rowRange(start_f,stop_f);
+
+			beg = i*atc_param.num_blocks;
+			end = min((int)(unsigned int)kpts.size(), (int)(beg+atc_param.num_blocks));
+
+			Mat features_sub = features.rowRange(beg,end);
 
 			if(atc_param.coding == CodingChoices_none){
 				cur_task = new EncodeFeaturesTask(encoder,"BRISK",features_sub,0);
@@ -430,7 +433,7 @@ void NodeManager::ATC_processing_thread(){
 				delete((EncodeFeaturesTask*)cur_task);
 			}
 
-			vector<KeyPoint> sub_kpts(&kpts[start_f],&kpts[stop_f]);
+			vector<KeyPoint> sub_kpts(&kpts[beg],&kpts[end]);
 			cur_task = new EncodeKeypointsTask(encoder,sub_kpts,640,480,true);
 			taskManager_ptr->addTask(cur_task);
 			//cout << "NM: Waiting the end of the encode_kpts_task" << endl;
@@ -440,17 +443,9 @@ void NodeManager::ATC_processing_thread(){
 			//cout << "NM: ended encode_kpts_task" << endl;
 			block_kp_bitstream = ((EncodeKeypointsTask*)cur_task)->getKptsBitstream();
 			delete((EncodeKeypointsTask*)cur_task);
-			cout << "sending " << (sub_kpts.size()) << "keypoints" << endl;
-			cout << "and " << (stop_f-start_f) << "features" << endl;
+			cout << "sending " << (int)(sub_kpts.size()) << "keypoints" << endl;
+			cout << "and " << (int)(features_sub.rows) << "features" << endl;
 
-			int sent_features = stop_f-start_f+1;
-			remaining_features-=sent_features;
-
-			start_f+=sent_features;
-			if(remaining_features>=feat_per_block)
-				stop_f+=feat_per_block;
-			else
-				stop_f=features.rows;
 
 			DataATCMsg *msg = new DataATCMsg(0, i, block_ft_bitstream, block_kp_bitstream);
 			msg->setSource(1);
