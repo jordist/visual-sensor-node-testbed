@@ -11,7 +11,7 @@ using namespace std;
 
 NodeManager::NodeManager(NodeType nt){
 	node_type = nt;
-	cout << "GIT!" << endl;
+	cout << "GIT! ale branch!" << endl;
 	cout << "Node Type is " << node_type << endl;
 	switch(node_type){
 	case SINK:{
