@@ -3,11 +3,17 @@
 
 #include "NodeManager/NodeManager.h"
 #include "RadioSystem/RadioSystem.h"
-#include "RadioSystem/ConnectionManager.h"
+//#include "RadioSystem/ConnectionManager.h"
 #include "Messages/Message.h"
 #include "S2GInterface/S2GInterface.h"
 
 using namespace std;
+/*
+ * USAGE:
+ * testbed-v2 sink 						SINK MODE
+ * testbed-v2 camera port 				CAMERA MODE, LISTENING ON PORT port FOR COOP.
+ * testbed-v2 cooperator address port   COOP MPDE, CONNECTING TO address:port
+ */
 
 int main(int argc, char ** argv){
 
@@ -26,7 +32,7 @@ int main(int argc, char ** argv){
 	RadioSystem *radioSys;
 	TaskManager *taskMng;
 	S2GInterface *s2ginterface;
-	ConnectionManager *connMng;
+	//ConnectionManager *connMng;
 	boost::asio::io_service io_service;
 
 	switch(type){
@@ -42,7 +48,7 @@ int main(int argc, char ** argv){
 		taskMng->start();
 
 		//start a telosb receiver
-		radioSys->startReceiver("/dev/ttyUSB0");
+		radioSys->startTelosbReceiver("/dev/ttyUSB0");
 
 		//start the sink2gui interface
 		tcp::resolver resolver(io_service);
@@ -58,6 +64,9 @@ int main(int argc, char ** argv){
 		nodeMng  = new NodeManager(CAMERA);
 		radioSys = new RadioSystem(nodeMng);
 		taskMng  = new TaskManager(nodeMng);
+		//connMng = new ConnectionManager();
+
+
 		nodeMng->set_radioSystem(radioSys);
 		nodeMng->set_taskManager(taskMng);
 
@@ -65,17 +74,23 @@ int main(int argc, char ** argv){
 		taskMng->start();
 
 		//start a telosb receiver
-		radioSys->startReceiver("/dev/ttyUSB1");
+		radioSys->startTelosbReceiver("/dev/ttyUSB1");
+
+		//start the WiFi manager
+		radioSys->startWiFiReceiver();
 
 		//start the server for connection with cooperators
+		//int port = atoi(argv[2]);
 		//connMng->startServer(port);
+
+		radioSys->joinTelosbReceiver();
 		break;
 	}
 	case COOPERATOR:{
 		nodeMng  = new NodeManager(COOPERATOR);
 		radioSys = new RadioSystem(nodeMng);
 		taskMng  = new TaskManager(nodeMng);
-		connMng = new ConnectionManager();
+		//connMng = new ConnectionManager();
 
 		nodeMng->set_radioSystem(radioSys);
 		nodeMng->set_taskManager(taskMng);
@@ -84,11 +99,15 @@ int main(int argc, char ** argv){
 		//start the task manager
 		taskMng->start();
 
+		tcp::resolver::query camera("localhost", "9001");
+		radioSys->startWiFiReceiver();
+
+
 		//start a telosb receiver
-		radioSys->startReceiver("/dev/ttyUSB1");
+		//radioSys->startReceiver("/dev/ttyUSB1");
 
 		//connect to the camera
-		//connMng->connectToCamera(address,port);
+		//connMng->connectToCamera(argv[2],atoi(argv[3]));
 		break;
 	}
 	default:
@@ -96,7 +115,7 @@ int main(int argc, char ** argv){
 		break;
 	}
 
-	radioSys->joinReceiver();
+
 	taskMng->join();
 
 

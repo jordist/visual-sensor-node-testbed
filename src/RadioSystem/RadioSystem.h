@@ -3,12 +3,15 @@
 
 #include <boost/thread.hpp>
 #include <boost/date_time.hpp>
+#include <boost/asio.hpp>
 #include "Messages/Message.h"
 #include "Telosb/serialsource.h"
 
 class NodeManager;
 class TelosbRadioSystem;
+class WiFiRadioSystem;
 class IncomingMessageQueue;
+using boost::asio::ip::tcp;
 
 class RadioSystem{
 
@@ -26,8 +29,13 @@ public:
 	void join(){
 		m_thread.join();
 	}*/
-	int startReceiver(string dev_name);
-	void joinReceiver();
+	int startTelosbReceiver(string dev_name);
+	void joinTelosbReceiver();
+
+	void startWiFiReceiver();
+	void stopWiFiReceiver();
+	void connectToCamera(tcp::resolver::query query);
+
 	serial_source getTelosb();
 	void notifyMsg(Message* msg);
 
@@ -35,6 +43,8 @@ private:
 
 	NodeManager *nodeManager_ptr;
 	TelosbRadioSystem *telosbRadioSystem_ptr;
+	WiFiRadioSystem *wifiRadioSystem_ptr;
+
 	IncomingMessageQueue *incoming_message_queue_ptr;
 	//boost::thread m_thread;
 	//void radioSystemThread();

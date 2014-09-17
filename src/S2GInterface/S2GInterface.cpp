@@ -118,7 +118,7 @@ void S2GInterface::handle_read_message(const boost::system::error_code& ec)
 				int bitstream_size = h.getPayloadSize();
 				cout << "Bitstream size is " << bitstream_size << endl;
 
-				//copy the bitstream (MAYBE REMOVED)
+				//copy the bitstream (MAYBE REMOVED?)
 				for(int i=0;i<bitstream_size;i++){
 					buf[i] = data[i];
 				}
@@ -225,7 +225,9 @@ void S2GInterface::writeMsg(Message* msg){
 	temp2 = h.serialization();
 
 	out.reserve( temp1.size() + temp2.size() ); // preallocate memory
+	//write header
 	out.insert( out.end(), temp2.begin(), temp2.end() );
+	//write payload
 	out.insert( out.end(), temp1.begin(), temp1.end() );
 
 

@@ -11,7 +11,6 @@ using namespace std;
 
 NodeManager::NodeManager(NodeType nt){
 	node_type = nt;
-	cout << "GIT! ale branch!" << endl;
 	cout << "Node Type is " << node_type << endl;
 	switch(node_type){
 	case SINK:{
@@ -28,7 +27,6 @@ NodeManager::NodeManager(NodeType nt){
 		extractor->setDescriptor("BRISK",&dscPrms);
 
 		encoder = new VisualFeatureEncoding();
-		decoder = new VisualFeatureDecoding();
 
 		//boost::thread m_thread;
 		//m_thread = boost::thread(&NodeManager::ATC_processing_thread, this, 0);
@@ -36,6 +34,14 @@ NodeManager::NodeManager(NodeType nt){
 		break;
 	}
 	case COOPERATOR:{
+		BRISK_detParams detPrms(60,4);
+
+		BRISK_descParams dscPrms;
+		extractor = new VisualFeatureExtraction();
+		extractor->setDetector("BRISK", &detPrms);
+		extractor->setDescriptor("BRISK",&dscPrms);
+
+		encoder = new VisualFeatureEncoding();
 		break;
 	}
 	default:
@@ -43,6 +49,10 @@ NodeManager::NodeManager(NodeType nt){
 	}
 	received_notifications = 0;
 	outgoing_msg_seq_num = 255;
+}
+
+NodeType NodeManager::getNodeType(){
+	return node_type;
 }
 
 void NodeManager::set_radioSystem(RadioSystem *rs){

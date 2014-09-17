@@ -77,9 +77,8 @@ src/example.d: ../src/example.cpp ../src/NodeManager/NodeManager.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StopMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/S2GInterface/S2GInterface.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h \
- ../src/RadioSystem/RadioSystem.h ../src/RadioSystem/ConnectionManager.h \
- /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/CooperatorList.h \
- ../src/Messages/Message.h ../src/S2GInterface/S2GInterface.h
+ ../src/RadioSystem/RadioSystem.h ../src/Messages/Message.h \
+ ../src/S2GInterface/S2GInterface.h
 
 ../src/NodeManager/NodeManager.h:
 
@@ -240,10 +239,6 @@ src/example.d: ../src/example.cpp ../src/NodeManager/NodeManager.h \
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h:
 
 ../src/RadioSystem/RadioSystem.h:
-
-../src/RadioSystem/ConnectionManager.h:
-
-/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/CooperatorList.h:
 
 ../src/Messages/Message.h:
 

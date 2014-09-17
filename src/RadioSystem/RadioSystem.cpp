@@ -2,18 +2,50 @@
 #include <iostream>
 #include "RadioSystem/RadioSystem.h"
 #include "NodeManager/NodeManager.h"
+#include "RadioSystem/WiFi/WiFiRadioSystem.h"
 
 using namespace std;
 
 RadioSystem::RadioSystem(NodeManager* nm){
 	nodeManager_ptr = nm;
 	incoming_message_queue_ptr = new IncomingMessageQueue(this);
-	telosbRadioSystem_ptr = new TelosbRadioSystem();
-	telosbRadioSystem_ptr->setIncomingMessageQueue(incoming_message_queue_ptr);
+	NodeType node_type = nodeManager_ptr->getNodeType();
+
+	switch(node_type){
+	case SINK:
+		telosbRadioSystem_ptr = new TelosbRadioSystem();
+		telosbRadioSystem_ptr->setIncomingMessageQueue(incoming_message_queue_ptr);
+		break;
+
+	case CAMERA:
+		telosbRadioSystem_ptr = new TelosbRadioSystem();
+		telosbRadioSystem_ptr->setIncomingMessageQueue(incoming_message_queue_ptr);
+
+		wifiRadioSystem_ptr = new WiFiRadioSystem("localhost","9001");
+		break;
+
+	case COOPERATOR:
+		wifiRadioSystem_ptr = new WiFiRadioSystem(tcp::resolver::query query);
+		break;
+
+	default:
+		break;
+	}
 }
 
+void RadioSystem::startWiFiReceiver(){
+	wifiRadioSystem_ptr->run();
+}
 
-int RadioSystem::startReceiver(string dev_name){
+void RadioSystem::stopWiFiReceiver(){
+	wifiRadioSystem_ptr->stop();
+}
+
+void RadioSystem::connectToCamera(tcp::resolver::query query){
+	wifiRadioSystem_ptr->connectToCamera(query);
+}
+
+int RadioSystem::startTelosbReceiver(string dev_name){
 	if(telosbRadioSystem_ptr->openRadio(dev_name.c_str(),115200,0)==0){
 		telosbRadioSystem_ptr->startReceiver();
 		cout << "RS: telosb ready!" << endl;
@@ -23,7 +55,7 @@ int RadioSystem::startReceiver(string dev_name){
 	return -1;
 }
 
-void RadioSystem::joinReceiver(){
+void RadioSystem::joinTelosbReceiver(){
 	telosbRadioSystem_ptr->joinReceiver();
 }
 

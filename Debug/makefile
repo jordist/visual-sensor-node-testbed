@@ -11,6 +11,7 @@ RM := rm -rf
 -include src/Tasks/subdir.mk
 -include src/TaskManager/subdir.mk
 -include src/S2GInterface/subdir.mk
+-include src/RadioSystem/WiFi/subdir.mk
 -include src/RadioSystem/Telosb/subdir.mk
 -include src/RadioSystem/subdir.mk
 -include src/NodeManager/subdir.mk

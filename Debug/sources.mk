@@ -27,6 +27,7 @@ src \
 src/Tasks \
 src/TaskManager \
 src/S2GInterface \
+src/RadioSystem/WiFi \
 src/RadioSystem/Telosb \
 src/RadioSystem \
 src/NodeManager \

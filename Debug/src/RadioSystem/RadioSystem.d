@@ -77,7 +77,10 @@ src/RadioSystem/RadioSystem.d: ../src/RadioSystem/RadioSystem.cpp \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/DataATCMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StopMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/S2GInterface/S2GInterface.h \
- /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/WiFiRadioSystem.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/ConnectionManager.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/Connection.h
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/RadioSystem.h:
 
@@ -236,3 +239,9 @@ src/RadioSystem/RadioSystem.d: ../src/RadioSystem/RadioSystem.cpp \
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/S2GInterface/S2GInterface.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/WiFiRadioSystem.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/ConnectionManager.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/Connection.h:

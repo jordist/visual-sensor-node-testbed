@@ -21,7 +21,7 @@
 using namespace std;
 
 
-typedef struct telosb_pkt_header_t{
+/*typedef struct telosb_pkt_header_t{
 	uchar reserved_fields[8];
 
 	uchar src_addr_msb;
@@ -38,7 +38,7 @@ typedef struct telosb_pkt_header_t{
 	uchar pkt_id_lsb;
 
 	uchar type;
-}telosb_pkt_header;
+}telosb_pkt_header;*/
 
 
 class TelosbRadioSystem {
@@ -52,7 +52,7 @@ public:
 
 	int openRadio(const char *serial_device, int baud_rate, int non_blocking);
 
-	int sendTestPacket(int radio_dst, MessageType message_type, vector<char>& bitstream);
+	//int sendTestPacket(int radio_dst, MessageType message_type, vector<char>& bitstream);
 	serial_source getTelosb();
 	void setIncomingMessageQueue(IncomingMessageQueue* incoming_message_queue);
 

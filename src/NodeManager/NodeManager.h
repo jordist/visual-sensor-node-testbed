@@ -62,6 +62,8 @@ public:
 
 	void sendMessage(Message* msg);
 
+	NodeType getNodeType();
+
 	//void sendTestPacket(Message* msg);
 
 private:
