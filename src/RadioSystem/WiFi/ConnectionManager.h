@@ -16,17 +16,18 @@ class ConnectionManager: private boost::noncopyable
 {
 public:
   /// Add the specified connection to the manager and start it.
-  void start(Connection_ptr c);
+  void start(Connection* c);
 
   /// Stop the specified connection.
-  void stop(Connection_ptr c);
+  void stop(Connection* c);
 
   /// Stop all connections.
   void stop_all();
+  void printActiveConnections();
 
 private:
   /// The managed connections.
-  std::set<Connection_ptr> connections_;
+  std::set<Connection*> connections_;
 };
 
 

@@ -99,7 +99,6 @@ int main(int argc, char ** argv){
 		//start the task manager
 		taskMng->start();
 
-		tcp::resolver::query camera("localhost", "9001");
 		radioSys->startWiFiReceiver();
 
 

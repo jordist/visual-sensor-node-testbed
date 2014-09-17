@@ -28,7 +28,7 @@ boost::asio::ip::tcp::socket& Connection::socket()
 void Connection::start()
 {
   socket_.async_read_some(boost::asio::buffer(buffer_),
-      boost::bind(&Connection::handle_read, shared_from_this(),
+      boost::bind(&Connection::handle_read, this,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));
 }
@@ -50,6 +50,7 @@ void Connection::handle_read(const boost::system::error_code& e,
 	else{
 		cout << "Connection broken!" << endl;
 		//connection broken, remove connection from set
+		connection_manager_.stop(this);
 	}
 
 //  if (!e)
@@ -97,7 +98,7 @@ void Connection::handle_write(const boost::system::error_code& e)
 
   if (e != boost::asio::error::operation_aborted)
   {
-    connection_manager_.stop(shared_from_this());
+    connection_manager_.stop(this);
   }
 }
 

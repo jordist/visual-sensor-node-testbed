@@ -67,6 +67,6 @@ private:
 
 };
 
-typedef boost::shared_ptr<Connection> Connection_ptr;
+//typedef boost::shared_ptr<Connection> Connection_ptr;
 
 #endif /* CONNECTION_H_ */

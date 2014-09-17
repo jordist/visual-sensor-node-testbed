@@ -13,36 +13,33 @@ RadioSystem::RadioSystem(NodeManager* nm){
 
 	switch(node_type){
 	case SINK:
+	{
 		telosbRadioSystem_ptr = new TelosbRadioSystem();
 		telosbRadioSystem_ptr->setIncomingMessageQueue(incoming_message_queue_ptr);
 		break;
-
+	}
 	case CAMERA:
+	{
 		telosbRadioSystem_ptr = new TelosbRadioSystem();
 		telosbRadioSystem_ptr->setIncomingMessageQueue(incoming_message_queue_ptr);
 
-		wifiRadioSystem_ptr = new WiFiRadioSystem("localhost","9001");
+		tcp::resolver::query query("localhost", "1234");
+		wifiRadioSystem_ptr = new WiFiRadioSystem(query,std::string("server"));
 		break;
-
+	}
 	case COOPERATOR:
-		wifiRadioSystem_ptr = new WiFiRadioSystem(tcp::resolver::query query);
+	{
+		tcp::resolver::query query("localhost", "1234");
+		wifiRadioSystem_ptr = new WiFiRadioSystem(query,std::string("client"));
 		break;
-
+	}
 	default:
 		break;
 	}
 }
 
 void RadioSystem::startWiFiReceiver(){
-	wifiRadioSystem_ptr->run();
-}
-
-void RadioSystem::stopWiFiReceiver(){
-	wifiRadioSystem_ptr->stop();
-}
-
-void RadioSystem::connectToCamera(tcp::resolver::query query){
-	wifiRadioSystem_ptr->connectToCamera(query);
+	wifiRadioSystem_ptr->startReceiver();
 }
 
 int RadioSystem::startTelosbReceiver(string dev_name){

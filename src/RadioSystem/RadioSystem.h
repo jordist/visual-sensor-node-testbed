@@ -33,8 +33,7 @@ public:
 	void joinTelosbReceiver();
 
 	void startWiFiReceiver();
-	void stopWiFiReceiver();
-	void connectToCamera(tcp::resolver::query query);
+
 
 	serial_source getTelosb();
 	void notifyMsg(Message* msg);

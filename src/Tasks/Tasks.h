@@ -11,6 +11,7 @@
 #include <RadioSystem/Telosb/TelosbRadioSystem.h>
 
 
+
 using namespace std;
 using namespace cv;
 
@@ -27,8 +28,9 @@ enum taskType {ACQUIRE_IMAGE_TASK,
                SUBTRACT_BACKGROUND_TASK,
                CONVERT_COLORSPACE_TASK,
                SEND_MESSAGE_TASK,
+               SEND_WIFI_MESSAGE_TASK,
                PROBE_LINK_TASK,
-               CONNECT_TO_COOPERATOR_TASK};
+               };
 
 class Task{
 
@@ -318,6 +320,15 @@ public:
 
 };
 
+class SendWiFiMessageTask : public Task{
+	Message *msg_to_send;
+
+public:
+	~SendWiFiMessageTask();
+	SendWiFiMessageTask(Message *msg);
+	void execute();
+};
+
 class ProbeLinkTask : public Task{
 private:
 public:
@@ -328,11 +339,11 @@ public:
 	void execute();
 };
 
-class ConnectToCooperatorTask : public Task{
+class ConnectToCamera : public Task{
 private:
 public:
-	ConnectToCooperatorTask(){
-		type = CONNECT_TO_COOPERATOR_TASK;
+	ConnectToCamera(){
+		type = CONNECT_TO_CAMERA;
 		completed = false;
 	}
 	void execute();

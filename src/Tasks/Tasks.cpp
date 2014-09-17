@@ -5,6 +5,10 @@
 #include <VisualFeatureExtraction.h>
 #include <VisualFeatureEncoding.h>
 #include <VisualFeatureDecoding.h>
+#include "Messages/Header.h"
+#include <boost/bind.hpp>
+#include <boost/asio.hpp>
+#include <boost/thread/thread.hpp>
 
 void AcquireImageTask::execute(){
 	cout << "executing the acquire_image_task" << endl;
@@ -256,7 +260,37 @@ SendMessageTask::SendMessageTask(Message *msg, serial_source radio_interface){
 	completed = false;
 }
 
+SendWiFiMessageTask::~SendWiFiMessageTask(){
+	delete(msg_to_send);
+}
 
+SendWiFiMessageTask::SendWiFiMessageTask(Message *msg){
+	msg_to_send = msg;
+	type = SEND_WIFI_MESSAGE_TASK;
+	boost::mutex::scoped_lock lk(task_monitor);
+	completed = false;
+}
+
+void SendWiFiMessageTask::execute(){
+		vector<uchar> out;
+		vector<uchar> temp1;
+		vector<uchar> temp2;
+
+		msg_to_send->getBitStream(temp1);
+
+		Header h(msg_to_send->getSource(), msg_to_send->getDestination(), msg_to_send->msg_type, 0, 1, msg_to_send->getSeqNum(), temp1.size());
+
+		temp2 = h.serialization();
+
+		out.reserve( temp1.size() + temp2.size() ); // preallocate memory
+		//write header
+		out.insert( out.end(), temp2.begin(), temp2.end() );
+		//write payload
+		out.insert( out.end(), temp1.begin(), temp1.end() );
+
+		boost::system::error_code ignored_error;
+		boost::asio::write(*msg_to_send->getSocket(),boost::asio::buffer(out),boost::asio::transfer_all(),  ignored_error);
+}
 
 void SendMessageTask::execute(){
 	/*

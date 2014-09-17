@@ -11,9 +11,11 @@
 #include "ASN.1/StartCTAMessage.h"
 #include "ASN.1/DataCTAMessage.h"
 #include "ASN.1/DataATCMessage.h"
+#include <boost/asio.hpp>
 
 
 using namespace std;
+using boost::asio::ip::tcp;
 
 #define MAX_START_CTA_MESSAGE_SIZE 1024
 #define MAX_START_ATC_MESSAGE_SIZE 1024
@@ -32,8 +34,14 @@ enum MessageType{
 class Message{
 private:
 
-	int src_addr; //todo Address class
+	//todo Address class
+
+	//TinyOS/Telosb Address
+	int src_addr;
 	int dst_addr;
+
+	//WiFi TCP socket
+	tcp::socket* socket_;
 
 public:
 	virtual ~Message(){};
@@ -67,6 +75,11 @@ public:
 
 	int getDestination(){
 		return dst_addr;
+	}
+
+	boost::asio::ip::tcp::socket* getSocket()
+	{
+	  return socket_;
 	}
 
 	virtual int getBitStream(vector<uchar>& bitstream) = 0;

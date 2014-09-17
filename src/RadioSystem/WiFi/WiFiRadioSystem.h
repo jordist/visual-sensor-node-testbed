@@ -20,31 +20,21 @@ using boost::asio::ip::tcp;
 class WiFiRadioSystem{
 
 public:
-	//server mode
-	WiFiRadioSystem(const std::string& address, const std::string& port);
-
-	//client mode
-	WiFiRadioSystem(tcp::resolver::query query);
-
-	void run();
-	void stop();
-	void connectToCamera(tcp::resolver::query query);
+	WiFiRadioSystem(boost::asio::ip::tcp::resolver::query, std::string mode);
+	void startReceiver();
 
 private:
-	 void handle_accept(const boost::system::error_code& e);
-	  void handle_stop();
-	  void handle_connect(const boost::system::error_code& error,
-	  		tcp::resolver::iterator endpoint_iter);
-	  boost::asio::io_service io_service_;
-	  boost::asio::ip::tcp::acceptor acceptor_;
-	  tcp::socket socket_;
-	  ConnectionManager connection_manager_;
+	void handleConnect(const boost::system::error_code& error,
+			tcp::resolver::iterator endpoint_iter);
+	void handleAccept(const boost::system::error_code&);
 
-	  /// The next connection to be accepted.
-	  Connection_ptr new_connection_;
+	boost::asio::io_service io_service;
+	tcp::acceptor acceptor;
+	tcp::socket socket;
+	ConnectionManager connection_manager;
+	Connection* new_connection;
 
-	  /// The handler for all incoming requests.
-	  //request_handler request_handler_;
+
 };
 
 
