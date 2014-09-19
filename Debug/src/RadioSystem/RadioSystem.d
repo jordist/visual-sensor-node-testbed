@@ -37,6 +37,8 @@ src/RadioSystem/RadioSystem.d: ../src/RadioSystem/RadioSystem.cpp \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/Coordinate.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OCTET_STRING.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataATCMessage.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CooperatorInfo.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CoopStatus.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/Telosb/serialsource.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/NodeManager/NodeManager.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/TaskManager/TaskManager.h \
@@ -76,11 +78,12 @@ src/RadioSystem/RadioSystem.d: ../src/RadioSystem/RadioSystem.cpp \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/DataCTAMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/DataATCMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StopMsg.h \
- /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/S2GInterface/S2GInterface.h \
- /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/CoopInfoMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/WiFiRadioSystem.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/ConnectionManager.h \
- /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/Connection.h
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/Connection.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/S2GInterface/S2GInterface.h
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/RadioSystem.h:
 
@@ -157,6 +160,10 @@ src/RadioSystem/RadioSystem.d: ../src/RadioSystem/RadioSystem.cpp \
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OCTET_STRING.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataATCMessage.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CooperatorInfo.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CoopStatus.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/Telosb/serialsource.h:
 
@@ -236,12 +243,14 @@ src/RadioSystem/RadioSystem.d: ../src/RadioSystem/RadioSystem.cpp \
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StopMsg.h:
 
-/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/S2GInterface/S2GInterface.h:
-
-/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h:
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/CoopInfoMsg.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/WiFiRadioSystem.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/ConnectionManager.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/Connection.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/S2GInterface/S2GInterface.h:

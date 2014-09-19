@@ -6,6 +6,7 @@
 #include <boost/asio.hpp>
 #include "Messages/Message.h"
 #include "Telosb/serialsource.h"
+#include <set>
 
 class NodeManager;
 class TelosbRadioSystem;
@@ -37,6 +38,7 @@ public:
 
 	serial_source getTelosb();
 	void notifyMsg(Message* msg);
+	std::set<Connection*> getWiFiConnections();
 
 private:
 

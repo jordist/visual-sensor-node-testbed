@@ -7,17 +7,20 @@
 
 #include "WiFiRadioSystem.h"
 #include <boost/bind.hpp>
+#include "NodeManager/NodeManager.h"
 
-WiFiRadioSystem::WiFiRadioSystem(tcp::resolver::query, std::string mode) :
+
+WiFiRadioSystem::WiFiRadioSystem(tcp::resolver::query, std::string mode, NodeManager* nm) :
 io_service(),
 acceptor(io_service),
-socket(io_service),
-connection_manager(),
+connection_manager(nm),
 new_connection(new Connection(io_service,
-		connection_manager))
+		connection_manager)),
+node_manager(nm)
 {
+	new_connection->setNodeManager(node_manager);
 	tcp::resolver resolver(io_service);
-	tcp::resolver::query query("localhost", "1234");
+	tcp::resolver::query query("localhost", "2345");
 	tcp::endpoint endpoint = *resolver.resolve(query);
 	tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
@@ -35,9 +38,9 @@ new_connection(new Connection(io_service,
 
 	if(mode.compare("client") == 0){
 		std::cout << "connecting..." << std::endl;
-		boost::asio::async_connect(socket, endpoint_iterator,
+		boost::asio::async_connect(new_connection->socket(), endpoint_iterator,
 				boost::bind(&WiFiRadioSystem::handleConnect, this,
-						boost::asio::placeholders::error, endpoint_iterator));
+						boost::asio::placeholders::error, endpoint_iterator, new_connection));
 	}
 }
 
@@ -46,8 +49,8 @@ void WiFiRadioSystem::startReceiver(){
 }
 
 void WiFiRadioSystem::handleConnect(const boost::system::error_code& error,
-		tcp::resolver::iterator endpoint_iter){
-	if (!socket.is_open())
+		tcp::resolver::iterator endpoint_iter, Connection* connection){
+	if (!connection->socket().is_open())
 	{
 		std::cout << "Connect timed out\n";
 	}
@@ -56,7 +59,7 @@ void WiFiRadioSystem::handleConnect(const boost::system::error_code& error,
 	{
 		std::cout << "Connect error: " << error.message() << "\n";
 
-		socket.close();
+		connection->socket().close();
 	}
 	// Otherwise we have successfully established a connection.
 	else
@@ -65,6 +68,7 @@ void WiFiRadioSystem::handleConnect(const boost::system::error_code& error,
 
 		// Start reading the header
 		std::cout << "Start reading..." << std::endl;
+		connection->readHeader();
 		//start_read_header();
 	}
 }
@@ -74,11 +78,20 @@ void WiFiRadioSystem::handleAccept(const boost::system::error_code& e){
 	{
 		std::cout << "connected..." << std::endl;
 		connection_manager.start(new_connection);
+
+
 		new_connection = new Connection(io_service,
 				connection_manager);
+		new_connection->setNodeManager(node_manager);
 		acceptor.async_accept(new_connection->socket(),
 				boost::bind(&WiFiRadioSystem::handleAccept, this,
 						boost::asio::placeholders::error));
 
+
 	}
 }
+
+std::set<Connection*> WiFiRadioSystem::getWiFiConnections(){
+	return connection_manager.getWiFiConnections();
+}
+

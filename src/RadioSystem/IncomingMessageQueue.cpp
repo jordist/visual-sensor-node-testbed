@@ -251,6 +251,37 @@ void IncomingMessageQueue::deserializeAndNotify(int cur_pos){
 		radio_system_ptr->notifyMsg(msg);
 		break;
 	}
+	case COOP_INFO_MESSAGE:{
+		char buf[MAX_COOP_INFO_MESSAGE_SIZE];
+
+		cout << "Deserializing coop info message at position " << cur_pos << endl;
+		int bitstream_size = message_queue[cur_pos].bitstream.size();
+		cout << "Bitstream size is " << bitstream_size << endl;
+
+		//copy the bitstream (MAYBE REMOVED)
+		for(int i=0;i<bitstream_size;i++){
+			buf[i] = message_queue[cur_pos].bitstream[i];
+		}
+
+		CooperatorInfo_t* internal_message = (CooperatorInfo_t*) calloc(1, sizeof(*internal_message));
+		rval = uper_decode_complete(0, &asn_DEF_CooperatorInfo,(void **)&internal_message, buf, MAX_COOP_INFO_MESSAGE_SIZE);
+		msg = new CoopInfoMsg(internal_message);
+		msg->setSource(src_addr);
+		msg->setDestination(dst_addr);
+
+		if(rval.code != RC_OK) {
+			fprintf(stderr,
+					"Broken message encoding at byte %ld\n",
+					(long)rval.consumed);
+			exit(65); /* better, EX_DATAERR */
+		} else {
+			fprintf(stdout,"Printing msg as XML...\n");
+			xer_fprint(stdout, &asn_DEF_CooperatorInfo, internal_message);
+		}
+
+		radio_system_ptr->notifyMsg(msg);
+		break;
+	}
 	default:
 		break;
 	}

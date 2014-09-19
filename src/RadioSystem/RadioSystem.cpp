@@ -23,14 +23,14 @@ RadioSystem::RadioSystem(NodeManager* nm){
 		telosbRadioSystem_ptr = new TelosbRadioSystem();
 		telosbRadioSystem_ptr->setIncomingMessageQueue(incoming_message_queue_ptr);
 
-		tcp::resolver::query query("localhost", "1234");
-		wifiRadioSystem_ptr = new WiFiRadioSystem(query,std::string("server"));
+		tcp::resolver::query query("localhost", "2345");
+		wifiRadioSystem_ptr = new WiFiRadioSystem(query,std::string("server"),nodeManager_ptr);
 		break;
 	}
 	case COOPERATOR:
 	{
-		tcp::resolver::query query("localhost", "1234");
-		wifiRadioSystem_ptr = new WiFiRadioSystem(query,std::string("client"));
+		tcp::resolver::query query("localhost", "2345");
+		wifiRadioSystem_ptr = new WiFiRadioSystem(query,std::string("client"),nodeManager_ptr);
 		break;
 	}
 	default:
@@ -63,6 +63,10 @@ serial_source RadioSystem::getTelosb(){
 void RadioSystem::notifyMsg(Message* msg){
 	cout << "RS: Notifying message to " << nodeManager_ptr << endl;
 	nodeManager_ptr->notify_msg(msg);
+}
+
+std::set<Connection*> RadioSystem::getWiFiConnections(){
+	return wifiRadioSystem_ptr->getWiFiConnections();
 }
 
 //void RadioSystem::radioSystemThread(){

@@ -9,6 +9,7 @@
 #include "ConnectionManager.h"
 #include <algorithm>
 #include <boost/bind.hpp>
+#include "NodeManager/NodeManager.h"
 
 void ConnectionManager::printActiveConnections(){
 	std::cout << "Active connections: " << connections_.size() << std::endl;
@@ -27,15 +28,19 @@ void ConnectionManager::printActiveConnections(){
 void ConnectionManager::start(Connection* c)
 {
 	connections_.insert(c);
-	c->start();
+	node_manager->notifyCooperatorOnline(c);
+	c->readHeader();
 	printActiveConnections();
+
 }
 
 void ConnectionManager::stop(Connection* c)
 {
 	connections_.erase(c);
+	node_manager->notifyCooperatorOffline(c);
 	c->stop();
 	printActiveConnections();
+
 }
 
 void ConnectionManager::stop_all()

@@ -12,8 +12,9 @@
 #include "Messages/StartATCMsg.h"
 #include "Messages/DataCTAMsg.h"
 #include "Messages/DataATCMsg.h"
-
 #include "Messages/StopMsg.h"
+#include "Messages/CoopInfoMsg.h"
+
 #include "RadioSystem/RadioSystem.h"
 
 using namespace std;

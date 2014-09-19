@@ -123,18 +123,18 @@ static ber_tlv_tag_t asn_DEF_StartATCMessage_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 static asn_TYPE_tag2member_t asn_MAP_StartATCMessage_tag2el_1[] = {
-    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* framesPerSecond at 36 */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* detectorType at 39 */
-    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* detectorThreshold at 40 */
-    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 }, /* descriptorType at 41 */
-    { (ASN_TAG_CLASS_CONTEXT | (4 << 2)), 4, 0, 0 }, /* descriptorLength at 42 */
-    { (ASN_TAG_CLASS_CONTEXT | (5 << 2)), 5, 0, 0 }, /* maxNumberOfFeatures at 43 */
-    { (ASN_TAG_CLASS_CONTEXT | (6 << 2)), 6, 0, 0 }, /* rotationInvariant at 45 */
-    { (ASN_TAG_CLASS_CONTEXT | (7 << 2)), 7, 0, 0 }, /* coding at 47 */
-    { (ASN_TAG_CLASS_CONTEXT | (8 << 2)), 8, 0, 0 }, /* transferCoordinates at 49 */
-    { (ASN_TAG_CLASS_CONTEXT | (9 << 2)), 9, 0, 0 }, /* transferScale at 50 */
-    { (ASN_TAG_CLASS_CONTEXT | (10 << 2)), 10, 0, 0 }, /* transferOrientation at 51 */
-    { (ASN_TAG_CLASS_CONTEXT | (11 << 2)), 11, 0, 0 } /* numBlocks at 53 */
+    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* framesPerSecond at 42 */
+    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* detectorType at 45 */
+    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* detectorThreshold at 46 */
+    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 }, /* descriptorType at 47 */
+    { (ASN_TAG_CLASS_CONTEXT | (4 << 2)), 4, 0, 0 }, /* descriptorLength at 48 */
+    { (ASN_TAG_CLASS_CONTEXT | (5 << 2)), 5, 0, 0 }, /* maxNumberOfFeatures at 49 */
+    { (ASN_TAG_CLASS_CONTEXT | (6 << 2)), 6, 0, 0 }, /* rotationInvariant at 51 */
+    { (ASN_TAG_CLASS_CONTEXT | (7 << 2)), 7, 0, 0 }, /* coding at 53 */
+    { (ASN_TAG_CLASS_CONTEXT | (8 << 2)), 8, 0, 0 }, /* transferCoordinates at 55 */
+    { (ASN_TAG_CLASS_CONTEXT | (9 << 2)), 9, 0, 0 }, /* transferScale at 56 */
+    { (ASN_TAG_CLASS_CONTEXT | (10 << 2)), 10, 0, 0 }, /* transferOrientation at 57 */
+    { (ASN_TAG_CLASS_CONTEXT | (11 << 2)), 11, 0, 0 } /* numBlocks at 59 */
 };
 static asn_SEQUENCE_specifics_t asn_SPC_StartATCMessage_specs_1 = {
 	sizeof(struct StartATCMessage),

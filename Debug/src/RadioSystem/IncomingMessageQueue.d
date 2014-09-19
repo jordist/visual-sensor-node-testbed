@@ -38,12 +38,15 @@ src/RadioSystem/IncomingMessageQueue.d: \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/Coordinate.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OCTET_STRING.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataATCMessage.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CooperatorInfo.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CoopStatus.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StartCTAMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Message.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StartATCMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/DataCTAMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/DataATCMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StopMsg.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/CoopInfoMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/RadioSystem.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/Telosb/serialsource.h
 
@@ -123,6 +126,10 @@ src/RadioSystem/IncomingMessageQueue.d: \
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataATCMessage.h:
 
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CooperatorInfo.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CoopStatus.h:
+
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StartCTAMsg.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Message.h:
@@ -134,6 +141,8 @@ src/RadioSystem/IncomingMessageQueue.d: \
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/DataATCMsg.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StopMsg.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/CoopInfoMsg.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/RadioSystem.h:
 

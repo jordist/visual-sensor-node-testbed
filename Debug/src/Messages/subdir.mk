@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../src/Messages/CoopInfoMsg.cpp \
 ../src/Messages/DataATCMsg.cpp \
 ../src/Messages/DataCTAMsg.cpp \
 ../src/Messages/Header.cpp \
@@ -13,6 +14,7 @@ CPP_SRCS += \
 ../src/Messages/StopMsg.cpp 
 
 OBJS += \
+./src/Messages/CoopInfoMsg.o \
 ./src/Messages/DataATCMsg.o \
 ./src/Messages/DataCTAMsg.o \
 ./src/Messages/Header.o \
@@ -22,6 +24,7 @@ OBJS += \
 ./src/Messages/StopMsg.o 
 
 CPP_DEPS += \
+./src/Messages/CoopInfoMsg.d \
 ./src/Messages/DataATCMsg.d \
 ./src/Messages/DataCTAMsg.d \
 ./src/Messages/Header.d \

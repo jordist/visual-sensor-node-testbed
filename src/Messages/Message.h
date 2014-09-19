@@ -11,12 +11,14 @@
 #include "ASN.1/StartCTAMessage.h"
 #include "ASN.1/DataCTAMessage.h"
 #include "ASN.1/DataATCMessage.h"
+#include "ASN.1/CooperatorInfo.h"
 #include <boost/asio.hpp>
 
 
 using namespace std;
 using boost::asio::ip::tcp;
 
+#define MAX_COOP_INFO_MESSAGE_SIZE 1024
 #define MAX_START_CTA_MESSAGE_SIZE 1024
 #define MAX_START_ATC_MESSAGE_SIZE 1024
 #define MAX_DATA_CTA_MESSAGE_SIZE 102400
@@ -28,8 +30,11 @@ enum MessageType{
 	START_DATC_MESSAGE,
 	DATA_CTA_MESSAGE,
 	DATA_ATC_MESSAGE,
-	STOP_MESSAGE
+	STOP_MESSAGE,
+	COOP_INFO_MESSAGE
 };
+
+class Connection;
 
 class Message{
 private:
@@ -41,7 +46,7 @@ private:
 	int dst_addr;
 
 	//WiFi TCP socket
-	tcp::socket* socket_;
+	Connection* tcp_dst_addr;
 
 public:
 	virtual ~Message(){};
@@ -77,9 +82,13 @@ public:
 		return dst_addr;
 	}
 
-	boost::asio::ip::tcp::socket* getSocket()
+	Connection* getTcpDestination()
 	{
-	  return socket_;
+	  return tcp_dst_addr;
+	}
+
+	void setTcpDestination(Connection* dst_addr){
+		tcp_dst_addr = dst_addr;
 	}
 
 	virtual int getBitStream(vector<uchar>& bitstream) = 0;

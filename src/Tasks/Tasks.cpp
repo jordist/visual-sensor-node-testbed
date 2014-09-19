@@ -272,7 +272,15 @@ SendWiFiMessageTask::SendWiFiMessageTask(Message *msg){
 }
 
 void SendWiFiMessageTask::execute(){
-		vector<uchar> out;
+
+	// call the proper Connection.sendMsg method and then complete
+	// make it synchrhonous so that we complete.
+
+	Connection* dest = msg_to_send->getTcpDestination();
+	dest->writeMsg(msg_to_send);
+	completed = true;
+
+	/*vector<uchar> out;
 		vector<uchar> temp1;
 		vector<uchar> temp2;
 
@@ -289,7 +297,7 @@ void SendWiFiMessageTask::execute(){
 		out.insert( out.end(), temp1.begin(), temp1.end() );
 
 		boost::system::error_code ignored_error;
-		boost::asio::write(*msg_to_send->getSocket(),boost::asio::buffer(out),boost::asio::transfer_all(),  ignored_error);
+		boost::asio::write(*msg_to_send->getSocket(),boost::asio::buffer(out),boost::asio::transfer_all(),  ignored_error);*/
 }
 
 void SendMessageTask::execute(){

@@ -9,6 +9,7 @@
 #include <VisualFeatureDecoding.h>
 #include <Messages/Message.h>
 #include <RadioSystem/Telosb/TelosbRadioSystem.h>
+#include <RadioSystem/WiFi/WiFiRadioSystem.h>
 
 
 
@@ -339,7 +340,7 @@ public:
 	void execute();
 };
 
-class ConnectToCamera : public Task{
+/*class ConnectToCamera : public Task{
 private:
 public:
 	ConnectToCamera(){
@@ -347,5 +348,5 @@ public:
 		completed = false;
 	}
 	void execute();
-};
+};*/
 #endif

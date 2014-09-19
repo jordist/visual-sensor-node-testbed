@@ -35,7 +35,9 @@ src/Messages/StartCTAMsg.d: ../src/Messages/StartCTAMsg.cpp \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataCTAMessage.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/Coordinate.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OCTET_STRING.h \
- /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataATCMessage.h
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataATCMessage.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CooperatorInfo.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CoopStatus.h
 
 ../src/Messages/StartCTAMsg.h:
 
@@ -112,3 +114,7 @@ src/Messages/StartCTAMsg.d: ../src/Messages/StartCTAMsg.cpp \
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OCTET_STRING.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataATCMessage.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CooperatorInfo.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CoopStatus.h:

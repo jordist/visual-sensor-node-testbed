@@ -3,6 +3,7 @@
 #include "NodeManager/NodeManager.h"
 #include "Tasks/Tasks.h"
 #include "Messages/DataATCMsg.h"
+#include "Messages/CoopInfoMsg.h"
 
 using namespace std;
 
@@ -86,7 +87,26 @@ void NodeManager::notify_msg(Message *msg){
 		}
 		case CAMERA:
 		{
-			//update system state and start cta processing
+			// TRY WIFI
+			/*std::set<Connection*> connections = radioSystem_ptr->getWiFiConnections();
+			std::set<Connection*>::iterator it = connections.begin();
+			Connection* cn = *it;
+			msg->setTcpDestination(cn);
+			Task *cur_task;
+			cur_task = new SendWiFiMessageTask(msg);
+			taskManager_ptr->addTask(cur_task);
+			cout << "NM: Waiting the end of the send_wifi_message_task" << endl;
+			{
+				boost::mutex::scoped_lock lk(cur_task->task_monitor);
+				while(!cur_task->completed){
+					cur_task_finished.wait(lk);
+				}
+			}
+			cout << "NM: exiting the wifi tx thread" << endl;
+			delete((SendWiFiMessageTask*)cur_task);*/
+			// END TRY WIFI
+
+//			//update system state and start cta processing
 			cta_param.quality_factor = ((StartCTAMsg*)msg)->getQualityFactor();
 			cta_param.num_slices = ((StartCTAMsg*)msg)->getNumSlices();
 			cur_state = ACTIVE;
@@ -96,6 +116,8 @@ void NodeManager::notify_msg(Message *msg){
 			delete(msg);
 			break;
 		}
+
+
 		default:
 			break;
 		}
@@ -168,6 +190,18 @@ void NodeManager::notify_msg(Message *msg){
 			cout << "stopping..." << endl;
 			cur_state = IDLE;
 			break;
+		}
+		}
+	}
+	case COOP_INFO_MESSAGE:
+	{
+		switch(node_type){
+		case SINK:{
+			s2gInterface_ptr->writeMsg(msg);
+			break;
+		}
+		case CAMERA:{
+
 		}
 		}
 	}
@@ -528,4 +562,22 @@ void NodeManager::ATC_processing_thread(){
 	cout << "NM: exiting the ATC thread QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ" << endl;
 
 
+}
+
+void NodeManager::notifyCooperatorOnline(Connection* cn){
+	std::string ip_addr = cn->socket().remote_endpoint().address().to_string();
+	int port = cn->socket().remote_endpoint().port();
+	CoopInfoMsg *msg = new CoopInfoMsg(ip_addr,port,CoopStatus_online);
+	msg->setSource(1);
+	msg->setDestination(0);
+	sendMessage(msg);
+}
+
+void NodeManager::notifyCooperatorOffline(Connection* cn){
+	std::string ip_addr = cn->socket().remote_endpoint().address().to_string();
+	int port = cn->socket().remote_endpoint().port();
+	CoopInfoMsg *msg = new CoopInfoMsg(ip_addr,port,CoopStatus_offline);
+	msg->setSource(1);
+	msg->setDestination(0);
+	sendMessage(msg);
 }

@@ -61,6 +61,8 @@ src/Tasks/Tasks.d: ../src/Tasks/Tasks.cpp ../src/Tasks/Tasks.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/Coordinate.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OCTET_STRING.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataATCMessage.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CooperatorInfo.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CoopStatus.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/Telosb/TelosbRadioSystem.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/Telosb/serialsource.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StartCTAMsg.h \
@@ -70,8 +72,12 @@ src/Tasks/Tasks.d: ../src/Tasks/Tasks.cpp ../src/Tasks/Tasks.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/DataCTAMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/DataATCMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StopMsg.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/CoopInfoMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/RadioSystem.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/Telosb/serialsource.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/WiFiRadioSystem.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/ConnectionManager.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/Connection.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h
 
 ../src/Tasks/Tasks.h:
@@ -200,6 +206,10 @@ src/Tasks/Tasks.d: ../src/Tasks/Tasks.cpp ../src/Tasks/Tasks.h \
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataATCMessage.h:
 
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CooperatorInfo.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CoopStatus.h:
+
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/Telosb/TelosbRadioSystem.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/Telosb/serialsource.h:
@@ -218,8 +228,16 @@ src/Tasks/Tasks.d: ../src/Tasks/Tasks.cpp ../src/Tasks/Tasks.h \
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StopMsg.h:
 
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/CoopInfoMsg.h:
+
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/RadioSystem.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/Telosb/serialsource.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/WiFiRadioSystem.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/ConnectionManager.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/Connection.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h:

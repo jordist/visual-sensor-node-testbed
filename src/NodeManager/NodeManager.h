@@ -63,7 +63,8 @@ public:
 	void sendMessage(Message* msg);
 
 	NodeType getNodeType();
-
+	void notifyCooperatorOnline(Connection* conn);
+	void notifyCooperatorOffline(Connection* conn);
 	//void sendTestPacket(Message* msg);
 
 private:

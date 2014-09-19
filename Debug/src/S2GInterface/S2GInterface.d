@@ -38,6 +38,8 @@ src/S2GInterface/S2GInterface.d: ../src/S2GInterface/S2GInterface.cpp \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/Coordinate.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OCTET_STRING.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataATCMessage.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CooperatorInfo.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CoopStatus.h \
  /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/highgui/highgui.hpp \
  /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/highgui/highgui_c.h \
  /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/core/core_c.h \
@@ -78,6 +80,10 @@ src/S2GInterface/S2GInterface.d: ../src/S2GInterface/S2GInterface.cpp \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/Telosb/serialsource.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/IncomingMessageQueue.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StopMsg.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/CoopInfoMsg.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/WiFiRadioSystem.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/ConnectionManager.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/Connection.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/S2GInterface/S2GInterface.h
 
 ../src/S2GInterface/S2GInterface.h:
@@ -158,6 +164,10 @@ src/S2GInterface/S2GInterface.d: ../src/S2GInterface/S2GInterface.cpp \
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataATCMessage.h:
 
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CooperatorInfo.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CoopStatus.h:
+
 /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/highgui/highgui.hpp:
 
 /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/highgui/highgui_c.h:
@@ -237,5 +247,13 @@ src/S2GInterface/S2GInterface.d: ../src/S2GInterface/S2GInterface.cpp \
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/IncomingMessageQueue.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StopMsg.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/CoopInfoMsg.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/WiFiRadioSystem.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/ConnectionManager.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/Connection.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/S2GInterface/S2GInterface.h:

@@ -15,6 +15,11 @@
 class ConnectionManager: private boost::noncopyable
 {
 public:
+
+  ConnectionManager(NodeManager* nm){
+	  node_manager = nm;
+  }
+
   /// Add the specified connection to the manager and start it.
   void start(Connection* c);
 
@@ -24,10 +29,14 @@ public:
   /// Stop all connections.
   void stop_all();
   void printActiveConnections();
+  std::set<Connection*> getWiFiConnections(){
+	  return connections_;
+  }
 
 private:
   /// The managed connections.
   std::set<Connection*> connections_;
+  NodeManager* node_manager;
 };
 
 

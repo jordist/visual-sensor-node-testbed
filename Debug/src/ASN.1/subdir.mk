@@ -7,6 +7,8 @@ C_SRCS += \
 ../src/ASN.1/BIT_STRING.c \
 ../src/ASN.1/BOOLEAN.c \
 ../src/ASN.1/CodingChoices.c \
+../src/ASN.1/CoopStatus.c \
+../src/ASN.1/CooperatorInfo.c \
 ../src/ASN.1/Coordinate.c \
 ../src/ASN.1/DataATCMessage.c \
 ../src/ASN.1/DataCTAMessage.c \
@@ -40,6 +42,8 @@ OBJS += \
 ./src/ASN.1/BIT_STRING.o \
 ./src/ASN.1/BOOLEAN.o \
 ./src/ASN.1/CodingChoices.o \
+./src/ASN.1/CoopStatus.o \
+./src/ASN.1/CooperatorInfo.o \
 ./src/ASN.1/Coordinate.o \
 ./src/ASN.1/DataATCMessage.o \
 ./src/ASN.1/DataCTAMessage.o \
@@ -73,6 +77,8 @@ C_DEPS += \
 ./src/ASN.1/BIT_STRING.d \
 ./src/ASN.1/BOOLEAN.d \
 ./src/ASN.1/CodingChoices.d \
+./src/ASN.1/CoopStatus.d \
+./src/ASN.1/CooperatorInfo.d \
 ./src/ASN.1/Coordinate.d \
 ./src/ASN.1/DataATCMessage.d \
 ./src/ASN.1/DataCTAMessage.d \
