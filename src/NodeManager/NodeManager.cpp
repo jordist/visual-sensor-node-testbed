@@ -12,7 +12,7 @@ using namespace std;
 
 NodeManager::NodeManager(NodeType nt){
 	node_type = nt;
-	cout << "Node Type is " << node_type << endl;
+
 	switch(node_type){
 	case SINK:{
 		break;
@@ -21,16 +21,13 @@ NodeManager::NodeManager(NodeType nt){
 		imgAcq = new ImageAcquisition(0);
 
 		BRISK_detParams detPrms(60,4);
-
 		BRISK_descParams dscPrms;
+
 		extractor = new VisualFeatureExtraction();
 		extractor->setDetector("BRISK", &detPrms);
 		extractor->setDescriptor("BRISK",&dscPrms);
 
 		encoder = new VisualFeatureEncoding();
-
-		//boost::thread m_thread;
-		//m_thread = boost::thread(&NodeManager::ATC_processing_thread, this, 0);
 
 		break;
 	}
@@ -43,6 +40,7 @@ NodeManager::NodeManager(NodeType nt){
 		extractor->setDescriptor("BRISK",&dscPrms);
 
 		encoder = new VisualFeatureEncoding();
+
 		break;
 	}
 	default:
@@ -106,13 +104,14 @@ void NodeManager::notify_msg(Message *msg){
 			delete((SendWiFiMessageTask*)cur_task);*/
 			// END TRY WIFI
 
-//			//update system state and start cta processing
+			//			//update system state and start cta processing
 			cta_param.quality_factor = ((StartCTAMsg*)msg)->getQualityFactor();
 			cta_param.num_slices = ((StartCTAMsg*)msg)->getNumSlices();
 			cur_state = ACTIVE;
 
 			//todo: run only if there's not another CTA or ATC thread running!
-			m_thread = boost::thread(&NodeManager::CTA_processing_thread, this);
+			//m_thread = boost::thread(&NodeManager::CTA_processing_thread, this);
+			CTA_processing_thread();
 			delete(msg);
 			break;
 		}
@@ -153,7 +152,8 @@ void NodeManager::notify_msg(Message *msg){
 			cur_state = ACTIVE;
 
 			//if camera, start ATC processing with ATC params
-			m_thread = boost::thread(&NodeManager::ATC_processing_thread, this);
+			//m_thread = boost::thread(&NodeManager::ATC_processing_thread, this);
+			ATC_processing_thread();
 			delete(msg);
 			break;
 		}
@@ -163,16 +163,67 @@ void NodeManager::notify_msg(Message *msg){
 
 		break;
 	}
-	case DATA_CTA_MESSAGE:
+
+	case START_DATC_MESSAGE:
 	{
-		cout << "forwarding to gui" << endl;
-		s2gInterface_ptr->writeMsg(msg);
+		switch(node_type){
+		case SINK:
+		{
+			//forward it
+			sendMessage(msg);
+			break;
+		}
+		case CAMERA:
+		{
+			//starts DATC processing:
+			//acquire image
+			//compute how to slice image according to offloading manager policy
+			//slice image
+			//sends each slice using DATA_CTA message
+			//extract features from my own slice
+			//put the features somewhere (e.g., in the offloading manager)
+			//delete the msg!
+			break;
+		}
+		}
 		break;
 	}
+
+	case DATA_CTA_MESSAGE:
+	{
+		switch(node_type){
+		case SINK:
+		{
+			s2gInterface_ptr->writeMsg(msg);
+			break;
+		}
+		case COOPERATOR:{
+			//decode image
+			//extract features
+			//SIMPLE CASE: DO NOT ENCODE FEATURES
+			//transmit features to camera using DATA_ATC message
+			//delete the msg
+			break;
+		}
+		}
+		break;
+	}
+
 	case DATA_ATC_MESSAGE:
 	{
-		cout << "forwarding to gui" << endl;
-		s2gInterface_ptr->writeMsg(msg);
+		switch(node_type){
+		case SINK:{
+			s2gInterface_ptr->writeMsg(msg);
+			break;
+		}
+		case CAMERA:{
+			//get features from cooperator
+			//decode features if needed
+			//put the features somewhere (e.g. the offloading manager)
+			//delete the msg
+			break;
+		}
+		}
 		break;
 	}
 
@@ -187,11 +238,12 @@ void NodeManager::notify_msg(Message *msg){
 		}
 		case CAMERA:
 		{
-			cout << "stopping..." << endl;
+			cout << "NM: Stopping..." << endl;
 			cur_state = IDLE;
 			break;
 		}
 		}
+		break;
 	}
 	case COOP_INFO_MESSAGE:
 	{
@@ -200,10 +252,8 @@ void NodeManager::notify_msg(Message *msg){
 			s2gInterface_ptr->writeMsg(msg);
 			break;
 		}
-		case CAMERA:{
-
 		}
-		}
+		break;
 	}
 	default:
 		break;
@@ -231,41 +281,10 @@ void NodeManager::sendMessage(Message* msg){
 			cur_task_finished.wait(lk);
 		}
 	}
-	cout << "NM: exiting the tx thread" << endl;
+	cout << "NM: ended send_message_task!" << endl;
 	delete((SendMessageTask*)cur_task);
 }
 
-
-/*void NodeManager::sendTestPacket(Message* msg){
-	boost::thread m_thread;
-	m_thread = boost::thread(&NodeManager::transmission_thread, this, msg);
-}
-
-void NodeManager::transmission_thread(Message* msg){
-	//create the SendMessageTask that sends the message
-	cout << "NM: I'm entering the transmission thread" << endl;
-	Task *cur_task;
-	outgoing_msg_seq_num++;
-	msg->setSeqNum(outgoing_msg_seq_num);
-	cur_task = new SendMessageTask(msg,radioSystem_ptr->getTelosb());
-	taskManager_ptr->addTask(cur_task);
-	cout << "NM: Waiting the end of the send_message_task" << endl;
-	{
-		boost::mutex::scoped_lock lk(cur_task->task_monitor);
-		while(!cur_task->completed){
-			cur_task_finished.wait(lk);
-		}
-	}
-	cout << "NM: exiting the tx thread" << endl;
-	delete((SendMessageTask*)cur_task);
-	//the SendMessageTask will packetize the message according to its address and
-	//send each packet to the proper radio interface
-	//packetization should be done by another specified component
-	//while loop that sends packets check a thread-safe variable to understand if continuing
-	//transmission or not. thread shouldn't be killed.
-
-
-}*/
 
 void NodeManager::CTA_processing_thread(){
 
@@ -340,8 +359,6 @@ void NodeManager::CTA_processing_thread(){
 		cout << "NM: ended encode_slice_task" << endl;
 		vector<uchar> slice_bitstream;
 		slice_bitstream = ((EncodeSliceTask*)cur_task)->getJpegBitstream();
-		//imshow("rx_image",image1);
-		//waitKey(50);
 
 		delete((EncodeSliceTask*)cur_task);
 		cout << "bitstream size of slice is " << slice_bitstream.size() << endl;
@@ -351,27 +368,11 @@ void NodeManager::CTA_processing_thread(){
 		top_left.xCoordinate = 0;
 		top_left.yCoordinate = (480/cta_param.num_slices)*i;
 		DataCTAMsg *msg = new DataCTAMsg(0,i,top_left,slice_bitstream.size(),slice_bitstream);
+
 		msg->setSource(1);
 		msg->setDestination(0);
-		//boost::thread tx_thread;
-		//tx_thread = boost::thread(&NodeManager::transmission_thread, this, msg);
-		//tx_thread.join();
-
 		sendMessage(msg);
 
-		//		//		cout << "NM: I'm entering the transmission thread" << endl;
-		//		outgoing_msg_seq_num++;
-		//		msg->setSeqNum(outgoing_msg_seq_num);
-		//		cur_task = new SendMessageTask(msg,radioSystem_ptr->getTelosb());
-		//		taskManager_ptr->addTask(cur_task);
-		//		cout << "NM: Waiting the end of the send_message_task" << endl;
-		//		{
-		//			boost::mutex::scoped_lock lk(cur_task->task_monitor);
-		//			while(!cur_task->completed){
-		//				cur_task_finished.wait(lk);
-		//			}
-		//		}
-		//		delete((SendMessageTask*)cur_task);
 	}
 	cout << "NM: exiting the CTA thread TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT" << endl;
 	cout << "Rec notifications: " << received_notifications << ", Sent notifications: " << taskManager_ptr->sent_notifications << endl;
@@ -501,64 +502,6 @@ void NodeManager::ATC_processing_thread(){
 
 		}
 	}
-
-	//	if(atc_param.coding == CodingChoices_none){
-	//		cout << "should do something here...." << endl;
-	//		cur_task = new EncodeFeaturesTask(encoder,"BRISK",features,0);
-	//		taskManager_ptr->addTask(cur_task);
-	//		cout << "NM: Waiting the end of the encode_features_task" << endl;
-	//		while(!cur_task->completed){
-	//			cur_task_finished.wait(lk);
-	//		}
-	//		cout << "NM: ended encode_features_task" << endl;
-	//		block_ft_bitstream = ((EncodeFeaturesTask*)cur_task)->getFeatsBitstream();
-	//		delete((EncodeFeaturesTask*)cur_task);
-	//	}
-	//	if(atc_param.coding == CodingChoices_entropyCoding){
-	//		cur_task = new EncodeFeaturesTask(encoder,"BRISK",features,1);
-	//		taskManager_ptr->addTask(cur_task);
-	//		cout << "NM: Waiting the end of the encode_features_task" << endl;
-	//		while(!cur_task->completed){
-	//			cur_task_finished.wait(lk);
-	//		}
-	//		cout << "NM: ended encode_features_task" << endl;
-	//		block_ft_bitstream = ((EncodeFeaturesTask*)cur_task)->getFeatsBitstream();
-	//		delete((EncodeFeaturesTask*)cur_task);
-	//	}
-
-	//	cur_task = new EncodeKeypointsTask(encoder,kpts,640,480,true);
-	//	taskManager_ptr->addTask(cur_task);
-	//	cout << "NM: Waiting the end of the encode_kpts_task" << endl;
-	//	while(!cur_task->completed){
-	//		cur_task_finished.wait(lk);
-	//	}
-	//	cout << "NM: ended encode_kpts_task" << endl;
-	//	block_kp_bitstream = ((EncodeKeypointsTask*)cur_task)->getKptsBitstream();
-	//	delete((EncodeKeypointsTask*)cur_task);
-	//	cout << "sending " << (int)(kpts.size()) << "keypoints" << endl;
-	//	cout << "and " << (int)(features.rows) << "features" << endl;
-
-
-	//	DataATCMsg *msg = new DataATCMsg(0, 0, block_ft_bitstream, block_kp_bitstream);
-	//	msg->setSource(1);
-	//	msg->setDestination(0);
-	//
-	//	sendMessage(msg);
-
-	//	//		cout << "NM: I'm entering the transmission thread" << endl;
-	//	outgoing_msg_seq_num++;
-	//	msg->setSeqNum(outgoing_msg_seq_num);
-	//	cur_task = new SendMessageTask(msg,radioSystem_ptr->getTelosb());
-	//	taskManager_ptr->addTask(cur_task);
-	//	cout << "NM: Waiting the end of the send_message_task" << endl;
-	//	{
-	//		boost::mutex::scoped_lock lk(cur_task->task_monitor);
-	//		while(!cur_task->completed){
-	//			cur_task_finished.wait(lk);
-	//		}
-	//	}
-	//	delete((SendMessageTask*)cur_task);
-
 	cout << "NM: exiting the ATC thread QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ" << endl;
 
 
