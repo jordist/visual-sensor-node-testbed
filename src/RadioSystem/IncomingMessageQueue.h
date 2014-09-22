@@ -10,6 +10,7 @@
 #include "Messages/Message.h"
 #include "Messages/StartCTAMsg.h"
 #include "Messages/StartATCMsg.h"
+#include "Messages/StartDATCMsg.h"
 #include "Messages/DataCTAMsg.h"
 #include "Messages/DataATCMsg.h"
 #include "Messages/StopMsg.h"

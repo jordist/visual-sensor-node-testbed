@@ -18,13 +18,14 @@ private:
 
 public:
 	~DataATCMsg();
-	DataATCMsg(int frameID, int blockNumber, vector<uchar>& features_data,
+	DataATCMsg(int frameID, int blockNumber, int numBlocks, vector<uchar>& features_data,
 			vector<uchar>& keypoints_data);
 	DataATCMsg(DataATCMessage_t* internal_message);
 	int getBitStream(vector<uchar>& bitstream);
 
 	int getFrameId();
 	int getBlockNumber();
+	int getNumBlocks();
 	OCTET_STRING_t getFeaturesData();
 	OCTET_STRING_t getKeypointsData(); //may return directly the opencv Mat
 };

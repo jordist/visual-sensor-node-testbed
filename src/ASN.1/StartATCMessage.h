@@ -37,7 +37,7 @@ typedef struct StartATCMessage {
 	BOOLEAN_t	 transferCoordinates;
 	BOOLEAN_t	 transferScale;
 	BOOLEAN_t	 transferOrientation;
-	long	 numBlocks;
+	long	 numFeaturesPerBlock;
 	
 	/* Context for parsing across buffer boundaries */
 	asn_struct_ctx_t _asn_ctx;

@@ -13,6 +13,7 @@
 #include "opencv2/nonfree/nonfree.hpp"
 #include "Messages/StartCTAMsg.h"
 #include "Messages/StartATCMsg.h"
+#include "Messages/StartDATCMsg.h"
 #include "Messages/DataCTAMsg.h"
 #include "Messages/DataATCMsg.h"
 #include "NodeManager/NodeManager.h"
@@ -175,6 +176,41 @@ void S2GInterface::handle_read_message(const boost::system::error_code& ec)
 				} else {
 					fprintf(stdout,"Printing msg as XML...\n");
 					xer_fprint(stdout, &asn_DEF_StartATCMessage, internal_message);
+				}
+
+				break;
+			}
+
+			case START_DATC_MESSAGE:
+			{
+				cout << "Message is START_DATC" << endl;
+
+				char buf[MAX_START_DATC_MESSAGE_SIZE];
+
+				cout << "Deserializing start atc message" << endl;
+				int bitstream_size = h.getPayloadSize();
+				cout << "Bitstream size is " << bitstream_size << endl;
+
+				//copy the bitstream (MAYBE REMOVED)
+				for(int i=0;i<bitstream_size;i++){
+					buf[i] = data[i];
+				}
+
+				StartDATCMessage_t* internal_message = (StartDATCMessage_t*) calloc(1, sizeof(*internal_message));
+				asn_dec_rval_t rval;
+				rval = uper_decode_complete(0, &asn_DEF_StartDATCMessage,(void **)&internal_message, buf, MAX_START_DATC_MESSAGE_SIZE);
+				msg = new StartDATCMsg(internal_message);
+				msg->setSource(h.getSrcAddr());
+				msg->setDestination(h.getDstAddr());
+
+				if(rval.code != RC_OK) {
+					fprintf(stderr,
+							"Broken message encoding at byte %ld\n",
+							(long)rval.consumed);
+					exit(65); /* better, EX_DATAERR */
+				} else {
+					fprintf(stdout,"Printing msg as XML...\n");
+					xer_fprint(stdout, &asn_DEF_StartDATCMessage, internal_message);
 				}
 
 				break;

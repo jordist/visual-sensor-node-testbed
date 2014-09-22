@@ -29,7 +29,7 @@ typedef struct ATC_param{
 	bool transmit_keypoints;
 	bool transmit_scale;
 	bool transmit_orientation;
-	int num_blocks;
+	int num_feat_per_block;
 	// .... other params such as num blocks
 } ATC_param_t;
 
@@ -65,6 +65,7 @@ public:
 	NodeType getNodeType();
 	void notifyCooperatorOnline(Connection* conn);
 	void notifyCooperatorOffline(Connection* conn);
+	void offloadingCompleted();
 	//void sendTestPacket(Message* msg);
 
 private:

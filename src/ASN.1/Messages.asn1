@@ -10,6 +10,7 @@ VSNTestBed DEFINITIONS AUTOMATIC TAGS ::= BEGIN
   DataATCMessage ::= SEQUENCE {
     frameID      INTEGER,     -- Identifies which frame the features belong to.
     blockNumber  INTEGER,     -- Features are grouped into blocks.
+    numBlocks 	 INTEGER,	  -- Tot. number of blocks
     featuresData OCTET STRING, -- Descriptor data.
     kptsData 	 OCTET STRING  -- Keypoints data (todo: optional?)
   }
@@ -55,9 +56,30 @@ VSNTestBed DEFINITIONS AUTOMATIC TAGS ::= BEGIN
     transferCoordinates  BOOLEAN,          -- Should coordinates be transfered?
     transferScale        BOOLEAN,          -- Should scale be transfered?
     transferOrientation  BOOLEAN,           -- Should orientation be transfered?
-    numBlocks			 INTEGER
+    numFeaturesPerBlock			 INTEGER
   }
   
+    StartDATCMessage ::= SEQUENCE {
+    framesPerSecond      INTEGER,          -- Valid options are: -1=as high 
+                                           -- as possible, 0=one-shot, 
+                                           -- <=1=specific rate.
+    detectorType         DetectorTypes,    -- Type of detector to be used.
+    detectorThreshold    REAL,             -- Detection threshold.
+    descriptorType       DescriptorTypes,  -- Type of descriptor to be used.
+    descriptorLength     INTEGER,          -- Length of each descriptor.
+    maxNumberOfFeatures  INTEGER,          -- Maximum number of features to 
+                                           -- transfer back to the server.
+    rotationInvariant    BOOLEAN,          -- Use rotation invariant 
+                                           -- descriptors.
+    coding               CodingChoices,    -- Type of coding to be performed on 
+                                           -- the descriptors.
+    transferCoordinates  BOOLEAN,          -- Should coordinates be transfered?
+    transferScale        BOOLEAN,          -- Should scale be transfered?
+    transferOrientation  BOOLEAN,          -- Should orientation be transfered?
+    numFeaturesPerBlock	 INTEGER,			
+  	numCooperators		 INTEGER,				-- 0 auto
+  	offloading			 OffloadingChoices
+  }
   
   
   CoopStatus ::= ENUMERATED {
@@ -68,6 +90,11 @@ VSNTestBed DEFINITIONS AUTOMATIC TAGS ::= BEGIN
   CodingChoices ::= ENUMERATED {
     none,
     entropyCoding
+  }
+  
+  OffloadingChoices ::= ENUMERATED {
+  	polimi,
+  	kth
   }
 
   Coordinate ::= SEQUENCE {

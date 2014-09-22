@@ -4,18 +4,18 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/RadioSystem/CooperatorList.cpp \
 ../src/RadioSystem/IncomingMessageQueue.cpp \
+../src/RadioSystem/OffloadingManager.cpp \
 ../src/RadioSystem/RadioSystem.cpp 
 
 OBJS += \
-./src/RadioSystem/CooperatorList.o \
 ./src/RadioSystem/IncomingMessageQueue.o \
+./src/RadioSystem/OffloadingManager.o \
 ./src/RadioSystem/RadioSystem.o 
 
 CPP_DEPS += \
-./src/RadioSystem/CooperatorList.d \
 ./src/RadioSystem/IncomingMessageQueue.d \
+./src/RadioSystem/OffloadingManager.d \
 ./src/RadioSystem/RadioSystem.d 
 
 

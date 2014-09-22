@@ -9,6 +9,7 @@
 #include <opencv2/core/core.hpp>
 #include "ASN.1/StartATCMessage.h"
 #include "ASN.1/StartCTAMessage.h"
+#include "ASN.1/StartDATCMessage.h"
 #include "ASN.1/DataCTAMessage.h"
 #include "ASN.1/DataATCMessage.h"
 #include "ASN.1/CooperatorInfo.h"
@@ -21,6 +22,7 @@ using boost::asio::ip::tcp;
 #define MAX_COOP_INFO_MESSAGE_SIZE 1024
 #define MAX_START_CTA_MESSAGE_SIZE 1024
 #define MAX_START_ATC_MESSAGE_SIZE 1024
+#define MAX_START_DATC_MESSAGE_SIZE 1024
 #define MAX_DATA_CTA_MESSAGE_SIZE 102400
 #define MAX_DATA_ATC_MESSAGE_SIZE 102400
 

@@ -12,7 +12,7 @@ StartATCMsg::~StartATCMsg(){
 
 StartATCMsg::StartATCMsg(int fps, DetectorTypes_t det, double det_thr, DescriptorTypes_t desc, int desc_length,
 		int max_feat, bool rotation_invariant, CodingChoices_t coding, bool transfer_kpt, bool transfer_scale,
-        bool transfer_orientation, int num_blocks){
+        bool transfer_orientation, int num_feat_per_block){
 	msg_type = START_ATC_MESSAGE;
 	internal_msg = (StartATCMessage_t*) calloc(1, sizeof(*internal_msg));
 	assert(internal_msg);
@@ -27,7 +27,7 @@ StartATCMsg::StartATCMsg(int fps, DetectorTypes_t det, double det_thr, Descripto
 	internal_msg->transferCoordinates = transfer_kpt;
 	internal_msg->transferScale = transfer_scale;
 	internal_msg->transferOrientation = transfer_orientation;
-    internal_msg->numBlocks = num_blocks;
+    internal_msg->numFeaturesPerBlock = num_feat_per_block;
 	xer_fprint(stdout, &asn_DEF_StartATCMessage, internal_msg);
 }
 StartATCMsg::StartATCMsg(StartATCMessage_t* internal_message){
@@ -75,8 +75,8 @@ void StartATCMsg::setTransferScale(bool transfer_scale){
 	internal_msg->transferScale = transfer_scale;
 }
 
-void StartATCMsg::setNumBlocks(int n){
-	internal_msg->numBlocks = n;
+void StartATCMsg::setNumFeatPerBlock(int n){
+	internal_msg->numFeaturesPerBlock = n;
 }
 
 int StartATCMsg::getDescriptorLength(){
@@ -99,8 +99,8 @@ double StartATCMsg::getDetectorThreshold(){
 	return internal_msg->detectorThreshold;
 }
 
-int StartATCMsg::getNumBlocks(){
-	return internal_msg->numBlocks;
+int StartATCMsg::getNumFeatPerBlock(){
+	return internal_msg->numFeaturesPerBlock;
 }
 
 

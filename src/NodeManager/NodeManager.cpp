@@ -3,6 +3,7 @@
 #include "NodeManager/NodeManager.h"
 #include "Tasks/Tasks.h"
 #include "Messages/DataATCMsg.h"
+#include "Messages/StartDATCMsg.h"
 #include "Messages/CoopInfoMsg.h"
 
 using namespace std;
@@ -148,7 +149,7 @@ void NodeManager::notify_msg(Message *msg){
 			atc_param.transmit_orientation = ((StartATCMsg*)msg)->getTransferOrientation();
 			atc_param.transmit_scale = ((StartATCMsg*)msg)->getTransferScale();
 
-			atc_param.num_blocks = ((StartATCMsg*)msg)->getNumBlocks();
+			atc_param.num_feat_per_block = ((StartATCMsg*)msg)->getNumFeatPerBlock();
 			cur_state = ACTIVE;
 
 			//if camera, start ATC processing with ATC params
@@ -175,6 +176,8 @@ void NodeManager::notify_msg(Message *msg){
 		}
 		case CAMERA:
 		{
+
+			cout << "DATC MSG: " << ((StartDATCMsg*)msg)->getNumCooperators() << endl;
 			//starts DATC processing:
 			//acquire image
 			//compute how to slice image according to offloading manager policy
@@ -440,18 +443,18 @@ void NodeManager::ATC_processing_thread(){
 
 	if(kpts.size()>0){
 
-		int feat_per_block = ceil((float)kpts.size() / (float)atc_param.num_blocks);
+		int num_blocks = ceil((float)kpts.size() / (float)atc_param.num_feat_per_block);
 		int beg,end;
 
-		cout << "features per block: " << (int)feat_per_block << endl;
+		cout << "features per block: " << (int)atc_param.num_feat_per_block << endl;
 
-		for(int i=0; i<atc_param.num_blocks; i++){
+		for(int i=0; i<num_blocks; i++){
 
 			vector<uchar> block_ft_bitstream;
 			vector<uchar> block_kp_bitstream;
 
-			beg = i*atc_param.num_blocks;
-			end = min((int)(unsigned int)kpts.size(), (int)(beg+feat_per_block));
+			beg = i*atc_param.num_feat_per_block;
+			end = min((int)(unsigned int)kpts.size(), (int)(beg+atc_param.num_feat_per_block));
 
 			Mat features_sub = features.rowRange(beg,end);
 
@@ -492,7 +495,7 @@ void NodeManager::ATC_processing_thread(){
 			cout << "and " << (int)(features_sub.rows) << "features" << endl;
 
 
-			DataATCMsg *msg = new DataATCMsg(0, i, block_ft_bitstream, block_kp_bitstream);
+			DataATCMsg *msg = new DataATCMsg(0, i, num_blocks, block_ft_bitstream, block_kp_bitstream);
 			msg->setSource(1);
 			msg->setDestination(0);
 
@@ -523,4 +526,9 @@ void NodeManager::notifyCooperatorOffline(Connection* cn){
 	msg->setSource(1);
 	msg->setDestination(0);
 	sendMessage(msg);
+}
+
+void NodeManager::offloadingCompleted(){
+	//called by the OffloadingManager when all data has been received
+	//prepare the ATC_DATA message and sends it to the SINK
 }

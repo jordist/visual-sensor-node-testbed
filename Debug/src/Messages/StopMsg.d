@@ -32,6 +32,8 @@ src/Messages/StopMsg.d: ../src/Messages/StopMsg.cpp \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CodingChoices.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/constr_SEQUENCE.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/StartCTAMessage.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/StartDATCMessage.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OffloadingChoices.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataCTAMessage.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/Coordinate.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OCTET_STRING.h \
@@ -106,6 +108,10 @@ src/Messages/StopMsg.d: ../src/Messages/StopMsg.cpp \
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/constr_SEQUENCE.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/StartCTAMessage.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/StartDATCMessage.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OffloadingChoices.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataCTAMessage.h:
 

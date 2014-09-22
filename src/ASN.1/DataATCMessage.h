@@ -24,6 +24,7 @@ extern "C" {
 typedef struct DataATCMessage {
 	long	 frameID;
 	long	 blockNumber;
+	long	 numBlocks;
 	OCTET_STRING_t	 featuresData;
 	OCTET_STRING_t	 kptsData;
 	

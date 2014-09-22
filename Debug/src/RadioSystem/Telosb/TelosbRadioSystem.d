@@ -35,6 +35,8 @@ src/RadioSystem/Telosb/TelosbRadioSystem.d: \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/CodingChoices.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/constr_SEQUENCE.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/StartCTAMessage.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/StartDATCMessage.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OffloadingChoices.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataCTAMessage.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/Coordinate.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OCTET_STRING.h \
@@ -45,6 +47,7 @@ src/RadioSystem/Telosb/TelosbRadioSystem.d: \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Message.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StartATCMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/IncomingMessageQueue.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StartDATCMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/DataCTAMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/DataATCMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StopMsg.h \
@@ -122,6 +125,10 @@ src/RadioSystem/Telosb/TelosbRadioSystem.d: \
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/StartCTAMessage.h:
 
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/StartDATCMessage.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/OffloadingChoices.h:
+
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/DataCTAMessage.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/ASN.1/Coordinate.h:
@@ -141,6 +148,8 @@ src/RadioSystem/Telosb/TelosbRadioSystem.d: \
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StartATCMsg.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/IncomingMessageQueue.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/StartDATCMsg.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/DataCTAMsg.h:
 

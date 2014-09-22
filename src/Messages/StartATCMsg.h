@@ -11,7 +11,7 @@ public:
 	~StartATCMsg();
 	StartATCMsg(int fps, DetectorTypes_t det, double det_thr, DescriptorTypes_t desc, int desc_length,
 			int max_feat, bool rotation_invariant, CodingChoices_t coding, bool transfer_kpt, bool transfer_scale,
-            bool transfer_orientation, int num_blocks);
+            bool transfer_orientation, int num_feat_per_blocks);
 	StartATCMsg(StartATCMessage_t* internal_message);
 
 	void setFramesPerSecond(int fps);
@@ -25,7 +25,7 @@ public:
 	void setTransferKpt(bool transfer_kpt);
 	void setTransferScale(bool transfer_scale);
 	void setTransferOrientation(bool transfer_orientation);
-	void setNumBlocks(int n); // new
+	void setNumFeatPerBlock(int n); // new
 
 	int getFramesPerSecond();
 	DetectorTypes_t getDetectorType();
@@ -37,7 +37,7 @@ public:
 	bool getTransferKpt();
 	bool getTransferScale();
 	bool getTransferOrientation();
-	int getNumBlocks();
+	int getNumFeatPerBlock();
 
 	int getBitStream(vector<uchar>& bitstream);
 };

@@ -19,9 +19,11 @@ C_SRCS += \
 ../src/ASN.1/NativeInteger.c \
 ../src/ASN.1/NativeReal.c \
 ../src/ASN.1/OCTET_STRING.c \
+../src/ASN.1/OffloadingChoices.c \
 ../src/ASN.1/REAL.c \
 ../src/ASN.1/StartATCMessage.c \
 ../src/ASN.1/StartCTAMessage.c \
+../src/ASN.1/StartDATCMessage.c \
 ../src/ASN.1/asn_codecs_prim.c \
 ../src/ASN.1/ber_decoder.c \
 ../src/ASN.1/ber_tlv_length.c \
@@ -54,9 +56,11 @@ OBJS += \
 ./src/ASN.1/NativeInteger.o \
 ./src/ASN.1/NativeReal.o \
 ./src/ASN.1/OCTET_STRING.o \
+./src/ASN.1/OffloadingChoices.o \
 ./src/ASN.1/REAL.o \
 ./src/ASN.1/StartATCMessage.o \
 ./src/ASN.1/StartCTAMessage.o \
+./src/ASN.1/StartDATCMessage.o \
 ./src/ASN.1/asn_codecs_prim.o \
 ./src/ASN.1/ber_decoder.o \
 ./src/ASN.1/ber_tlv_length.o \
@@ -89,9 +93,11 @@ C_DEPS += \
 ./src/ASN.1/NativeInteger.d \
 ./src/ASN.1/NativeReal.d \
 ./src/ASN.1/OCTET_STRING.d \
+./src/ASN.1/OffloadingChoices.d \
 ./src/ASN.1/REAL.d \
 ./src/ASN.1/StartATCMessage.d \
 ./src/ASN.1/StartCTAMessage.d \
+./src/ASN.1/StartDATCMessage.d \
 ./src/ASN.1/asn_codecs_prim.d \
 ./src/ASN.1/ber_decoder.d \
 ./src/ASN.1/ber_tlv_length.d \

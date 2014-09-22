@@ -176,6 +176,43 @@ void IncomingMessageQueue::deserializeAndNotify(int cur_pos){
 		radio_system_ptr->notifyMsg(msg);
 		break;
 	}
+	case START_DATC_MESSAGE:
+	{
+		char buf[MAX_START_DATC_MESSAGE_SIZE];
+
+		cout << "Deserializing start datc message at position " << cur_pos << endl;
+		int bitstream_size = message_queue[cur_pos].bitstream.size();
+		cout << "Bitstream size is " << bitstream_size << endl;
+
+		//copy the bitstream (MAYBE REMOVED)
+		for(int i=0;i<bitstream_size;i++){
+			buf[i] = message_queue[cur_pos].bitstream[i];
+		}
+
+		StartDATCMessage_t* internal_message = (StartDATCMessage_t*) calloc(1, sizeof(*internal_message));
+		rval = uper_decode_complete(0, &asn_DEF_StartDATCMessage,(void **)&internal_message, buf, MAX_START_DATC_MESSAGE_SIZE);
+		msg = new StartDATCMsg(internal_message);
+		msg->setSource(src_addr);
+		msg->setDestination(dst_addr);
+		cout << "fps: " << ((StartDATCMsg*)msg)->getFramesPerSecond() << endl;
+		cout << "desc length: " << ((StartDATCMsg*)msg)->getDescriptorLength() << endl;
+		cout << "thr: " << ((StartDATCMsg*)msg)->getDetectorThreshold() << endl;
+
+		if(rval.code != RC_OK) {
+			fprintf(stderr,
+					"Broken message encoding at byte %ld\n",
+					(long)rval.consumed);
+			exit(65); /* better, EX_DATAERR */
+		} else {
+			fprintf(stdout,"Printing msg as XML...\n");
+			xer_fprint(stdout, &asn_DEF_StartDATCMessage, internal_message);
+		}
+
+		radio_system_ptr->notifyMsg(msg);
+		break;
+	}
+
+
 	case DATA_CTA_MESSAGE:
 	{
 		char buf[MAX_DATA_CTA_MESSAGE_SIZE];

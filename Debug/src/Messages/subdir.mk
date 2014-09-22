@@ -11,6 +11,7 @@ CPP_SRCS += \
 ../src/Messages/Message.cpp \
 ../src/Messages/StartATCMsg.cpp \
 ../src/Messages/StartCTAMsg.cpp \
+../src/Messages/StartDATCMsg.cpp \
 ../src/Messages/StopMsg.cpp 
 
 OBJS += \
@@ -21,6 +22,7 @@ OBJS += \
 ./src/Messages/Message.o \
 ./src/Messages/StartATCMsg.o \
 ./src/Messages/StartCTAMsg.o \
+./src/Messages/StartDATCMsg.o \
 ./src/Messages/StopMsg.o 
 
 CPP_DEPS += \
@@ -31,6 +33,7 @@ CPP_DEPS += \
 ./src/Messages/Message.d \
 ./src/Messages/StartATCMsg.d \
 ./src/Messages/StartCTAMsg.d \
+./src/Messages/StartDATCMsg.d \
 ./src/Messages/StopMsg.d 
 
 

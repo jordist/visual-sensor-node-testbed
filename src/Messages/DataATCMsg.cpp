@@ -18,13 +18,14 @@ DataATCMsg::~DataATCMsg(){
 	free(internal_msg);
 }
 
-DataATCMsg::DataATCMsg(int frameID, int blockNumber, vector<uchar>& features_data,
+DataATCMsg::DataATCMsg(int frameID, int blockNumber, int numBlocks, vector<uchar>& features_data,
 		vector<uchar>& keypoints_data){
 	msg_type = DATA_ATC_MESSAGE;
 	internal_msg = (DataATCMessage_t*) calloc(1, sizeof(*internal_msg));
 	assert(internal_msg);
 	internal_msg->frameID = frameID;
 	internal_msg->blockNumber = blockNumber;
+	internal_msg->numBlocks = numBlocks;
 	OCTET_STRING_t ft_data;
 	OCTET_STRING_t kp_data;
 
@@ -50,6 +51,10 @@ int DataATCMsg::getFrameId(){
 }
 int DataATCMsg::getBlockNumber(){
 	return internal_msg->blockNumber;
+}
+
+int DataATCMsg::getNumBlocks(){
+	return internal_msg->numBlocks;
 }
 
 OCTET_STRING_t DataATCMsg::getFeaturesData(){
