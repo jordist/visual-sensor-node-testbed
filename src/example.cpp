@@ -7,6 +7,8 @@
 #include "Messages/Message.h"
 #include "S2GInterface/S2GInterface.h"
 
+//
+
 using namespace std;
 /*
  * USAGE:
