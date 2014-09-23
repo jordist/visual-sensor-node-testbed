@@ -7,14 +7,29 @@
 
 #include "OffloadingManager.h"
 
+
+bool bandwidthComp(cooperator i, cooperator j){
+  return (i.bandwidth > j.bandwidth);
+}
+
 void OffloadingManager::addCooperator(Connection* c){
 	cooperator temp_coop;
 	temp_coop.connection = c;
+	cooperatorList.push_back(temp_coop);
+}
+
+void OffloadingManager::removeCooperator(Connection* c){
+	for(int i=0;i<cooperatorList.size();i++){
+		cooperator temp_coop = cooperatorList[i];
+		if(temp_coop.connection == c){
+			cooperatorList.erase(cooperatorList.begin()+i);
+		}
+	}
 }
 
 
 
-Mat OffloadingManager::computeLoads(int cooperatorsToUse, Mat image){
+Mat OffloadingManager::computeLoads(int cooperatorsToUse, Mat& image){
 	Mat myLoad;
 	double camera_load;
 
@@ -159,3 +174,39 @@ void OffloadingManager::transmitLoads(){
 		cooperatorList[i].connection->writeMsg(msg);
 	}
 }
+
+int OffloadingManager::probeLinks(){
+  for(int i=0;i < cooperatorList.size();i++){
+      //DUMMY BANDWIDTH - REPLACE WITH ACTUAL PROBING
+      cooperatorList[i].bandwidth = 24000000;
+      cooperatorList[i].CPUspeed = 1480000;
+  }
+  return 0;
+
+	/*char command[60];
+	for(int i=0;i<cooperatorList.size();i++){
+		strcpy(command,"iperf -c");
+		strcat(command,inet_ntoa(cooperatorList[i].client.sin_addr));
+		strcat(command," -t 5 -p 8000  >/home/ubuntu/iperfLog.txt");
+		cout << "Starting bandwidth test: " << inet_ntoa(cooperatorList[i].client.sin_addr) << endl;
+		system(command);
+
+		//Parsing del file per estrarre il valore della banda calcolata.
+		double bandwidth=getBandwidth(false);
+		if(bandwidth==0)
+			return -1;
+		else{
+			cooperatorList[i].bandwidth = bandwidth*1000000;
+        		cooperatorList[i].CPUspeed = 1480000;
+		}
+	}
+
+	return 0;*/
+}
+
+void OffloadingManager::sortCooperators()
+{
+  std::sort(cooperatorList.begin(), cooperatorList.end(), bandwidthComp);
+}
+
+

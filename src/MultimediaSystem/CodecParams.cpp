@@ -33,12 +33,12 @@ void BRISK_pModel::loadFiles(){
 	// load the probability model
 	ifstream file;
 
-	file.open("/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/MultimediaSystem/thirdparty/coder/brisk/P0.bin", ios::in | ios::binary);
+	file.open("/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/MultimediaSystem/thirdparty/coder/brisk/P0.bin", ios::in | ios::binary);
 
 	file.read((char*)P0,sizeof(double)*1776);
 	file.close();
 
-	file.open("/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/MultimediaSystem/thirdparty/coder/brisk/P0c0.bin", ios::in | ios::binary);
+	file.open("/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/MultimediaSystem/thirdparty/coder/brisk/P0c0.bin", ios::in | ios::binary);
 	for(int i=0; i<1776; i++){
 		for(int j=0; j<1776; j++){
 			file.read((char*)&P0c0[j][i],sizeof(double));
@@ -46,7 +46,7 @@ void BRISK_pModel::loadFiles(){
 	}
 	file.close();
 
-	file.open("/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/MultimediaSystem/thirdparty/coder/brisk/P0c1.bin", ios::in | ios::binary);
+	file.open("/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/MultimediaSystem/thirdparty/coder/brisk/P0c1.bin", ios::in | ios::binary);
 	for(int i=0; i<1776; i++){
 		for(int j=0; j<1776; j++){
 			file.read((char*)&P0c1[j][i],sizeof(double));
@@ -55,10 +55,10 @@ void BRISK_pModel::loadFiles(){
 	file.close();
 
 	if      ( BRISK_LENGTH_BITS == 512){
-		file.open("/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/MultimediaSystem/thirdparty/coder/brisk/ranking_original_optimized512.bin", ios::in | ios::binary);
+		file.open("/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/MultimediaSystem/thirdparty/coder/brisk/ranking_original_optimized512.bin", ios::in | ios::binary);
 	}
 	else if ( BRISK_LENGTH_BITS == 256 ){
-		file.open("/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/MultimediaSystem/thirdparty/coder/brisk/ranking_original_optimized256.bin", ios::in | ios::binary);
+		file.open("/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/MultimediaSystem/thirdparty/coder/brisk/ranking_original_optimized256.bin", ios::in | ios::binary);
 	}
 	else{
 		cout << "Wrong Brisk Length!!!!" << endl;

@@ -103,7 +103,7 @@ private:
 	void CTA_processing_thread();
 	void ATC_processing_thread();
 	void DATC_processing_thread();
-
+	void DATC_processing_thread_cooperator(DataCTAMsg* msg);
 	void transmission_thread(Message* msg);
 
 	ImageAcquisition *imgAcq;

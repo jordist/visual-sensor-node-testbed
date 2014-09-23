@@ -53,8 +53,11 @@ public:
 	void createOffloadingTask(int num_cooperators);
 
 	void addCooperator(Connection* c);
-	Mat computeLoads(int cooperatorsToUse, Mat image);
+	void removeCooperator(Connection* c);
+	Mat computeLoads(int cooperatorsToUse, Mat& image);
 	void transmitLoads();
+	int probeLinks();
+	void sortCooperators();
 
 
 private:
@@ -67,6 +70,7 @@ private:
 	//used to store keypoints and features from cooperators
 	vector<KeyPoint> keypoint_buffer;
 	Mat features_buffer;
+
 
 };
 

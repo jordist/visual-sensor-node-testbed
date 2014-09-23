@@ -220,9 +220,8 @@ void NodeManager::notify_msg(Message *msg){
 			break;
 		}
 		case COOPERATOR:{
-			//decode image
-			//extract features
-			//SIMPLE CASE: DO NOT ENCODE FEATURES
+			cout << "it's a DATA CTA message" << endl;
+			DATC_processing_thread_cooperator((DataCTAMsg*)msg);
 			//transmit features to camera using DATA_ATC message
 			//delete the msg
 			break;
@@ -558,12 +557,65 @@ void NodeManager::DATC_processing_thread(){
 	image = ((ConvertColorspaceTask*)cur_task)->getConvertedImage();
 	delete((ConvertColorspaceTask*)cur_task);
 
+	//probe links (should become a task)
+	offloading_manager->probeLinks();
+	//sort cooperators in descending order of bandwidth (should become a task?)
+	offloading_manager->sortCooperators();
 	//compute loads (should become a task)
 	//here one should check what king of offloading algorithm should be called
 	Mat myLoad = offloading_manager->computeLoads(datc_param.num_cooperators,image);
 
 	//transmit loads (should become a task)
 	offloading_manager->transmitLoads();
+}
+
+void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
+	cout << "NM: I'm entering the DATC_processing thread " << endl;
+
+
+	boost::mutex monitor;
+	boost::mutex::scoped_lock lk(monitor);
+	Task *cur_task;
+
+	//decode the image (should become a task)
+	cv::Mat slice;
+	OCTET_STRING_t oct_data = msg->getData();
+	uint8_t* imbuf = oct_data.buf;
+	int data_size = oct_data.size;
+	vector<uchar> jpeg_bitstream;
+	for(int i=0;i<data_size;i++){
+		jpeg_bitstream.push_back(imbuf[i]);
+	}
+	slice = imdecode(jpeg_bitstream,CV_LOAD_IMAGE_GRAYSCALE);
+
+	//get the features
+	// Extract the keypoints
+	cur_task = new ExtractKeypointsTask(extractor,slice,datc_param.detection_threshold);
+	taskManager_ptr->addTask(cur_task);
+	cout << "NM: Waiting the end of the extract_keypoints_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	cout << "NM: ended extract_keypoints_task" << endl;
+
+	vector<KeyPoint> kpts = ((ExtractKeypointsTask*)cur_task)->getKeypoints();
+	cout << "extracted " << (int)kpts.size() << "keypoints" << endl;
+
+	delete((ExtractKeypointsTask*)cur_task);
+
+	//Extract features
+	std::cout<<std::dec;
+	cur_task = new ExtractFeaturesTask(extractor,slice,kpts,datc_param.max_features);
+	taskManager_ptr->addTask(cur_task);
+	cout << "NM: Waiting the end of the extract_features_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	cout << "NM: ended extract_features_task" << endl;
+	Mat features = ((ExtractFeaturesTask*)cur_task)->getFeatures();
+	kpts = ((ExtractFeaturesTask*)cur_task)->getKeypoints();
+	cout << "now extracted " << (int)kpts.size() << "keypoints" << endl;
+	delete((ExtractFeaturesTask*)cur_task);
 }
 
 void NodeManager::notifyCooperatorOnline(Connection* cn){
@@ -577,6 +629,7 @@ void NodeManager::notifyCooperatorOnline(Connection* cn){
 }
 
 void NodeManager::notifyCooperatorOffline(Connection* cn){
+	offloading_manager->removeCooperator(cn);
 	std::string ip_addr = cn->socket().remote_endpoint().address().to_string();
 	int port = cn->socket().remote_endpoint().port();
 	CoopInfoMsg *msg = new CoopInfoMsg(ip_addr,port,CoopStatus_offline);

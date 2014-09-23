@@ -11,6 +11,7 @@
 #include "ConnectionManager.h"
 #include "Messages/StartCTAMsg.h"
 #include "Messages/StartATCMsg.h"
+#include "Messages/StartDATCMsg.h"
 #include "Messages/DataCTAMsg.h"
 #include "Messages/DataATCMsg.h"
 #include "Messages/StopMsg.h"
@@ -107,6 +108,7 @@ Header Connection::parseHeader(uchar data[]){
 	return msg;
 }
 
+// TODO: create a message parser, since this code is repeated several times in the project!
 void Connection::handleReadMessage(const boost::system::error_code& ec)
 {
 
@@ -208,6 +210,111 @@ void Connection::handleReadMessage(const boost::system::error_code& ec)
 
 				break;
 			}
+
+			case START_DATC_MESSAGE:
+			{
+				cout << "Message is START_DATC" << endl;
+
+				char buf[MAX_START_DATC_MESSAGE_SIZE];
+
+				cout << "Deserializing start atc message" << endl;
+				int bitstream_size = h.getPayloadSize();
+				cout << "Bitstream size is " << bitstream_size << endl;
+
+				//copy the bitstream (MAYBE REMOVED)
+				for(int i=0;i<bitstream_size;i++){
+					buf[i] = data[i];
+				}
+
+				StartDATCMessage_t* internal_message = (StartDATCMessage_t*) calloc(1, sizeof(*internal_message));
+				asn_dec_rval_t rval;
+				rval = uper_decode_complete(0, &asn_DEF_StartDATCMessage,(void **)&internal_message, buf, MAX_START_DATC_MESSAGE_SIZE);
+				msg = new StartDATCMsg(internal_message);
+				msg->setSource(h.getSrcAddr());
+				msg->setDestination(h.getDstAddr());
+
+				if(rval.code != RC_OK) {
+					fprintf(stderr,
+							"Broken message encoding at byte %ld\n",
+							(long)rval.consumed);
+					exit(65); /* better, EX_DATAERR */
+				} else {
+					fprintf(stdout,"Printing msg as XML...\n");
+					xer_fprint(stdout, &asn_DEF_StartDATCMessage, internal_message);
+				}
+
+				break;
+			}
+
+			case DATA_CTA_MESSAGE:
+			{
+				cout << "Message is DATA_CTA" << endl;
+
+				char buf[MAX_DATA_CTA_MESSAGE_SIZE];
+
+				cout << "Deserializing data cta message" << endl;
+				int bitstream_size = h.getPayloadSize();
+				cout << "Bitstream size is " << bitstream_size << endl;
+
+				//copy the bitstream (MAYBE REMOVED)
+				for(int i=0;i<bitstream_size;i++){
+					buf[i] = data[i];
+				}
+
+				DataCTAMessage_t* internal_message = (DataCTAMessage_t*) calloc(1, sizeof(*internal_message));
+				asn_dec_rval_t rval;
+				rval = uper_decode_complete(0, &asn_DEF_DataCTAMessage,(void **)&internal_message, buf, MAX_DATA_CTA_MESSAGE_SIZE);
+				msg = new DataCTAMsg(internal_message);
+				msg->setSource(h.getSrcAddr());
+				msg->setDestination(h.getDstAddr());
+
+				if(rval.code != RC_OK) {
+					fprintf(stderr,
+							"Broken message encoding at byte %ld\n",
+							(long)rval.consumed);
+					exit(65); /* better, EX_DATAERR */
+				} else {
+					fprintf(stdout,"Printing msg as XML...\n");
+					xer_fprint(stdout, &asn_DEF_DataCTAMessage, internal_message);
+				}
+
+				break;
+			}
+
+			case DATA_ATC_MESSAGE:
+						{
+							cout << "Message is DATA_ATC" << endl;
+
+							char buf[MAX_DATA_ATC_MESSAGE_SIZE];
+
+							cout << "Deserializing data cta message" << endl;
+							int bitstream_size = h.getPayloadSize();
+							cout << "Bitstream size is " << bitstream_size << endl;
+
+							//copy the bitstream (MAYBE REMOVED)
+							for(int i=0;i<bitstream_size;i++){
+								buf[i] = data[i];
+							}
+
+							DataATCMessage_t* internal_message = (DataATCMessage_t*) calloc(1, sizeof(*internal_message));
+							asn_dec_rval_t rval;
+							rval = uper_decode_complete(0, &asn_DEF_DataCTAMessage,(void **)&internal_message, buf, MAX_DATA_ATC_MESSAGE_SIZE);
+							msg = new DataATCMsg(internal_message);
+							msg->setSource(h.getSrcAddr());
+							msg->setDestination(h.getDstAddr());
+
+							if(rval.code != RC_OK) {
+								fprintf(stderr,
+										"Broken message encoding at byte %ld\n",
+										(long)rval.consumed);
+								exit(65); /* better, EX_DATAERR */
+							} else {
+								fprintf(stdout,"Printing msg as XML...\n");
+								xer_fprint(stdout, &asn_DEF_DataATCMessage, internal_message);
+							}
+
+							break;
+						}
 
 			case STOP_MESSAGE:
 			{

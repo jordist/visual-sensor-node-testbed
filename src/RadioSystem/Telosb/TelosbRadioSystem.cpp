@@ -54,10 +54,6 @@ void TelosbRadioSystem::receiverThread(){
 
 		//READ PACKET HEADER
 		cout << "TRS: message received!" << endl;
-		for(int i=0;i<18;i++){
-			cout << hex << (int)packet[i] << " ";
-		}
-		cout << " " << endl;
 
 		int src_addr = *(unsigned short*)&packet[8];
 		int dst_addr = *(unsigned short*)&packet[10];
