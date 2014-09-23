@@ -25,7 +25,7 @@ node_manager(nm)
 	tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
 	if(mode.compare("server") == 0){
-		//open te acceptor
+		//open the acceptor
 		std::cout << "server initializing..." << std::endl;
 		acceptor.open(endpoint.protocol());
 		acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));

@@ -5,6 +5,7 @@
 #include "Messages/DataATCMsg.h"
 #include "Messages/StartDATCMsg.h"
 #include "Messages/CoopInfoMsg.h"
+#include "RadioSystem/OffloadingManager.h"
 
 using namespace std;
 
@@ -29,6 +30,8 @@ NodeManager::NodeManager(NodeType nt){
 		extractor->setDescriptor("BRISK",&dscPrms);
 
 		encoder = new VisualFeatureEncoding();
+
+		offloading_manager = new OffloadingManager(this);
 
 		break;
 	}
@@ -177,7 +180,23 @@ void NodeManager::notify_msg(Message *msg){
 		case CAMERA:
 		{
 
-			cout << "DATC MSG: " << ((StartDATCMsg*)msg)->getNumCooperators() << endl;
+			datc_param.max_features =  ((StartDATCMsg*)msg)->getMaxNumFeat();
+			datc_param.det = ((StartDATCMsg*)msg)->getDetectorType();
+			datc_param.detection_threshold = ((StartDATCMsg*)msg)->getDetectorThreshold();
+			datc_param.desc = ((StartDATCMsg*)msg)->getDescriptorType();
+			datc_param.desc_length = ((StartDATCMsg*)msg)->getDescriptorLength();
+
+			datc_param.coding = ((StartDATCMsg*)msg)->getCoding();
+			datc_param.transmit_keypoints = ((StartDATCMsg*)msg)->getTransferKpt();
+			datc_param.transmit_orientation = ((StartDATCMsg*)msg)->getTransferOrientation();
+			datc_param.transmit_scale = ((StartDATCMsg*)msg)->getTransferScale();
+
+			datc_param.num_feat_per_block = ((StartDATCMsg*)msg)->getNumFeatPerBlock();
+			datc_param.num_cooperators = ((StartDATCMsg*)msg)->getNumCooperators();
+			cur_state = ACTIVE;
+
+			DATC_processing_thread();
+			delete(msg);
 			//starts DATC processing:
 			//acquire image
 			//compute how to slice image according to offloading manager policy
@@ -510,7 +529,45 @@ void NodeManager::ATC_processing_thread(){
 
 }
 
+void NodeManager::DATC_processing_thread(){
+	cout << "NM: I'm entering the DATC_processing thread " << endl;
+
+	boost::mutex monitor;
+	boost::mutex::scoped_lock lk(monitor);
+	Task *cur_task;
+
+	// Acquire the image
+	cur_task = new AcquireImageTask(imgAcq);
+	taskManager_ptr->addTask(cur_task);
+	//cout << "NM: Waiting the end of the acquire_image_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	cout << "NM: ended acquire_image_task" << endl;
+	Mat image = ((AcquireImageTask*)cur_task)->getImage();
+	delete((AcquireImageTask*)cur_task);
+
+	// Convert to gray-scale
+	cur_task = new ConvertColorspaceTask(image,0);
+	taskManager_ptr->addTask(cur_task);
+	cout << "NM: Waiting the end of the convert_colorspace_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	cout << "NM: ended convert_colorspace_task" << endl;
+	image = ((ConvertColorspaceTask*)cur_task)->getConvertedImage();
+	delete((ConvertColorspaceTask*)cur_task);
+
+	//compute loads (should become a task)
+	//here one should check what king of offloading algorithm should be called
+	Mat myLoad = offloading_manager->computeLoads(datc_param.num_cooperators,image);
+
+	//transmit loads (should become a task)
+	offloading_manager->transmitLoads();
+}
+
 void NodeManager::notifyCooperatorOnline(Connection* cn){
+	offloading_manager->addCooperator(cn);
 	std::string ip_addr = cn->socket().remote_endpoint().address().to_string();
 	int port = cn->socket().remote_endpoint().port();
 	CoopInfoMsg *msg = new CoopInfoMsg(ip_addr,port,CoopStatus_online);

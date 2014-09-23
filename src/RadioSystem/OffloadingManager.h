@@ -9,11 +9,31 @@
 #define OFFLOADINGMANAGER_H_
 #include <opencv2/opencv.hpp>
 #include <vector>
+#include "NodeManager/NodeManager.h"
 
 using namespace std;
 using namespace cv;
 
-class NodeManager;
+#define F 1514
+#define H 66
+
+
+class Connection;
+
+typedef struct cooperator{
+	Connection* connection;
+
+	double bandwidth;
+	double CPUspeed;
+
+	double load;
+	Mat image_slice;
+	int col_offset;
+
+	double t0; //start tx of image load
+	double t1; //end rx of features
+	int tx_bytes,rx_bytes;
+}cooperator;
 
 class OffloadingManager{
 public:
@@ -32,19 +52,21 @@ public:
 	//reset variables and keep track of progresses
 	void createOffloadingTask(int num_cooperators);
 
-	//something that computes the slices based on the cooperators
-	//vector<Mat>
+	void addCooperator(Connection* c);
+	Mat computeLoads(int cooperatorsToUse, Mat image);
+	void transmitLoads();
+
 
 private:
 
 	int cooperators_to_use;
 	int received_cooperators;
+	vector<cooperator> cooperatorList;
 
 	NodeManager* node_manager;
 	//used to store keypoints and features from cooperators
 	vector<KeyPoint> keypoint_buffer;
 	Mat features_buffer;
-
 
 };
 

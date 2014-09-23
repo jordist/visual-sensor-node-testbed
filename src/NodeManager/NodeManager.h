@@ -11,6 +11,8 @@
 #include "Messages/Message.h"
 #include "S2GInterface/S2GInterface.h"
 
+class OffloadingManager;
+
 //todo: param structures
 typedef struct CTA_param{
 	int quality_factor;
@@ -32,6 +34,21 @@ typedef struct ATC_param{
 	int num_feat_per_block;
 	// .... other params such as num blocks
 } ATC_param_t;
+
+typedef struct DATC_param{
+	int max_features;
+	DetectorTypes_t det;
+	DescriptorTypes_t desc;
+	double detection_threshold;
+	int desc_length;
+	bool rotation_invariant;
+	CodingChoices_t coding;
+	bool transmit_keypoints;
+	bool transmit_scale;
+	bool transmit_orientation;
+	int num_feat_per_block;
+	int num_cooperators;
+} DATC_param_t;
 
 enum NodeType{
 	SINK,
@@ -74,6 +91,7 @@ private:
 
 	CTA_param_t cta_param;
 	ATC_param_t atc_param;
+	DATC_param_t datc_param;
 
 	unsigned short outgoing_msg_seq_num;
 	RadioSystem *radioSystem_ptr;
@@ -84,7 +102,7 @@ private:
 
 	void CTA_processing_thread();
 	void ATC_processing_thread();
-
+	void DATC_processing_thread();
 
 	void transmission_thread(Message* msg);
 
@@ -92,6 +110,7 @@ private:
 	VisualFeatureExtraction *extractor;
 	VisualFeatureEncoding *encoder;
 	VisualFeatureDecoding *decoder;
+	OffloadingManager *offloading_manager;
 };
 
 #endif

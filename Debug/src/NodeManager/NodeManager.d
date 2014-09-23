@@ -86,7 +86,21 @@ src/NodeManager/NodeManager.d: ../src/NodeManager/NodeManager.cpp \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/ConnectionManager.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/WiFi/Connection.h \
  /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h \
- /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/S2GInterface/S2GInterface.h
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/S2GInterface/S2GInterface.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/OffloadingManager.h \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/opencv.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/imgproc/imgproc_c.h \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/photo/photo.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/photo/photo_c.h \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/video/video.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/video/tracking.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/video/background_segm.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/objdetect/objdetect.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/calib3d/calib3d.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/ml/ml.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/contrib/contrib.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/contrib/retina.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/contrib/openfabmap.hpp
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/NodeManager/NodeManager.h:
 
@@ -263,3 +277,31 @@ src/NodeManager/NodeManager.d: ../src/NodeManager/NodeManager.cpp \
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/Messages/Header.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/S2GInterface/S2GInterface.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/testbed-v2/src/RadioSystem/OffloadingManager.h:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/opencv.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/imgproc/imgproc_c.h:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/photo/photo.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/photo/photo_c.h:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/video/video.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/video/tracking.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/video/background_segm.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/objdetect/objdetect.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/calib3d/calib3d.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/ml/ml.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/contrib/contrib.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/contrib/retina.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/contrib/openfabmap.hpp:

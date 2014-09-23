@@ -266,8 +266,7 @@ void Connection::writeMsg(Message* msg){
 
 	msg->getBitStream(temp1);
 
-	//Header h(msg->getSource(), msg->getDestination(), msg->msg_type, 0, 1, msg->getSeqNum(), temp1.size());
-	Header h(1,0,START_CTA_MESSAGE,0,1,1,12);
+	Header h(msg->getSource(), msg->getDestination(), msg->msg_type, 0, 1, msg->getSeqNum(), temp1.size());
 	temp2 = h.serialization();
 	std::cout << h;
 
