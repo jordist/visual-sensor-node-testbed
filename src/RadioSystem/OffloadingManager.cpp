@@ -87,11 +87,11 @@ Mat OffloadingManager::computeLoads(Mat& image){
 		c_2 = cooperatorList[1].bandwidth;
 		c_3 = cooperatorList[2].bandwidth;
 		camera_load = -(pow(F,2)*ovl*pow(v,2) + pow(H,2)*ovl*pow(v,2) - pow(F,2)*c_2*c_3 + 2*F*H*ovl*pow(v,2) + pow(F,2)*c_2*c_3*ovl + 2*pow(F,2)*c_2*ovl*v + pow(F,2)*c_3*ovl*v + 2*F*H*c_2*ovl*v + F*H*c_3*ovl*v)
-								/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
+														/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
 		cooperatorList[0].load = (pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*pow(F,2)*ovl*pow(v,2) + 2*pow(H,2)*ovl*pow(v,2) + 2*F*H*pow(v,2) + pow(F,2)*c_2*c_3 + pow(F,2)*c_2*v + pow(F,2)*c_3*v + 4*F*H*ovl*pow(v,2) - pow(F,2)*c_2*c_3*ovl + pow(F,2)*c_2*ovl*v + 2*pow(F,2)*c_3*ovl*v + F*H*c_2*v + F*H*c_3*v + F*H*c_2*ovl*v + 2*F*H*c_3*ovl*v)
-								/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
+														/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
 		cooperatorList[1].load = -(pow(F,2)*ovl*pow(v,2) + pow(H,2)*ovl*pow(v,2) - pow(F,2)*c_2*c_3 - pow(F,2)*c_2*v + 2*F*H*ovl*pow(v,2) + pow(F,2)*c_2*c_3*ovl - pow(F,2)*c_2*ovl*v + pow(F,2)*c_3*ovl*v - F*H*c_2*v - F*H*c_2*ovl*v + F*H*c_3*ovl*v)
-								/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
+														/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
 		cooperatorList[2].load = (pow(F,2)*c_2*c_3 + 3*pow(F,2)*c_2*c_3*ovl)/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
 
 		s_0 = camera_load;
@@ -223,19 +223,26 @@ void OffloadingManager::createOffloadingTask(int num_cooperators){
 void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& features, Connection* cn){
 	features_buffer.push_back(features);
 
-	for(int j=0;j<kpts.size();j++){
-		//compensate for slicing if keypoints come from a cooperator
-		if(cn){
-			for(int i=0;i<cooperatorList.size();i++){
-				if(cooperatorList[i].connection == cn){
+	if(cn){
+		for(int i=0;i<cooperatorList.size();i++){
+			if(cn == cooperatorList[i].connection){
+				//compensate for slicing if keypoints come from a cooperator
+				for(int j=0;j<kpts.size();j++){
 					kpts[j].pt.x = kpts[j].pt.x + cooperatorList[i].col_offset;
-					break;
+					keypoint_buffer.push_back(kpts[j]);
 				}
+				break;
 			}
 		}
-		//add
-		keypoint_buffer.push_back(kpts[j]);
 	}
+	else{
+		for(int j=0;j<kpts.size();j++){
+			keypoint_buffer.push_back(kpts[j]);
+		}
+	}
+
+	//add
+
 
 	received_cooperators++;
 	if(received_cooperators == cooperators_to_use+1){

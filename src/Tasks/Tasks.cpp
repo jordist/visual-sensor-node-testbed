@@ -326,12 +326,12 @@ void SendMessageTask::execute(){
 	//retrieve tot number of packets to send
 	vector<uchar> bitstream;
 	msg_to_send->getBitStream(bitstream);
-	//cout << "bitstream size: " << bitstream.size() << endl;
+	cout << "SMT: bitstream size: " << bitstream.size() << endl;
 	bool header_only_packet = false;
 
 
 	int num_packets_to_send = ceil(double(bitstream.size())/ (double) (max_radio_payload_length-app_header_length) );
-	//cout << "total packets to send " << num_packets_to_send << endl;
+	cout << "SMT: total packets to send " << num_packets_to_send << endl;
 	int remainingBytes = bitstream.size();
 
 	if(remainingBytes == 0){
@@ -392,7 +392,7 @@ void SendMessageTask::execute(){
 			serial_packet[j+radio_header_length+app_header_length] = bitstream[dataIdx];
 			dataIdx++;
 		}
-		//cout << "packet ready" << endl;
+		cout << "SMT: packet ready" << endl;
 		//send (telosb only)
 		int ret = -1;
 		int max_resend   = 3;
@@ -411,7 +411,7 @@ void SendMessageTask::execute(){
 			//usleep(9500);
 		}
 
-		//cout << "packet sent!" << endl;
+		cout << "SMT: packet sent!" << endl;
 
 		//usleep(30000);
 		remainingBytes-=curFrameLength;

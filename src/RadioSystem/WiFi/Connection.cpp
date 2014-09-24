@@ -378,7 +378,8 @@ void Connection::writeMsg(Message* msg){
 	vector<uchar> temp1;
 	vector<uchar> temp2;
 
-	msg->getBitStream(temp1);
+	if(msg->getBitStream(temp1)<=0)
+		cout << "error in getting the bitstream from msg!" << endl;
 
 	Header h(msg->getSource(), msg->getDestination(), msg->msg_type, 0, 1, msg->getSeqNum(), temp1.size());
 	temp2 = h.serialization();
@@ -390,14 +391,6 @@ void Connection::writeMsg(Message* msg){
 	//write payload
 	out.insert( out.end(), temp1.begin(), temp1.end() );
 
-
-	/*boost::asio::async_write(socket_,
-			boost::asio::buffer(out),
-			boost::bind(&Connection::handle_write, this, boost::asio::placeholders::error));
-	 */
-
-	//	boost::system::error_code ignored_error;
-	//	boost::asio::write(msg->getTcpDestination()->socket(),boost::asio::buffer(out),boost::asio::transfer_all(), ignored_error);
 	boost::asio::write(socket_, boost::asio::buffer(out, out.size()));
 	std::cout << "writing to: " << socket_.remote_endpoint().address().to_string() << std::endl;
 	std::cout << "writing to: " << socket_.remote_endpoint().port() << std::endl;
