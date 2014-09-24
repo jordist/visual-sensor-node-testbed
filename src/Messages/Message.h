@@ -23,8 +23,8 @@ using boost::asio::ip::tcp;
 #define MAX_START_CTA_MESSAGE_SIZE 1024
 #define MAX_START_ATC_MESSAGE_SIZE 1024
 #define MAX_START_DATC_MESSAGE_SIZE 1024
-#define MAX_DATA_CTA_MESSAGE_SIZE 102400
-#define MAX_DATA_ATC_MESSAGE_SIZE 102400
+#define MAX_DATA_CTA_MESSAGE_SIZE 1024000
+#define MAX_DATA_ATC_MESSAGE_SIZE 1024000
 
 enum MessageType{
 	START_CTA_MESSAGE,
@@ -48,7 +48,7 @@ private:
 	int dst_addr;
 
 	//WiFi TCP socket
-	Connection* tcp_dst_addr;
+	Connection* connection;
 
 public:
 	virtual ~Message(){};
@@ -84,14 +84,14 @@ public:
 		return dst_addr;
 	}
 
-	Connection* getTcpDestination()
-	{
-	  return tcp_dst_addr;
+	Connection* getTcpConnection(){
+		return connection;
 	}
 
-	void setTcpDestination(Connection* dst_addr){
-		tcp_dst_addr = dst_addr;
+	void setTcpConnection(Connection* cn){
+		connection = cn;
 	}
+
 
 	virtual int getBitStream(vector<uchar>& bitstream) = 0;
 

@@ -68,7 +68,7 @@ void WiFiRadioSystem::handleConnect(const boost::system::error_code& error,
 
 		// Start reading the header
 		std::cout << "Start reading..." << std::endl;
-		connection->readHeader();
+		connection_manager.start(connection);
 		//start_read_header();
 	}
 }

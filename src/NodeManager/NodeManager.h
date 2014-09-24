@@ -59,7 +59,8 @@ enum NodeType{
 //todo: states
 enum SystemState{
 	ACTIVE,
-	IDLE
+	IDLE,
+	WAITING_LOAD
 };
 
 
@@ -82,7 +83,7 @@ public:
 	NodeType getNodeType();
 	void notifyCooperatorOnline(Connection* conn);
 	void notifyCooperatorOffline(Connection* conn);
-	void offloadingCompleted();
+	void notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features);
 	//void sendTestPacket(Message* msg);
 
 private:
@@ -104,7 +105,7 @@ private:
 	void ATC_processing_thread();
 	void DATC_processing_thread();
 	void DATC_processing_thread_cooperator(DataCTAMsg* msg);
-	void transmission_thread(Message* msg);
+	void DATC_store_features(DataATCMsg* msg);
 
 	ImageAcquisition *imgAcq;
 	VisualFeatureExtraction *extractor;

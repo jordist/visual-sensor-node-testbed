@@ -43,19 +43,17 @@ public:
 		node_manager = nm;
 	}
 
-	//add keypoints from cooperators
-	void addKeypoints(vector<KeyPoint>& kpts);
-
-	//add features from cooperators
-	void addFeatures(Mat& features);
+	//add keypoints and features from cooperators
+	void addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& features,Connection* cn);
 
 	//reset variables and keep track of progresses
 	void createOffloadingTask(int num_cooperators);
 
 	void addCooperator(Connection* c);
 	void removeCooperator(Connection* c);
-	Mat computeLoads(int cooperatorsToUse, Mat& image);
+	Mat computeLoads(Mat& image);
 	void transmitLoads();
+	void transmitStartDATC(StartDATCMsg* msg);
 	int probeLinks();
 	void sortCooperators();
 

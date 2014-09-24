@@ -9,7 +9,7 @@
 
 
 bool bandwidthComp(cooperator i, cooperator j){
-  return (i.bandwidth > j.bandwidth);
+	return (i.bandwidth > j.bandwidth);
 }
 
 void OffloadingManager::addCooperator(Connection* c){
@@ -28,8 +28,7 @@ void OffloadingManager::removeCooperator(Connection* c){
 }
 
 
-
-Mat OffloadingManager::computeLoads(int cooperatorsToUse, Mat& image){
+Mat OffloadingManager::computeLoads(Mat& image){
 	Mat myLoad;
 	double camera_load;
 
@@ -42,9 +41,8 @@ Mat OffloadingManager::computeLoads(int cooperatorsToUse, Mat& image){
 	double c_2,c_3,c_4;
 	double s_0,s_1,s_2,s_3,s_4;
 
-	cooperators_to_use = cooperatorsToUse;
 
-	switch(cooperatorsToUse){
+	switch(cooperators_to_use){
 	case 1:
 		camera_load = (0.5 - ovl/2);
 		cooperatorList[0].load = (ovl/2 + 0.5);
@@ -89,11 +87,11 @@ Mat OffloadingManager::computeLoads(int cooperatorsToUse, Mat& image){
 		c_2 = cooperatorList[1].bandwidth;
 		c_3 = cooperatorList[2].bandwidth;
 		camera_load = -(pow(F,2)*ovl*pow(v,2) + pow(H,2)*ovl*pow(v,2) - pow(F,2)*c_2*c_3 + 2*F*H*ovl*pow(v,2) + pow(F,2)*c_2*c_3*ovl + 2*pow(F,2)*c_2*ovl*v + pow(F,2)*c_3*ovl*v + 2*F*H*c_2*ovl*v + F*H*c_3*ovl*v)
-				/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
+								/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
 		cooperatorList[0].load = (pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*pow(F,2)*ovl*pow(v,2) + 2*pow(H,2)*ovl*pow(v,2) + 2*F*H*pow(v,2) + pow(F,2)*c_2*c_3 + pow(F,2)*c_2*v + pow(F,2)*c_3*v + 4*F*H*ovl*pow(v,2) - pow(F,2)*c_2*c_3*ovl + pow(F,2)*c_2*ovl*v + 2*pow(F,2)*c_3*ovl*v + F*H*c_2*v + F*H*c_3*v + F*H*c_2*ovl*v + 2*F*H*c_3*ovl*v)
-				/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
+								/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
 		cooperatorList[1].load = -(pow(F,2)*ovl*pow(v,2) + pow(H,2)*ovl*pow(v,2) - pow(F,2)*c_2*c_3 - pow(F,2)*c_2*v + 2*F*H*ovl*pow(v,2) + pow(F,2)*c_2*c_3*ovl - pow(F,2)*c_2*ovl*v + pow(F,2)*c_3*ovl*v - F*H*c_2*v - F*H*c_2*ovl*v + F*H*c_3*ovl*v)
-				/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
+								/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
 		cooperatorList[2].load = (pow(F,2)*c_2*c_3 + 3*pow(F,2)*c_2*c_3*ovl)/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
 
 		s_0 = camera_load;
@@ -156,15 +154,21 @@ Mat OffloadingManager::computeLoads(int cooperatorsToUse, Mat& image){
 	return myLoad;
 }
 
+void OffloadingManager::transmitStartDATC(StartDATCMsg* msg){
+	for(int i=0 ;i<cooperatorList.size();i++){
+		cooperatorList[i].connection->writeMsg(msg);
+	}
+	delete(msg);
+}
 
 void OffloadingManager::transmitLoads(){
 
 	vector<uchar> bitstream;
 	vector<int> param = vector<int>(2);
 	param[0] = CV_IMWRITE_JPEG_QUALITY;
-	param[1] = 100;
+	param[1] = 50;
 
-	for(int i=0;i<cooperators_to_use;i++){
+	for(int i=0;i<cooperators_to_use;i++){                                       // Wait for a keystroke in the window
 		cv::imencode(".jpg",cooperatorList[i].image_slice,bitstream,param);
 		Coordinate_t top_left;
 		top_left.xCoordinate = cooperatorList[i].col_offset;
@@ -176,12 +180,12 @@ void OffloadingManager::transmitLoads(){
 }
 
 int OffloadingManager::probeLinks(){
-  for(int i=0;i < cooperatorList.size();i++){
-      //DUMMY BANDWIDTH - REPLACE WITH ACTUAL PROBING
-      cooperatorList[i].bandwidth = 24000000;
-      cooperatorList[i].CPUspeed = 1480000;
-  }
-  return 0;
+	for(int i=0;i < cooperatorList.size();i++){
+		//DUMMY BANDWIDTH - REPLACE WITH ACTUAL PROBING
+		cooperatorList[i].bandwidth = 24000000;
+		cooperatorList[i].CPUspeed = 1480000;
+	}
+	return 0;
 
 	/*char command[60];
 	for(int i=0;i<cooperatorList.size();i++){
@@ -191,7 +195,7 @@ int OffloadingManager::probeLinks(){
 		cout << "Starting bandwidth test: " << inet_ntoa(cooperatorList[i].client.sin_addr) << endl;
 		system(command);
 
-		//Parsing del file per estrarre il valore della banda calcolata.
+		//Parsing file to get bandwidth
 		double bandwidth=getBandwidth(false);
 		if(bandwidth==0)
 			return -1;
@@ -206,7 +210,35 @@ int OffloadingManager::probeLinks(){
 
 void OffloadingManager::sortCooperators()
 {
-  std::sort(cooperatorList.begin(), cooperatorList.end(), bandwidthComp);
+	std::sort(cooperatorList.begin(), cooperatorList.end(), bandwidthComp);
 }
 
+void OffloadingManager::createOffloadingTask(int num_cooperators){
+	received_cooperators = 0;
+	cooperators_to_use = num_cooperators;
+	features_buffer.release();
+	keypoint_buffer.clear();
+}
 
+void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& features, Connection* cn){
+	features_buffer.push_back(features);
+
+	for(int j=0;j<kpts.size();j++){
+		//compensate for slicing if keypoints come from a cooperator
+		if(cn){
+			for(int i=0;i<cooperatorList.size();i++){
+				if(cooperatorList[i].connection == cn){
+					kpts[j].pt.x = kpts[j].pt.x + cooperatorList[i].col_offset;
+					break;
+				}
+			}
+		}
+		//add
+		keypoint_buffer.push_back(kpts[j]);
+	}
+
+	received_cooperators++;
+	if(received_cooperators == cooperators_to_use+1){
+		node_manager->notifyOffloadingCompleted(keypoint_buffer,features_buffer);
+	}
+}

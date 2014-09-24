@@ -30,6 +30,7 @@ NodeManager::NodeManager(NodeType nt){
 		extractor->setDescriptor("BRISK",&dscPrms);
 
 		encoder = new VisualFeatureEncoding();
+		decoder = new VisualFeatureDecoding();
 
 		offloading_manager = new OffloadingManager(this);
 
@@ -89,31 +90,11 @@ void NodeManager::notify_msg(Message *msg){
 		}
 		case CAMERA:
 		{
-			// TRY WIFI
-			/*std::set<Connection*> connections = radioSystem_ptr->getWiFiConnections();
-			std::set<Connection*>::iterator it = connections.begin();
-			Connection* cn = *it;
-			msg->setTcpDestination(cn);
-			Task *cur_task;
-			cur_task = new SendWiFiMessageTask(msg);
-			taskManager_ptr->addTask(cur_task);
-			cout << "NM: Waiting the end of the send_wifi_message_task" << endl;
-			{
-				boost::mutex::scoped_lock lk(cur_task->task_monitor);
-				while(!cur_task->completed){
-					cur_task_finished.wait(lk);
-				}
-			}
-			cout << "NM: exiting the wifi tx thread" << endl;
-			delete((SendWiFiMessageTask*)cur_task);*/
-			// END TRY WIFI
-
-			//			//update system state and start cta processing
+			//update system state and start cta processing
 			cta_param.quality_factor = ((StartCTAMsg*)msg)->getQualityFactor();
 			cta_param.num_slices = ((StartCTAMsg*)msg)->getNumSlices();
 			cur_state = ACTIVE;
 
-			//todo: run only if there's not another CTA or ATC thread running!
 			//m_thread = boost::thread(&NodeManager::CTA_processing_thread, this);
 			CTA_processing_thread();
 			delete(msg);
@@ -195,17 +176,28 @@ void NodeManager::notify_msg(Message *msg){
 			datc_param.num_cooperators = ((StartDATCMsg*)msg)->getNumCooperators();
 			cur_state = ACTIVE;
 
+			//transmit start DATC will delete the message
+			offloading_manager->transmitStartDATC((StartDATCMsg*)msg);
 			DATC_processing_thread();
-			delete(msg);
-			//starts DATC processing:
-			//acquire image
-			//compute how to slice image according to offloading manager policy
-			//slice image
-			//sends each slice using DATA_CTA message
-			//extract features from my own slice
-			//put the features somewhere (e.g., in the offloading manager)
-			//delete the msg!
 			break;
+		}
+		case COOPERATOR:
+		{
+			datc_param.max_features =  ((StartDATCMsg*)msg)->getMaxNumFeat();
+			datc_param.det = ((StartDATCMsg*)msg)->getDetectorType();
+			datc_param.detection_threshold = ((StartDATCMsg*)msg)->getDetectorThreshold();
+			datc_param.desc = ((StartDATCMsg*)msg)->getDescriptorType();
+			datc_param.desc_length = ((StartDATCMsg*)msg)->getDescriptorLength();
+
+			datc_param.coding = ((StartDATCMsg*)msg)->getCoding();
+			datc_param.transmit_keypoints = ((StartDATCMsg*)msg)->getTransferKpt();
+			datc_param.transmit_orientation = ((StartDATCMsg*)msg)->getTransferOrientation();
+			datc_param.transmit_scale = ((StartDATCMsg*)msg)->getTransferScale();
+
+			datc_param.num_feat_per_block = ((StartDATCMsg*)msg)->getNumFeatPerBlock();
+			datc_param.num_cooperators = ((StartDATCMsg*)msg)->getNumCooperators();
+			cur_state = WAITING_LOAD;
+			delete(msg);
 		}
 		}
 		break;
@@ -222,8 +214,7 @@ void NodeManager::notify_msg(Message *msg){
 		case COOPERATOR:{
 			cout << "it's a DATA CTA message" << endl;
 			DATC_processing_thread_cooperator((DataCTAMsg*)msg);
-			//transmit features to camera using DATA_ATC message
-			//delete the msg
+			delete(msg);
 			break;
 		}
 		}
@@ -238,10 +229,8 @@ void NodeManager::notify_msg(Message *msg){
 			break;
 		}
 		case CAMERA:{
-			//get features from cooperator
-			//decode features if needed
-			//put the features somewhere (e.g. the offloading manager)
-			//delete the msg
+			DATC_store_features((DataATCMsg*)msg);
+			delete(msg);
 			break;
 		}
 		}
@@ -535,6 +524,9 @@ void NodeManager::DATC_processing_thread(){
 	boost::mutex::scoped_lock lk(monitor);
 	Task *cur_task;
 
+	//first of all broadcast the start datc to cooperators
+
+
 	// Acquire the image
 	cur_task = new AcquireImageTask(imgAcq);
 	taskManager_ptr->addTask(cur_task);
@@ -557,16 +549,49 @@ void NodeManager::DATC_processing_thread(){
 	image = ((ConvertColorspaceTask*)cur_task)->getConvertedImage();
 	delete((ConvertColorspaceTask*)cur_task);
 
+	//create offloading task
+	offloading_manager->createOffloadingTask(datc_param.num_cooperators);
 	//probe links (should become a task)
 	offloading_manager->probeLinks();
 	//sort cooperators in descending order of bandwidth (should become a task?)
 	offloading_manager->sortCooperators();
 	//compute loads (should become a task)
 	//here one should check what king of offloading algorithm should be called
-	Mat myLoad = offloading_manager->computeLoads(datc_param.num_cooperators,image);
+	Mat myLoad = offloading_manager->computeLoads(image);
 
 	//transmit loads (should become a task)
 	offloading_manager->transmitLoads();
+
+	// Extract the keypoints of own load
+	cur_task = new ExtractKeypointsTask(extractor,myLoad,atc_param.detection_threshold);
+	taskManager_ptr->addTask(cur_task);
+	cout << "NM: Waiting the end of the extract_keypoints_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	cout << "NM: ended extract_keypoints_task" << endl;
+
+	vector<KeyPoint> kpts = ((ExtractKeypointsTask*)cur_task)->getKeypoints();
+	cout << "extracted " << (int)kpts.size() << "keypoints" << endl;
+
+	delete((ExtractKeypointsTask*)cur_task);
+
+	//Extract features
+	cur_task = new ExtractFeaturesTask(extractor,myLoad,kpts,atc_param.max_features);
+	taskManager_ptr->addTask(cur_task);
+	cout << "NM: Waiting the end of the extract_features_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	cout << "NM: ended extract_features_task" << endl;
+	Mat features = ((ExtractFeaturesTask*)cur_task)->getFeatures();
+	kpts = ((ExtractFeaturesTask*)cur_task)->getKeypoints();
+	cout << "now extracted " << (int)kpts.size() << "keypoints" << endl;
+	delete((ExtractFeaturesTask*)cur_task);
+
+	//put the unencoded features somewhere...
+	offloading_manager->addKeypointsAndFeatures(kpts,features,null);
+
 }
 
 void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
@@ -588,7 +613,11 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	}
 	slice = imdecode(jpeg_bitstream,CV_LOAD_IMAGE_GRAYSCALE);
 
-	//get the features
+	/*namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
+	imshow( "Display window", slice );                   // Show our image inside it.
+
+	waitKey(0);                                          // Wait for a keystroke in the window*/
+
 	// Extract the keypoints
 	cur_task = new ExtractKeypointsTask(extractor,slice,datc_param.detection_threshold);
 	taskManager_ptr->addTask(cur_task);
@@ -616,6 +645,100 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	kpts = ((ExtractFeaturesTask*)cur_task)->getKeypoints();
 	cout << "now extracted " << (int)kpts.size() << "keypoints" << endl;
 	delete((ExtractFeaturesTask*)cur_task);
+
+	//features serialization
+	vector<uchar> ft_bitstream;
+	vector<uchar> kp_bitstream;
+	cur_task = new EncodeFeaturesTask(encoder,"BRISK",features,0);
+	taskManager_ptr->addTask(cur_task);
+	//cout << "NM: Waiting the end of the encode_features_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	//cout << "NM: ended encode_features_task" << endl;
+	ft_bitstream = ((EncodeFeaturesTask*)cur_task)->getFeatsBitstream();
+	delete((EncodeFeaturesTask*)cur_task);
+
+	cur_task = new EncodeKeypointsTask(encoder,kpts,640,480,true);
+	taskManager_ptr->addTask(cur_task);
+	//cout << "NM: Waiting the end of the encode_kpts_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	//cout << "NM: ended encode_kpts_task" << endl;
+	kp_bitstream = ((EncodeKeypointsTask*)cur_task)->getKptsBitstream();
+	delete((EncodeKeypointsTask*)cur_task);
+	cout << "sending " << (int)(kpts.size()) << "keypoints" << endl;
+	cout << "and " << (int)(features.rows) << "features" << endl;
+
+	DataATCMsg *atc_msg = new DataATCMsg(0, 0, 1, ft_bitstream, kp_bitstream);
+	std::set<Connection*> connections = radioSystem_ptr->getWiFiConnections();
+	std::set<Connection*>::iterator it = connections.begin();
+	Connection* cn = *it;
+	atc_msg->setTcpConnection(cn);
+	cur_task = new SendWiFiMessageTask(atc_msg);
+	taskManager_ptr->addTask(cur_task);
+	cout << "NM: Waiting the end of the send_wifi_message_task" << endl;
+	{
+		boost::mutex::scoped_lock lk(cur_task->task_monitor);
+		while(!cur_task->completed){
+			cur_task_finished.wait(lk);
+		}
+	}
+	cout << "NM: exiting the wifi tx thread" << endl;
+	delete((SendWiFiMessageTask*)cur_task);
+}
+
+void NodeManager::DATC_store_features(DataATCMsg* msg){
+
+	boost::mutex monitor;
+	boost::mutex::scoped_lock lk(monitor);
+	Task *cur_task;
+	cv::Mat features;
+	vector<cv::KeyPoint> keypoints;
+
+	//get the features from the message
+	//may become a method of the message....
+	//get features
+	OCTET_STRING_t oct_data_ft = ((DataATCMsg*)msg)->getFeaturesData();
+	uint8_t* ftbuf = oct_data_ft.buf;
+	int data_size = oct_data_ft.size;
+	vector<uchar> ft_bitstream;
+	for(int i=0;i<data_size;i++){
+		ft_bitstream.push_back(ftbuf[i]);
+	}
+
+	//get keypoints
+	OCTET_STRING_t oct_data_kp = ((DataATCMsg*)msg)->getKeypointsData();
+	uint8_t* kpbuf = oct_data_kp.buf;
+	data_size = oct_data_kp.size;
+	vector<uchar> kp_bitstream;
+	for(int i=0;i<data_size;i++){
+		kp_bitstream.push_back(kpbuf[i]);
+	}
+
+	cur_task = new DecodeKeypointsTask(decoder,kp_bitstream,640,480,true);
+	taskManager_ptr->addTask(cur_task);
+	cout << "NM: Waiting the end of the decode_kpts_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	cout << "NM: ended decode_kpts_task" << endl;
+	keypoints = ((DecodeKeypointsTask*)cur_task)->getKeypoints();
+	delete((DecodeKeypointsTask*)cur_task);
+
+	cur_task = new DecodeFeaturesTask(decoder,"BRISK",ft_bitstream,0,keypoints.size());
+	taskManager_ptr->addTask(cur_task);
+	cout << "NM: Waiting the end of the decode_features_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	cout << "NM: ended decode_features_task" << endl;
+	features = ((DecodeFeaturesTask*)cur_task)->getFeatures();
+	delete((DecodeFeaturesTask*)cur_task);
+
+	//put the features somewhere
+	offloading_manager->addKeypointsAndFeatures(keypoints,features,msg->getTcpConnection());
 }
 
 void NodeManager::notifyCooperatorOnline(Connection* cn){
@@ -638,7 +761,77 @@ void NodeManager::notifyCooperatorOffline(Connection* cn){
 	sendMessage(msg);
 }
 
-void NodeManager::offloadingCompleted(){
-	//called by the OffloadingManager when all data has been received
+void NodeManager::notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features){
+
+	boost::mutex monitor;
+	boost::mutex::scoped_lock lk(monitor);
+	Task *cur_task;
 	//prepare the ATC_DATA message and sends it to the SINK
+	//ugly... put into a task!
+	extractor->cutFeatures(kpts,features,atc_param.max_features);
+	if(kpts.size()>0){
+
+		int num_blocks = ceil((float)kpts.size() / (float)atc_param.num_feat_per_block);
+		int beg,end;
+
+		cout << "features per block: " << (int)atc_param.num_feat_per_block << endl;
+
+		for(int i=0; i<num_blocks; i++){
+
+			vector<uchar> block_ft_bitstream;
+			vector<uchar> block_kp_bitstream;
+
+			beg = i*atc_param.num_feat_per_block;
+			end = min((int)(unsigned int)kpts.size(), (int)(beg+atc_param.num_feat_per_block));
+
+			Mat features_sub = features.rowRange(beg,end);
+
+			if(atc_param.coding == CodingChoices_none){
+				cur_task = new EncodeFeaturesTask(encoder,"BRISK",features_sub,0);
+				taskManager_ptr->addTask(cur_task);
+				//cout << "NM: Waiting the end of the encode_features_task" << endl;
+				while(!cur_task->completed){
+					cur_task_finished.wait(lk);
+				}
+				//cout << "NM: ended encode_features_task" << endl;
+				block_ft_bitstream = ((EncodeFeaturesTask*)cur_task)->getFeatsBitstream();
+				delete((EncodeFeaturesTask*)cur_task);
+			}
+			if(atc_param.coding == CodingChoices_entropyCoding){
+				cur_task = new EncodeFeaturesTask(encoder,"BRISK",features_sub,1);
+				taskManager_ptr->addTask(cur_task);
+				//cout << "NM: Waiting the end of the encode_features_task" << endl;
+				while(!cur_task->completed){
+					cur_task_finished.wait(lk);
+				}
+				//cout << "NM: ended encode_features_task" << endl;
+				block_ft_bitstream = ((EncodeFeaturesTask*)cur_task)->getFeatsBitstream();
+				delete((EncodeFeaturesTask*)cur_task);
+			}
+
+			vector<KeyPoint> sub_kpts(&kpts[beg],&kpts[end]);
+			cur_task = new EncodeKeypointsTask(encoder,sub_kpts,640,480,true);
+			taskManager_ptr->addTask(cur_task);
+			//cout << "NM: Waiting the end of the encode_kpts_task" << endl;
+			while(!cur_task->completed){
+				cur_task_finished.wait(lk);
+			}
+			//cout << "NM: ended encode_kpts_task" << endl;
+			block_kp_bitstream = ((EncodeKeypointsTask*)cur_task)->getKptsBitstream();
+			delete((EncodeKeypointsTask*)cur_task);
+			cout << "sending " << (int)(sub_kpts.size()) << "keypoints" << endl;
+			cout << "and " << (int)(features_sub.rows) << "features" << endl;
+
+
+			DataATCMsg *msg = new DataATCMsg(0, i, num_blocks, block_ft_bitstream, block_kp_bitstream);
+			msg->setSource(1);
+			msg->setDestination(0);
+
+			sendMessage(msg);
+
+			cout << "first keypoint: " << sub_kpts[0].pt.x << " " << sub_kpts[0].pt.y << endl;
+
+		}
+	}
+
 }

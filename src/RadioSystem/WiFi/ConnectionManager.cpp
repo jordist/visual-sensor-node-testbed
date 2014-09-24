@@ -28,7 +28,8 @@ void ConnectionManager::printActiveConnections(){
 void ConnectionManager::start(Connection* c)
 {
 	connections_.insert(c);
-	node_manager->notifyCooperatorOnline(c);
+	if(node_manager->getNodeType() == CAMERA)
+		node_manager->notifyCooperatorOnline(c);
 	c->readHeader();
 	printActiveConnections();
 
@@ -37,7 +38,8 @@ void ConnectionManager::start(Connection* c)
 void ConnectionManager::stop(Connection* c)
 {
 	connections_.erase(c);
-	node_manager->notifyCooperatorOffline(c);
+	if(node_manager->getNodeType() == CAMERA)
+		node_manager->notifyCooperatorOffline(c);
 	c->stop();
 	printActiveConnections();
 

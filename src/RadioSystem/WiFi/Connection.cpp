@@ -161,6 +161,8 @@ void Connection::handleReadMessage(const boost::system::error_code& ec)
 				msg = new StartCTAMsg(internal_message);
 				msg->setSource(h.getSrcAddr());
 				msg->setDestination(h.getDstAddr());
+				msg->setTcpConnection(this);
+
 
 
 				if(rval.code != RC_OK) {
@@ -197,6 +199,7 @@ void Connection::handleReadMessage(const boost::system::error_code& ec)
 				msg = new StartATCMsg(internal_message);
 				msg->setSource(h.getSrcAddr());
 				msg->setDestination(h.getDstAddr());
+				msg->setTcpConnection(this);
 
 				if(rval.code != RC_OK) {
 					fprintf(stderr,
@@ -232,6 +235,7 @@ void Connection::handleReadMessage(const boost::system::error_code& ec)
 				msg = new StartDATCMsg(internal_message);
 				msg->setSource(h.getSrcAddr());
 				msg->setDestination(h.getDstAddr());
+				msg->setTcpConnection(this);
 
 				if(rval.code != RC_OK) {
 					fprintf(stderr,
@@ -267,6 +271,7 @@ void Connection::handleReadMessage(const boost::system::error_code& ec)
 				msg = new DataCTAMsg(internal_message);
 				msg->setSource(h.getSrcAddr());
 				msg->setDestination(h.getDstAddr());
+				msg->setTcpConnection(this);
 
 				if(rval.code != RC_OK) {
 					fprintf(stderr,
@@ -282,39 +287,40 @@ void Connection::handleReadMessage(const boost::system::error_code& ec)
 			}
 
 			case DATA_ATC_MESSAGE:
-						{
-							cout << "Message is DATA_ATC" << endl;
+			{
+				cout << "Message is DATA_ATC" << endl;
 
-							char buf[MAX_DATA_ATC_MESSAGE_SIZE];
+				char buf[MAX_DATA_ATC_MESSAGE_SIZE];
 
-							cout << "Deserializing data cta message" << endl;
-							int bitstream_size = h.getPayloadSize();
-							cout << "Bitstream size is " << bitstream_size << endl;
+				cout << "Deserializing data atc message" << endl;
+				int bitstream_size = h.getPayloadSize();
+				cout << "Bitstream size is " << bitstream_size << endl;
 
-							//copy the bitstream (MAYBE REMOVED)
-							for(int i=0;i<bitstream_size;i++){
-								buf[i] = data[i];
-							}
+				//copy the bitstream (MAYBE REMOVED)
+				for(int i=0;i<bitstream_size;i++){
+					buf[i] = data[i];
+				}
 
-							DataATCMessage_t* internal_message = (DataATCMessage_t*) calloc(1, sizeof(*internal_message));
-							asn_dec_rval_t rval;
-							rval = uper_decode_complete(0, &asn_DEF_DataCTAMessage,(void **)&internal_message, buf, MAX_DATA_ATC_MESSAGE_SIZE);
-							msg = new DataATCMsg(internal_message);
-							msg->setSource(h.getSrcAddr());
-							msg->setDestination(h.getDstAddr());
+				DataATCMessage_t* internal_message = (DataATCMessage_t*) calloc(1, sizeof(*internal_message));
+				asn_dec_rval_t rval;
+				rval = uper_decode_complete(0, &asn_DEF_DataATCMessage,(void **)&internal_message, buf, MAX_DATA_ATC_MESSAGE_SIZE);
+				msg = new DataATCMsg(internal_message);
+				msg->setSource(h.getSrcAddr());
+				msg->setDestination(h.getDstAddr());
+				msg->setTcpConnection(this);
 
-							if(rval.code != RC_OK) {
-								fprintf(stderr,
-										"Broken message encoding at byte %ld\n",
-										(long)rval.consumed);
-								exit(65); /* better, EX_DATAERR */
-							} else {
-								fprintf(stdout,"Printing msg as XML...\n");
-								xer_fprint(stdout, &asn_DEF_DataATCMessage, internal_message);
-							}
+				if(rval.code != RC_OK) {
+					fprintf(stderr,
+							"Broken message encoding at byte %ld\n",
+							(long)rval.consumed);
+					exit(65); /* better, EX_DATAERR */
+				} else {
+					fprintf(stdout,"Printing msg as XML...\n");
+					xer_fprint(stdout, &asn_DEF_DataATCMessage, internal_message);
+				}
 
-							break;
-						}
+				break;
+			}
 
 			case STOP_MESSAGE:
 			{
@@ -322,6 +328,7 @@ void Connection::handleReadMessage(const boost::system::error_code& ec)
 				msg = new StopMsg();
 				msg->setSource(h.getSrcAddr());
 				msg->setDestination(h.getDstAddr());
+				msg->setTcpConnection(this);
 				break;
 			}
 
@@ -334,7 +341,7 @@ void Connection::handleReadMessage(const boost::system::error_code& ec)
 
 			//writeMsg();
 			node_manager->notify_msg(msg);
-			//readHeader();
+			readHeader();
 
 		}
 		else{
@@ -399,6 +406,7 @@ void Connection::writeMsg(Message* msg){
 	//if(ignored_error!=0){
 	//	std::cout << "tx error" << std::endl;
 	//}
+
 
 }
 

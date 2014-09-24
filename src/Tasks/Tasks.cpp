@@ -276,7 +276,7 @@ void SendWiFiMessageTask::execute(){
 	// call the proper Connection.sendMsg method and then complete
 	// make it synchrhonous so that we complete.
 
-	Connection* dest = msg_to_send->getTcpDestination();
+	Connection* dest = msg_to_send->getTcpConnection();
 	dest->writeMsg(msg_to_send);
 	completed = true;
 
