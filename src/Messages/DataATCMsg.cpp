@@ -18,7 +18,8 @@ DataATCMsg::~DataATCMsg(){
 	free(internal_msg);
 }
 
-DataATCMsg::DataATCMsg(int frameID, int blockNumber, int numBlocks, vector<uchar>& features_data,
+DataATCMsg::DataATCMsg(int frameID, int blockNumber, int numBlocks, double detTime,
+		double descTime, double kptsEncTime, double featEncTime, vector<uchar>& features_data,
 		vector<uchar>& keypoints_data){
 	msg_type = DATA_ATC_MESSAGE;
 	internal_msg = (DataATCMessage_t*) calloc(1, sizeof(*internal_msg));
@@ -26,6 +27,10 @@ DataATCMsg::DataATCMsg(int frameID, int blockNumber, int numBlocks, vector<uchar
 	internal_msg->frameID = frameID;
 	internal_msg->blockNumber = blockNumber;
 	internal_msg->numBlocks = numBlocks;
+	internal_msg->detTime = detTime;
+	internal_msg->descTime = descTime;
+	internal_msg->kencTime = kptsEncTime;
+	internal_msg->fencTime = featEncTime;
 	OCTET_STRING_t ft_data;
 	OCTET_STRING_t kp_data;
 
@@ -55,6 +60,22 @@ int DataATCMsg::getBlockNumber(){
 
 int DataATCMsg::getNumBlocks(){
 	return internal_msg->numBlocks;
+}
+
+double DataATCMsg::getDetTime(){
+	return internal_msg->detTime;
+}
+
+double DataATCMsg::getDescTime(){
+	return internal_msg->descTime;
+}
+
+double DataATCMsg::getFeatEncodingTime(){
+	return internal_msg->fencTime;
+}
+
+double DataATCMsg::getKptsEncodingTime(){
+	return internal_msg->kencTime;
 }
 
 OCTET_STRING_t DataATCMsg::getFeaturesData(){

@@ -83,7 +83,7 @@ public:
 	NodeType getNodeType();
 	void notifyCooperatorOnline(Connection* conn);
 	void notifyCooperatorOffline(Connection* conn);
-	void notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features);
+	void notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features, double detTime, double descTime);
 	//void sendTestPacket(Message* msg);
 
 private:

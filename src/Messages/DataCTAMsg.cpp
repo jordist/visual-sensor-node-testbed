@@ -10,7 +10,7 @@ DataCTAMsg::~DataCTAMsg(){
 	free(internal_msg);
 }
 
-DataCTAMsg::DataCTAMsg(int frameID, int sliceNumber, Coordinate_t topLeft, int dataSize, vector<uchar>& data){
+DataCTAMsg::DataCTAMsg(int frameID, int sliceNumber, Coordinate_t topLeft, int dataSize, double encTime, vector<uchar>& data){
 	msg_type = DATA_CTA_MESSAGE;
 	internal_msg = (DataCTAMessage_t*) calloc(1, sizeof(*internal_msg));
 	assert(internal_msg);
@@ -18,6 +18,7 @@ DataCTAMsg::DataCTAMsg(int frameID, int sliceNumber, Coordinate_t topLeft, int d
 	internal_msg->sliceNumber = sliceNumber;
 	internal_msg->topLeft = topLeft;
 	internal_msg->dataSize = dataSize;
+	internal_msg->encTime = encTime;
 	OCTET_STRING_t data_str;
 
 	data_str.size = data.size();
@@ -41,6 +42,9 @@ Coordinate_t DataCTAMsg::getTopLeft(){
 }
 int DataCTAMsg::getDataSize(){
 	return internal_msg->dataSize;
+}
+double DataCTAMsg::getEncodingTime(){
+	return internal_msg->encTime;
 }
 OCTET_STRING_t DataCTAMsg::getData(){
 	return internal_msg->data;

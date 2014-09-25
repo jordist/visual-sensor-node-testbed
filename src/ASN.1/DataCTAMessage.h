@@ -14,6 +14,7 @@
 /* Including external dependencies */
 #include <NativeInteger.h>
 #include "Coordinate.h"
+#include <NativeReal.h>
 #include <OCTET_STRING.h>
 #include <constr_SEQUENCE.h>
 
@@ -27,6 +28,7 @@ typedef struct DataCTAMessage {
 	long	 sliceNumber;
 	Coordinate_t	 topLeft;
 	long	 dataSize;
+	double	 encTime;
 	OCTET_STRING_t	 data;
 	
 	/* Context for parsing across buffer boundaries */

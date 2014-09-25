@@ -13,6 +13,7 @@
 
 /* Including external dependencies */
 #include <NativeInteger.h>
+#include <NativeReal.h>
 #include <OCTET_STRING.h>
 #include <constr_SEQUENCE.h>
 
@@ -25,6 +26,10 @@ typedef struct DataATCMessage {
 	long	 frameID;
 	long	 blockNumber;
 	long	 numBlocks;
+	double	 detTime;
+	double	 descTime;
+	double	 kencTime;
+	double	 fencTime;
 	OCTET_STRING_t	 featuresData;
 	OCTET_STRING_t	 kptsData;
 	

@@ -38,7 +38,9 @@ void EncodeSliceTask::execute(){
 	vector<int> param = vector<int>(2);
 	param[0] = CV_IMWRITE_JPEG_QUALITY;
 	param[1] = qualityFactor;
+	encTime = getTickCount();
 	imencode(".jpg",image,jpegBitstream,param);
+	encTime = (getTickCount()-encTime)/(getTickFrequency());
 	boost::mutex::scoped_lock lk(task_monitor);
 
 	cout << "TM: task executed" << endl;
@@ -55,7 +57,9 @@ void DecodeSliceTask::execute(){
 
 void ExtractKeypointsTask::execute(){
 	extractor->setDetThreshold("BRISK",det_thr);
+	detTime = getTickCount();
 	extractor->extractKeypoints(image,keypoints);
+	detTime = (getTickCount()-detTime)/getTickFrequency();
 	boost::mutex::scoped_lock lk(task_monitor);
 
 	cout << "TM: task executed" << endl;
@@ -63,7 +67,9 @@ void ExtractKeypointsTask::execute(){
 }
 
 void ExtractFeaturesTask::execute(){
+	descTime = getTickCount();
 	extractor->extractFeatures(image,keypoints,features);
+	descTime = (getTickCount()-descTime)/getTickFrequency();
 	extractor->cutFeatures(keypoints,features,max_features);
 	boost::mutex::scoped_lock lk(task_monitor);
 
@@ -72,7 +78,9 @@ void ExtractFeaturesTask::execute(){
 }
 
 void EncodeKeypointsTask::execute(){
+	kencTime = getTickCount();
 	encoder->encodeKeyPoints(keypoints,kptsBitstream,imWidth,imHeight,encodeAngles);
+	kencTime = (getTickCount()-kencTime)/getTickFrequency();
 	boost::mutex::scoped_lock lk(task_monitor);
 
 	cout << "TM: task executed" << endl;
@@ -83,15 +91,20 @@ void EncodeFeaturesTask::execute(){
 
 	if(method==0)// dummy
 	{
+		fencTime = getTickCount();
 		encoder->dummy_encodeBinaryDescriptors(descName,
 				features,
 				featsBitstream);
+		fencTime = (getTickCount()-fencTime)/getTickFrequency();
+
 	}
 	else // entropy coding
 	{
+		fencTime = getTickCount();
 		encoder->encodeBinaryDescriptors(descName,
 				features,
 				featsBitstream);
+		fencTime = (getTickCount()-fencTime)/getTickFrequency();
 	}
 	boost::mutex::scoped_lock lk(task_monitor);
 

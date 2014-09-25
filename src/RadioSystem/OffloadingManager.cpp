@@ -168,12 +168,14 @@ void OffloadingManager::transmitLoads(){
 	param[0] = CV_IMWRITE_JPEG_QUALITY;
 	param[1] = 50;
 
-	for(int i=0;i<cooperators_to_use;i++){                                       // Wait for a keystroke in the window
-		cv::imencode(".jpg",cooperatorList[i].image_slice,bitstream,param);
+	for(int i=0;i<cooperators_to_use;i++){
+		double enc_time = getTickCount();
+		imencode(".jpg",cooperatorList[i].image_slice,bitstream,param);
+		enc_time = (enc_time-getTickCount())/getTickFrequency();
 		Coordinate_t top_left;
 		top_left.xCoordinate = cooperatorList[i].col_offset;
 		top_left.yCoordinate = 0;
-		DataCTAMsg *msg = new DataCTAMsg(0,i,top_left,bitstream.size(),bitstream);
+		DataCTAMsg *msg = new DataCTAMsg(0,i,top_left,bitstream.size(),enc_time,bitstream);
 
 		cooperatorList[i].connection->writeMsg(msg);
 	}
@@ -220,12 +222,18 @@ void OffloadingManager::createOffloadingTask(int num_cooperators){
 	keypoint_buffer.clear();
 }
 
-void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& features, Connection* cn){
+void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& features, Connection* cn,
+		double detTime, double descTime, double kencTime, double fencTime){
 	features_buffer.push_back(features);
 
 	if(cn){
 		for(int i=0;i<cooperatorList.size();i++){
 			if(cn == cooperatorList[i].connection){
+				//add time measurementes
+				cooperatorList[i].detTime = detTime;
+				cooperatorList[i].descTime = descTime;
+				cooperatorList[i].kencTime = kencTime;
+				cooperatorList[i].fencTime = fencTime;
 				//compensate for slicing if keypoints come from a cooperator
 				for(int j=0;j<kpts.size();j++){
 					kpts[j].pt.x = kpts[j].pt.x + cooperatorList[i].col_offset;
@@ -236,6 +244,12 @@ void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& feat
 		}
 	}
 	else{
+		//add time measurements
+		camDetTime = detTime;
+		camDescTime = descTime;
+		camkEncTime = kencTime;
+		camfEncTime = fencTime;
+
 		for(int j=0;j<kpts.size();j++){
 			keypoint_buffer.push_back(kpts[j]);
 		}
@@ -246,6 +260,6 @@ void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& feat
 
 	received_cooperators++;
 	if(received_cooperators == cooperators_to_use+1){
-		node_manager->notifyOffloadingCompleted(keypoint_buffer,features_buffer);
+		node_manager->notifyOffloadingCompleted(keypoint_buffer,features_buffer,camDetTime,camDescTime);
 	}
 }

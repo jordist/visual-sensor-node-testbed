@@ -373,7 +373,7 @@ void NodeManager::CTA_processing_thread(){
 		cout << "NM: ended encode_slice_task" << endl;
 		vector<uchar> slice_bitstream;
 		slice_bitstream = ((EncodeSliceTask*)cur_task)->getJpegBitstream();
-
+		double enc_time = ((EncodeSliceTask*)cur_task)->getEncodingTime();
 		delete((EncodeSliceTask*)cur_task);
 		cout << "bitstream size of slice is " << slice_bitstream.size() << endl;
 
@@ -381,7 +381,7 @@ void NodeManager::CTA_processing_thread(){
 		Coordinate_t top_left;
 		top_left.xCoordinate = 0;
 		top_left.yCoordinate = (480/cta_param.num_slices)*i;
-		DataCTAMsg *msg = new DataCTAMsg(0,i,top_left,slice_bitstream.size(),slice_bitstream);
+		DataCTAMsg *msg = new DataCTAMsg(0,i,top_left,slice_bitstream.size(),enc_time,slice_bitstream);
 
 		msg->setSource(1);
 		msg->setDestination(0);
@@ -434,6 +434,7 @@ void NodeManager::ATC_processing_thread(){
 	cout << "NM: ended extract_keypoints_task" << endl;
 
 	vector<KeyPoint> kpts = ((ExtractKeypointsTask*)cur_task)->getKeypoints();
+	double detTime = ((ExtractKeypointsTask*)cur_task)->getDetTime();
 	cout << "extracted " << (int)kpts.size() << "keypoints" << endl;
 
 	delete((ExtractKeypointsTask*)cur_task);
@@ -448,6 +449,7 @@ void NodeManager::ATC_processing_thread(){
 	}
 	cout << "NM: ended extract_features_task" << endl;
 	Mat features = ((ExtractFeaturesTask*)cur_task)->getFeatures();
+	double descTime = ((ExtractFeaturesTask*)cur_task)->getDescTime();
 	kpts = ((ExtractFeaturesTask*)cur_task)->getKeypoints();
 	cout << "now extracted " << (int)kpts.size() << "keypoints" << endl;
 	delete((ExtractFeaturesTask*)cur_task);
@@ -468,7 +470,7 @@ void NodeManager::ATC_processing_thread(){
 			end = min((int)(unsigned int)kpts.size(), (int)(beg+atc_param.num_feat_per_block));
 
 			Mat features_sub = features.rowRange(beg,end);
-
+			double fencTime;
 			if(atc_param.coding == CodingChoices_none){
 				cur_task = new EncodeFeaturesTask(encoder,"BRISK",features_sub,0);
 				taskManager_ptr->addTask(cur_task);
@@ -478,6 +480,7 @@ void NodeManager::ATC_processing_thread(){
 				}
 				//cout << "NM: ended encode_features_task" << endl;
 				block_ft_bitstream = ((EncodeFeaturesTask*)cur_task)->getFeatsBitstream();
+				fencTime = ((EncodeFeaturesTask*)cur_task)->getEncodingTime();
 				delete((EncodeFeaturesTask*)cur_task);
 			}
 			if(atc_param.coding == CodingChoices_entropyCoding){
@@ -489,6 +492,7 @@ void NodeManager::ATC_processing_thread(){
 				}
 				//cout << "NM: ended encode_features_task" << endl;
 				block_ft_bitstream = ((EncodeFeaturesTask*)cur_task)->getFeatsBitstream();
+				fencTime = ((EncodeFeaturesTask*)cur_task)->getEncodingTime();
 				delete((EncodeFeaturesTask*)cur_task);
 			}
 
@@ -501,12 +505,13 @@ void NodeManager::ATC_processing_thread(){
 			}
 			//cout << "NM: ended encode_kpts_task" << endl;
 			block_kp_bitstream = ((EncodeKeypointsTask*)cur_task)->getKptsBitstream();
+			double kencTime = ((EncodeKeypointsTask*)cur_task)->getEncodingTime();
 			delete((EncodeKeypointsTask*)cur_task);
 			cout << "sending " << (int)(sub_kpts.size()) << "keypoints" << endl;
 			cout << "and " << (int)(features_sub.rows) << "features" << endl;
 
 
-			DataATCMsg *msg = new DataATCMsg(0, i, num_blocks, block_ft_bitstream, block_kp_bitstream);
+			DataATCMsg *msg = new DataATCMsg(0, i, num_blocks, detTime, descTime, kencTime, fencTime, block_ft_bitstream, block_kp_bitstream);
 			msg->setSource(1);
 			msg->setDestination(0);
 
@@ -576,6 +581,7 @@ void NodeManager::DATC_processing_thread(){
 	cout << "NM: ended extract_keypoints_task" << endl;
 
 	vector<KeyPoint> kpts = ((ExtractKeypointsTask*)cur_task)->getKeypoints();
+	double detTime = ((ExtractKeypointsTask*)cur_task)->getDetTime();
 	cout << "extracted " << (int)kpts.size() << "keypoints" << endl;
 
 	delete((ExtractKeypointsTask*)cur_task);
@@ -590,11 +596,13 @@ void NodeManager::DATC_processing_thread(){
 	cout << "NM: ended extract_features_task" << endl;
 	Mat features = ((ExtractFeaturesTask*)cur_task)->getFeatures();
 	kpts = ((ExtractFeaturesTask*)cur_task)->getKeypoints();
+	double descTime =  ((ExtractFeaturesTask*)cur_task)->getDescTime();
 	cout << "now extracted " << (int)kpts.size() << "keypoints" << endl;
 	delete((ExtractFeaturesTask*)cur_task);
 
 	//put the unencoded features somewhere...
-	offloading_manager->addKeypointsAndFeatures(kpts,features,null);
+	//todo: understand what to do with encoding times
+	offloading_manager->addKeypointsAndFeatures(kpts,features,null,detTime,descTime,0,0);
 
 }
 
@@ -632,6 +640,7 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	cout << "NM: ended extract_keypoints_task" << endl;
 
 	vector<KeyPoint> kpts = ((ExtractKeypointsTask*)cur_task)->getKeypoints();
+	double detTime = ((ExtractKeypointsTask*)cur_task)->getDetTime();
 	cout << "extracted " << (int)kpts.size() << "keypoints" << endl;
 
 	delete((ExtractKeypointsTask*)cur_task);
@@ -647,6 +656,7 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	cout << "NM: ended extract_features_task" << endl;
 	Mat features = ((ExtractFeaturesTask*)cur_task)->getFeatures();
 	kpts = ((ExtractFeaturesTask*)cur_task)->getKeypoints();
+	double descTime = ((ExtractFeaturesTask*)cur_task)->getDescTime();
 	cout << "now extracted " << (int)kpts.size() << "keypoints" << endl;
 	delete((ExtractFeaturesTask*)cur_task);
 
@@ -661,6 +671,7 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	}
 	//cout << "NM: ended encode_features_task" << endl;
 	ft_bitstream = ((EncodeFeaturesTask*)cur_task)->getFeatsBitstream();
+	double fencTime = ((EncodeFeaturesTask*)cur_task)->getEncodingTime();
 	delete((EncodeFeaturesTask*)cur_task);
 
 	cur_task = new EncodeKeypointsTask(encoder,kpts,640,480,true);
@@ -671,11 +682,12 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	}
 	//cout << "NM: ended encode_kpts_task" << endl;
 	kp_bitstream = ((EncodeKeypointsTask*)cur_task)->getKptsBitstream();
+	double kencTime = ((EncodeKeypointsTask*)cur_task)->getEncodingTime();
 	delete((EncodeKeypointsTask*)cur_task);
 	cout << "sending " << (int)(kpts.size()) << "keypoints" << endl;
 	cout << "and " << (int)(features.rows) << "features" << endl;
 
-	DataATCMsg *atc_msg = new DataATCMsg(0, 0, 1, ft_bitstream, kp_bitstream);
+	DataATCMsg *atc_msg = new DataATCMsg(0, 0, 1, detTime, descTime, kencTime, fencTime, ft_bitstream, kp_bitstream);
 	std::set<Connection*> connections = radioSystem_ptr->getWiFiConnections();
 	std::set<Connection*>::iterator it = connections.begin();
 	Connection* cn = *it;
@@ -742,7 +754,8 @@ void NodeManager::DATC_store_features(DataATCMsg* msg){
 	delete((DecodeFeaturesTask*)cur_task);
 
 	//put the features somewhere
-	offloading_manager->addKeypointsAndFeatures(keypoints,features,msg->getTcpConnection());
+	offloading_manager->addKeypointsAndFeatures(keypoints,features,msg->getTcpConnection(),
+			msg->getDetTime(),msg->getDescTime(),msg->getKptsEncodingTime(),msg->getFeatEncodingTime());
 }
 
 void NodeManager::notifyCooperatorOnline(Connection* cn){
@@ -765,7 +778,7 @@ void NodeManager::notifyCooperatorOffline(Connection* cn){
 	sendMessage(msg);
 }
 
-void NodeManager::notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features){
+void NodeManager::notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features, double camDetTime, double camDescTime){
 
 	boost::mutex monitor;
 	boost::mutex::scoped_lock lk(monitor);
@@ -826,8 +839,8 @@ void NodeManager::notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features
 			cout << "sending " << (int)(sub_kpts.size()) << "keypoints" << endl;
 			cout << "and " << (int)(features_sub.rows) << "features" << endl;
 
-
-			DataATCMsg *msg = new DataATCMsg(0, i, num_blocks, block_ft_bitstream, block_kp_bitstream);
+			//TODO: understand what to do with encoding times...
+			DataATCMsg *msg = new DataATCMsg(0, i, num_blocks, camDetTime, camDescTime, 0, 0, block_ft_bitstream, block_kp_bitstream);
 			msg->setSource(1);
 			msg->setDestination(0);
 

@@ -30,9 +30,10 @@ typedef struct cooperator{
 	Mat image_slice;
 	int col_offset;
 
-	double t0; //start tx of image load
-	double t1; //end rx of features
-	int tx_bytes,rx_bytes;
+	double detTime;
+	double descTime;
+	double kencTime;
+	double fencTime;
 }cooperator;
 
 class OffloadingManager{
@@ -44,7 +45,8 @@ public:
 	}
 
 	//add keypoints and features from cooperators
-	void addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& features,Connection* cn);
+	void addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& features,Connection* cn,
+			double detTime, double descTime, double kencTime, double fencTime);
 
 	//reset variables and keep track of progresses
 	void createOffloadingTask(int num_cooperators);
@@ -69,6 +71,7 @@ private:
 	vector<KeyPoint> keypoint_buffer;
 	Mat features_buffer;
 
+	double camDetTime, camDescTime, camkEncTime, camfEncTime;
 
 };
 

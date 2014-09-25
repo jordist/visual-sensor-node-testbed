@@ -11,6 +11,10 @@ VSNTestBed DEFINITIONS AUTOMATIC TAGS ::= BEGIN
     frameID      INTEGER,     -- Identifies which frame the features belong to.
     blockNumber  INTEGER,     -- Features are grouped into blocks.
     numBlocks 	 INTEGER,	  -- Tot. number of blocks
+  	detTime		 REAL,		  -- Time spent for keypoint detection
+  	descTime	 REAL,		  -- Time spent for features descriptio
+  	kencTime     REAL,        -- Time spent for encoding keypoints
+  	fencTime     REAL,	      -- Time spent for encoding features
     featuresData OCTET STRING, -- Descriptor data.
     kptsData 	 OCTET STRING  -- Keypoints data (todo: optional?)
   }
@@ -23,6 +27,7 @@ VSNTestBed DEFINITIONS AUTOMATIC TAGS ::= BEGIN
     topLeft      Coordinate,  -- Describes where the slice is positioned in the 
                               -- original image.
     dataSize     INTEGER,     -- The length of the data bit string.
+    encTime 	 REAL,		  -- time spent for JPEG encoding
     data         OCTET STRING   -- JPEG encoded image data.
   }
 

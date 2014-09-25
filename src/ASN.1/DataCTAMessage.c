@@ -46,8 +46,17 @@ static asn_TYPE_member_t asn_MBR_DataCTAMessage_1[] = {
 		0,
 		"dataSize"
 		},
-	{ ATF_NOFLAGS, 0, offsetof(struct DataCTAMessage, data),
+	{ ATF_NOFLAGS, 0, offsetof(struct DataCTAMessage, encTime),
 		(ASN_TAG_CLASS_CONTEXT | (4 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_NativeReal,
+		0,	/* Defer constraints checking to the member type */
+		0,	/* No PER visible constraints */
+		0,
+		"encTime"
+		},
+	{ ATF_NOFLAGS, 0, offsetof(struct DataCTAMessage, data),
+		(ASN_TAG_CLASS_CONTEXT | (5 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_OCTET_STRING,
 		0,	/* Defer constraints checking to the member type */
@@ -60,17 +69,18 @@ static ber_tlv_tag_t asn_DEF_DataCTAMessage_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 static asn_TYPE_tag2member_t asn_MAP_DataCTAMessage_tag2el_1[] = {
-    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* frameID at 19 */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* sliceNumber at 20 */
-    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* topLeft at 23 */
-    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 }, /* dataSize at 25 */
-    { (ASN_TAG_CLASS_CONTEXT | (4 << 2)), 4, 0, 0 } /* data at 26 */
+    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* frameID at 23 */
+    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* sliceNumber at 24 */
+    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* topLeft at 27 */
+    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 }, /* dataSize at 29 */
+    { (ASN_TAG_CLASS_CONTEXT | (4 << 2)), 4, 0, 0 }, /* encTime at 30 */
+    { (ASN_TAG_CLASS_CONTEXT | (5 << 2)), 5, 0, 0 } /* data at 31 */
 };
 static asn_SEQUENCE_specifics_t asn_SPC_DataCTAMessage_specs_1 = {
 	sizeof(struct DataCTAMessage),
 	offsetof(struct DataCTAMessage, _asn_ctx),
 	asn_MAP_DataCTAMessage_tag2el_1,
-	5,	/* Count of tags in the map */
+	6,	/* Count of tags in the map */
 	0, 0, 0,	/* Optional elements (not needed) */
 	-1,	/* Start extensions */
 	-1	/* Stop extensions */
@@ -96,7 +106,7 @@ asn_TYPE_descriptor_t asn_DEF_DataCTAMessage = {
 		/sizeof(asn_DEF_DataCTAMessage_tags_1[0]), /* 1 */
 	0,	/* No PER visible constraints */
 	asn_MBR_DataCTAMessage_1,
-	5,	/* Elements count */
+	6,	/* Elements count */
 	&asn_SPC_DataCTAMessage_specs_1	/* Additional specs */
 };
 

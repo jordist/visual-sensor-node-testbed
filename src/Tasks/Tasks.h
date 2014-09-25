@@ -84,6 +84,7 @@ private:
 	Mat image;
 	int qualityFactor;
 	vector<uchar> jpegBitstream;
+	double encTime;
 public:
 	EncodeSliceTask(Mat &image_, int qualityFactor_){
 		image = image_;
@@ -94,6 +95,9 @@ public:
 	void execute();
 	vector<uchar> getJpegBitstream(){
 		return jpegBitstream;
+	}
+	double getEncodingTime(){
+		return encTime;
 	}
 };
 
@@ -119,6 +123,7 @@ private:
 	Mat image;
 	vector<KeyPoint> keypoints;
 	int det_thr;
+	double detTime;
 public:
 	ExtractKeypointsTask(VisualFeatureExtraction *extractor_,Mat &image_,int det_thr_){
 		extractor = extractor_;
@@ -132,6 +137,9 @@ public:
 	vector<KeyPoint> getKeypoints(){
 		return keypoints;
 	}
+	double getDetTime(){
+		return detTime;
+	}
 };
 
 class ExtractFeaturesTask : public Task{
@@ -141,6 +149,7 @@ private:
 	vector<KeyPoint> keypoints;
 	Mat features;
 	int max_features;
+	double descTime;
 
 public:
 	ExtractFeaturesTask(VisualFeatureExtraction *extractor_,
@@ -161,6 +170,9 @@ public:
 	vector<KeyPoint> getKeypoints(){
 		return keypoints;
 	}
+	double getDescTime(){
+		return descTime;
+	}
 };
 
 class EncodeKeypointsTask : public Task{
@@ -170,6 +182,7 @@ private:
 	int imWidth, imHeight;
 	bool encodeAngles;
 	vector<uchar> kptsBitstream;
+	double kencTime;
 public:
 	EncodeKeypointsTask(VisualFeatureEncoding *encoder_,
 			                 vector<KeyPoint> &keypoints_,
@@ -187,6 +200,9 @@ public:
 	vector<uchar> getKptsBitstream(){
 		return kptsBitstream;
 	}
+	double getEncodingTime(){
+		return kencTime;
+	}
 };
 
 class EncodeFeaturesTask : public Task{
@@ -196,6 +212,7 @@ private:
 	Mat features;
 	int method;
 	vector<uchar> featsBitstream;
+	double fencTime;
 public:
 	EncodeFeaturesTask(VisualFeatureEncoding *encoder_,
 			                string descName_,
@@ -211,6 +228,9 @@ public:
 	void execute();
 	vector<uchar> getFeatsBitstream(){
 		return featsBitstream;
+	}
+	double getEncodingTime(){
+		return fencTime;
 	}
 };
 
