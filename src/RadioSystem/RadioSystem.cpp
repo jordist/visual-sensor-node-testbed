@@ -6,9 +6,10 @@
 
 using namespace std;
 
-RadioSystem::RadioSystem(NodeManager* nm){
+RadioSystem::RadioSystem(NodeManager* nm, MessageParser* m){
 	nodeManager_ptr = nm;
-	incoming_message_queue_ptr = new IncomingMessageQueue(this);
+	msg_parser = m;
+	incoming_message_queue_ptr = new IncomingMessageQueue(this,msg_parser);
 	NodeType node_type = nodeManager_ptr->getNodeType();
 
 	switch(node_type){

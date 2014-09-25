@@ -51,7 +51,9 @@ src/RadioSystem/IncomingMessageQueue.d: \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StopMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/CoopInfoMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/RadioSystem.h \
- /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/Telosb/serialsource.h
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/Telosb/serialsource.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/Header.h \
+ ../src/RadioSystem/MessageParser.h
 
 ../src/RadioSystem/IncomingMessageQueue.h:
 
@@ -156,3 +158,7 @@ src/RadioSystem/IncomingMessageQueue.d: \
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/RadioSystem.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/Telosb/serialsource.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/Header.h:
+
+../src/RadioSystem/MessageParser.h:

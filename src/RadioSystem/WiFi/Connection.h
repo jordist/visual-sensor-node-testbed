@@ -24,6 +24,7 @@
 class NodeManager;
 class ConnectionManager;
 class Message;
+class MessageParser;
 
 class Connection
 {
@@ -44,6 +45,7 @@ public:
 
 	void writeMsg(Message* msg);
 	void setNodeManager(NodeManager* nm);
+	void setMessageParser(MessageParser* m);
 
 
 private:
@@ -71,6 +73,7 @@ private:
 	uchar header_[HEADER_SIZE];
 
 	NodeManager* node_manager;
+	MessageParser* message_parser;
 
 	/// The incoming request.
 	//request request_;

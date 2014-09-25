@@ -16,7 +16,7 @@
 #include "Messages/Header.h"
 
 class NodeManager;
-
+class MessageParser;
 
 using boost::asio::ip::tcp;
 using namespace std;
@@ -26,7 +26,7 @@ using namespace std;
 class S2GInterface{
 
 public:
-	S2GInterface(NodeManager* nm, boost::asio::io_service& io_service,
+	S2GInterface(NodeManager* nm, MessageParser* m, boost::asio::io_service& io_service,
 			tcp::resolver::iterator endpoint_iterator);
 	void startInterface(){
 		r_thread = boost::thread(&S2GInterface::runThread, this);
@@ -61,6 +61,7 @@ private:
 	vector<int> packetId_;
 
 	NodeManager* node_manager;
+	MessageParser* msg_parser;
 };
 
 

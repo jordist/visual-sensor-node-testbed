@@ -53,11 +53,6 @@ src/S2GInterface/S2GInterface.d: ../src/S2GInterface/S2GInterface.cpp \
  /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/imgproc/types_c.h \
  /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/nonfree/nonfree.hpp \
  /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/nonfree/features2d.hpp \
- /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StartCTAMsg.h \
- /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StartATCMsg.h \
- /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StartDATCMsg.h \
- /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/DataCTAMsg.h \
- /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/DataATCMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/NodeManager/NodeManager.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/RadioSystem.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/Message.h \
@@ -81,13 +76,19 @@ src/S2GInterface/S2GInterface.d: ../src/S2GInterface/S2GInterface.cpp \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/MultimediaSystem/includes/VisualFeatureDecoding.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/Telosb/TelosbRadioSystem.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/Telosb/serialsource.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StartCTAMsg.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StartATCMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/IncomingMessageQueue.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StartDATCMsg.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/DataCTAMsg.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/DataATCMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StopMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/CoopInfoMsg.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/WiFiRadioSystem.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/ConnectionManager.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/Connection.h \
- /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/S2GInterface/S2GInterface.h
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/S2GInterface/S2GInterface.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/MessageParser.h
 
 ../src/S2GInterface/S2GInterface.h:
 
@@ -197,16 +198,6 @@ src/S2GInterface/S2GInterface.d: ../src/S2GInterface/S2GInterface.cpp \
 
 /home/greeneyes/OpenCV-Install/2.4.4/include/opencv2/nonfree/features2d.hpp:
 
-/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StartCTAMsg.h:
-
-/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StartATCMsg.h:
-
-/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StartDATCMsg.h:
-
-/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/DataCTAMsg.h:
-
-/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/DataATCMsg.h:
-
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/NodeManager/NodeManager.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/RadioSystem.h:
@@ -253,7 +244,17 @@ src/S2GInterface/S2GInterface.d: ../src/S2GInterface/S2GInterface.cpp \
 
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/Telosb/serialsource.h:
 
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StartCTAMsg.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StartATCMsg.h:
+
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/IncomingMessageQueue.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StartDATCMsg.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/DataCTAMsg.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/DataATCMsg.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/StopMsg.h:
 
@@ -266,3 +267,5 @@ src/S2GInterface/S2GInterface.d: ../src/S2GInterface/S2GInterface.cpp \
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/Connection.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/S2GInterface/S2GInterface.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/MessageParser.h:

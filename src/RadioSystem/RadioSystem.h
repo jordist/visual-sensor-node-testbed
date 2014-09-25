@@ -12,12 +12,13 @@ class NodeManager;
 class TelosbRadioSystem;
 class WiFiRadioSystem;
 class IncomingMessageQueue;
+class MessageParser;
 using boost::asio::ip::tcp;
 
 class RadioSystem{
 
 public:
-	RadioSystem(NodeManager *nm);
+	RadioSystem(NodeManager *nm, MessageParser* m);
 	/*void set_nodeManager(NodeManager *nm){
 		nodeManager_ptr = nm;
 		cout << "RS node manager set " << nm << endl;
@@ -40,6 +41,7 @@ public:
 	void notifyMsg(Message* msg);
 	std::set<Connection*> getWiFiConnections();
 
+
 private:
 
 	NodeManager *nodeManager_ptr;
@@ -47,6 +49,7 @@ private:
 	WiFiRadioSystem *wifiRadioSystem_ptr;
 
 	IncomingMessageQueue *incoming_message_queue_ptr;
+	MessageParser *msg_parser;
 	//boost::thread m_thread;
 	//void radioSystemThread();
 

@@ -88,7 +88,8 @@ src/RadioSystem/WiFi/Connection.d: ../src/RadioSystem/WiFi/Connection.cpp \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/WiFiRadioSystem.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/ConnectionManager.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/Connection.h \
- /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/S2GInterface/S2GInterface.h
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/S2GInterface/S2GInterface.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/MessageParser.h
 
 ../src/RadioSystem/WiFi/Connection.h:
 
@@ -269,3 +270,5 @@ src/RadioSystem/WiFi/Connection.d: ../src/RadioSystem/WiFi/Connection.cpp \
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/Connection.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/S2GInterface/S2GInterface.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/MessageParser.h:

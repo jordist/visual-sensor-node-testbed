@@ -3,8 +3,7 @@
 
 #include "NodeManager/NodeManager.h"
 #include "RadioSystem/RadioSystem.h"
-//#include "RadioSystem/ConnectionManager.h"
-#include "Messages/Message.h"
+#include "RadioSystem/MessageParser.h"
 #include "S2GInterface/S2GInterface.h"
 
 using namespace std;
@@ -32,6 +31,7 @@ int main(int argc, char ** argv){
 	RadioSystem *radioSys;
 	TaskManager *taskMng;
 	S2GInterface *s2ginterface;
+	MessageParser *msg_parser;
 	//ConnectionManager *connMng;
 	boost::asio::io_service io_service;
 
@@ -39,8 +39,11 @@ int main(int argc, char ** argv){
 	case SINK:{
 		//create the main components
 		nodeMng  = new NodeManager(SINK);
-		radioSys = new RadioSystem(nodeMng);
+		msg_parser = new MessageParser();
+		radioSys = new RadioSystem(nodeMng, msg_parser);
 		taskMng  = new TaskManager(nodeMng);
+
+
 		nodeMng->set_radioSystem(radioSys);
 		nodeMng->set_taskManager(taskMng);
 
@@ -54,15 +57,18 @@ int main(int argc, char ** argv){
 		tcp::resolver resolver(io_service);
 		tcp::resolver::query query("localhost", "1234");
 		tcp::resolver::iterator iterator = resolver.resolve(query);
-		s2ginterface = new S2GInterface(nodeMng, io_service, iterator);
+		s2ginterface = new S2GInterface(nodeMng, msg_parser, io_service, iterator);
 		s2ginterface->startInterface();
 		nodeMng->set_s2gInterface(s2ginterface);
+
+
 
 		break;
 	}
 	case CAMERA:{
 		nodeMng  = new NodeManager(CAMERA);
-		radioSys = new RadioSystem(nodeMng);
+		msg_parser = new MessageParser();
+		radioSys = new RadioSystem(nodeMng,msg_parser);
 		taskMng  = new TaskManager(nodeMng);
 		//connMng = new ConnectionManager();
 
@@ -88,7 +94,8 @@ int main(int argc, char ** argv){
 	}
 	case COOPERATOR:{
 		nodeMng  = new NodeManager(COOPERATOR);
-		radioSys = new RadioSystem(nodeMng);
+		msg_parser = new MessageParser();
+		radioSys = new RadioSystem(nodeMng,msg_parser);
 		taskMng  = new TaskManager(nodeMng);
 		//connMng = new ConnectionManager();
 

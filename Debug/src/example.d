@@ -86,7 +86,7 @@ src/example.d: ../src/example.cpp ../src/NodeManager/NodeManager.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/Connection.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/Header.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/S2GInterface/S2GInterface.h \
- ../src/RadioSystem/RadioSystem.h ../src/Messages/Message.h \
+ ../src/RadioSystem/RadioSystem.h ../src/RadioSystem/MessageParser.h \
  ../src/S2GInterface/S2GInterface.h
 
 ../src/NodeManager/NodeManager.h:
@@ -267,6 +267,6 @@ src/example.d: ../src/example.cpp ../src/NodeManager/NodeManager.h \
 
 ../src/RadioSystem/RadioSystem.h:
 
-../src/Messages/Message.h:
+../src/RadioSystem/MessageParser.h:
 
 ../src/S2GInterface/S2GInterface.h:

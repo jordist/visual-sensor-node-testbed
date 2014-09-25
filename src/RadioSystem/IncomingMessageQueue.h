@@ -15,10 +15,11 @@
 #include "Messages/DataATCMsg.h"
 #include "Messages/StopMsg.h"
 #include "Messages/CoopInfoMsg.h"
-
 #include "RadioSystem/RadioSystem.h"
 
 using namespace std;
+
+class MessageParser;
 
 //MAIN IDEA: store incoming packets, check when all the packets needed to construct
 //a message are there, then deserialize the bitstream in a Message object and pass it
@@ -42,7 +43,7 @@ struct message_queue_entry{
 
 class IncomingMessageQueue {
 public:
-	IncomingMessageQueue(RadioSystem* radio_system);
+	IncomingMessageQueue(RadioSystem* radio_system, MessageParser* m);
 	virtual ~IncomingMessageQueue();
 
 	int size();
@@ -52,6 +53,7 @@ public:
 private:
 	int last_seq_num;
 	RadioSystem *radio_system_ptr;
+	MessageParser *msg_parser;
 	vector<message_queue_entry> message_queue;
 	//mutable boost::mutex the_mutex;
 	void deserializeAndNotify(int cur_pos);
