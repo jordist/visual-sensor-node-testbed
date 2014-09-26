@@ -41,9 +41,6 @@ private:
 	void stop();
 	void start_read_header();
 	void handle_read_message(const boost::system::error_code& ec);
-
-
-	Header parseHeader(uchar data[]);
 	void data_sent_handler(const boost::system::error_code& ec);
 	void handle_connect(const boost::system::error_code& error,
 			tcp::resolver::iterator endpoint_iter);
@@ -51,14 +48,11 @@ private:
 	tcp::socket socket_;
 	boost::thread r_thread;
 	uchar header_[HEADER_SIZE];
-	vector<short> op_mode_;
-	vector<uchar> buffer_;
-	vector<int> cta_cur_slice_idx_;
-	vector<int> atc_cur_slice_idx_;
-	vector<int> cta_cur_frame_idx_;
-	vector<int> atc_cur_frame_idx_;
 	vector<int> messageId_;
 	vector<int> packetId_;
+
+	vector<uchar> out;
+
 
 	NodeManager* node_manager;
 	MessageParser* msg_parser;

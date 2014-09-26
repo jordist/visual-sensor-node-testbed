@@ -166,16 +166,16 @@ void OffloadingManager::transmitLoads(){
 	vector<uchar> bitstream;
 	vector<int> param = vector<int>(2);
 	param[0] = CV_IMWRITE_JPEG_QUALITY;
-	param[1] = 50;
+	param[1] = 100;
 
 	for(int i=0;i<cooperators_to_use;i++){
 		double enc_time = getTickCount();
 		imencode(".jpg",cooperatorList[i].image_slice,bitstream,param);
-		enc_time = (enc_time-getTickCount())/getTickFrequency();
+		enc_time = (getTickCount()-enc_time)/getTickFrequency();
 		Coordinate_t top_left;
 		top_left.xCoordinate = cooperatorList[i].col_offset;
 		top_left.yCoordinate = 0;
-		DataCTAMsg *msg = new DataCTAMsg(0,i,top_left,bitstream.size(),enc_time,bitstream);
+		DataCTAMsg *msg = new DataCTAMsg(0,1,top_left,bitstream.size(),enc_time,bitstream);
 
 		cooperatorList[i].connection->writeMsg(msg);
 	}

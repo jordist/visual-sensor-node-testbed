@@ -24,13 +24,21 @@ RadioSystem::RadioSystem(NodeManager* nm, MessageParser* m){
 		telosbRadioSystem_ptr = new TelosbRadioSystem();
 		telosbRadioSystem_ptr->setIncomingMessageQueue(incoming_message_queue_ptr);
 
+#ifdef __arm__
+		tcp::resolver::query query("10.42.0.3", "2345");
+#else
 		tcp::resolver::query query("localhost", "2345");
+#endif
 		wifiRadioSystem_ptr = new WiFiRadioSystem(query,std::string("server"),nodeManager_ptr);
 		break;
 	}
 	case COOPERATOR:
 	{
+#ifdef __arm__
+		tcp::resolver::query query("10.42.0.3", "2345");
+#else
 		tcp::resolver::query query("localhost", "2345");
+#endif
 		wifiRadioSystem_ptr = new WiFiRadioSystem(query,std::string("client"),nodeManager_ptr);
 		break;
 	}

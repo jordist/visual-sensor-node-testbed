@@ -13,7 +13,7 @@
 void AcquireImageTask::execute(){
 	cout << "executing the acquire_image_task" << endl;
 	imgAcq->takePicture(image);
-	//image = imread("/home/greeneyes/Scrivania/testbed-v2/src/sample_VGA_1.jpg");
+	//image = imread("util/sample_VGA_1.jpg");
 	cout << "ok!" << endl;
 	boost::mutex::scoped_lock lk(task_monitor);
 
@@ -40,7 +40,7 @@ void EncodeSliceTask::execute(){
 	param[1] = qualityFactor;
 	encTime = getTickCount();
 	imencode(".jpg",image,jpegBitstream,param);
-	encTime = (getTickCount()-encTime)/(getTickFrequency());
+	encTime = (getTickCount()-encTime)/getTickFrequency();
 	boost::mutex::scoped_lock lk(task_monitor);
 
 	cout << "TM: task executed" << endl;

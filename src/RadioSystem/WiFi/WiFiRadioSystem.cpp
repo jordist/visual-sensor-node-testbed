@@ -10,7 +10,7 @@
 #include "NodeManager/NodeManager.h"
 
 
-WiFiRadioSystem::WiFiRadioSystem(tcp::resolver::query, std::string mode, NodeManager* nm) :
+WiFiRadioSystem::WiFiRadioSystem(tcp::resolver::query query, std::string mode, NodeManager* nm) :
 io_service(),
 acceptor(io_service),
 connection_manager(nm),
@@ -20,7 +20,6 @@ node_manager(nm)
 {
 	new_connection->setNodeManager(node_manager);
 	tcp::resolver resolver(io_service);
-	tcp::resolver::query query("localhost", "2345");
 	tcp::endpoint endpoint = *resolver.resolve(query);
 	tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 

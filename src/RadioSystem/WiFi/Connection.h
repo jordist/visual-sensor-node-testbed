@@ -67,10 +67,10 @@ private:
 	/// The handler used to process the incoming request.
 	//MessageHandler& message_handler_;
 
-	/// Buffer for incoming data.
-	boost::array<char, 8192> buffer_;
 
 	uchar header_[HEADER_SIZE];
+	vector<uchar> out;
+
 
 	NodeManager* node_manager;
 	MessageParser* message_parser;

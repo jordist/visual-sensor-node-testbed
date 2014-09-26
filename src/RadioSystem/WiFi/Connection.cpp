@@ -115,7 +115,6 @@ void Connection::handle_write(const boost::system::error_code& e)
 
 void Connection::writeMsg(Message* msg){
 
-	vector<uchar> out;
 	vector<uchar> temp1;
 	vector<uchar> temp2;
 
@@ -126,6 +125,7 @@ void Connection::writeMsg(Message* msg){
 	temp2 = h.serialization();
 	std::cout << h;
 
+	out.clear();
 	out.reserve( temp1.size() + temp2.size() ); // preallocate memory
 	//write header
 	out.insert( out.end(), temp2.begin(), temp2.end() );
