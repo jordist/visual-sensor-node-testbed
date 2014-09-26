@@ -51,7 +51,7 @@ int main(int argc, char ** argv){
 		taskMng->start();
 
 		//start a telosb receiver
-		radioSys->startTelosbReceiver("/dev/ttyUSB0");
+		radioSys->startTelosbReceiver(argv[2]);
 
 		//start the sink2gui interface
 		tcp::resolver resolver(io_service);
@@ -80,14 +80,12 @@ int main(int argc, char ** argv){
 		taskMng->start();
 
 		//start a telosb receiver
-		radioSys->startTelosbReceiver("/dev/ttyUSB1");
+		radioSys->startTelosbReceiver(argv[2]);
 
 		//start the WiFi manager
 		radioSys->startWiFiReceiver();
 
-		//start the server for connection with cooperators
-		//int port = atoi(argv[2]);
-		//connMng->startServer(port);
+
 
 		radioSys->joinTelosbReceiver();
 		break;
@@ -108,12 +106,6 @@ int main(int argc, char ** argv){
 
 		radioSys->startWiFiReceiver();
 
-
-		//start a telosb receiver
-		//radioSys->startReceiver("/dev/ttyUSB1");
-
-		//connect to the camera
-		//connMng->connectToCamera(argv[2],atoi(argv[3]));
 		break;
 	}
 	default:

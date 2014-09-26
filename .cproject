@@ -187,7 +187,10 @@
 									<listOptionValue builtIn="false" value="/home/greeneyes/OpenCV-Install/2.4.9-arm/lib"/>
 									<listOptionValue builtIn="false" value="/home/greeneyes/boost-arm/lib"/>
 								</option>
-								<option id="macosx.cpp.link.option.other.483265627" name="Other options (-Xlinker [option])" superClass="macosx.cpp.link.option.other"/>
+								<option id="macosx.cpp.link.option.other.483265627" name="Other options (-Xlinker [option])" superClass="macosx.cpp.link.option.other" valueType="stringList">
+									<listOptionValue builtIn="false" value="-rpath='/home/debian/boost-arm/lib'"/>
+									<listOptionValue builtIn="false" value="-rpath='/home/debian/opencv-arm/lib'"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.454055281" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -207,7 +210,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/ASN.1}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/MultimediaSystem/includes}&quot;"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.other.other.1119314960" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -g2" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.1119314960" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -g2 -mfpu=neon -mfloat-abi=hard -flax-vector-conversions" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1950001316" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool command="arm-linux-gnueabihf-gcc" id="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug.516476567" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug">
@@ -274,6 +277,7 @@
 		<configuration configurationName="Release">
 			<resource resourceType="PROJECT" workspacePath="/testbed-v2"/>
 		</configuration>
+		<configuration configurationName="Release_BB"/>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/testbed-v2"/>
 		</configuration>

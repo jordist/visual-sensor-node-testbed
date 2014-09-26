@@ -176,11 +176,6 @@ void NodeManager::notify_msg(Message *msg){
 			datc_param.num_cooperators = ((StartDATCMsg*)msg)->getNumCooperators();
 			cur_state = ACTIVE;
 
-			//transmit start DATC will delete the message
-			vector<uchar> temp1;
-			if(msg->getBitStream(temp1)<=0)
-				cout << "errore!" << endl;
-
 			offloading_manager->transmitStartDATC((StartDATCMsg*)msg);
 			DATC_processing_thread();
 			break;

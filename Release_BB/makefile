@@ -56,7 +56,7 @@ all: testbed-v2
 testbed-v2: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MacOS X C++ Linker'
-	arm-linux-gnueabihf-g++ -L/home/greeneyes/OpenCV-Install/2.4.9-arm/lib -L/home/greeneyes/boost-arm/lib -o "testbed-v2" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-linux-gnueabihf-g++ -L/home/greeneyes/OpenCV-Install/2.4.9-arm/lib -L/home/greeneyes/boost-arm/lib -Xlinker -rpath='/home/debian/boost-arm/lib' -Xlinker -rpath='/home/debian/opencv-arm/lib' -o "testbed-v2" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -230,10 +230,10 @@ struct BRISK_descParams:descParams{
 		if( rankingFile.compare("")==0 ) // use the default ranking files
 		{
 			if ( BRISK_LENGTH_BITS == 512 ){
-				filename = "/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/MultimediaSystem/thirdparty/coder/brisk/ranking_original_optimized512.bin";
+				filename = "util/brisk/ranking_original_optimized512.bin";
 			}
 			else if (BRISK_LENGTH_BITS == 256 ){
-				filename = "/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/MultimediaSystem/thirdparty/coder/brisk/ranking_original_optimized256.bin";
+				filename = "util/brisk/ranking_original_optimized256.bin";
 			}
 		}
 		else{

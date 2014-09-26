@@ -45,8 +45,11 @@
 #include "thirdparty/agast/include/agast/agast7_12s.h"
 #include "thirdparty/agast/include/agast/agast5_8.h"
 #include <stdlib.h>
-//#include <arm_neon.h>
-//#define uint8x16_to_8x8x2(v) ((uint8x8x2_t) { vget_low_u8(v), vget_high_u8(v) })
+
+#ifdef __arm__
+#include <arm_neon.h>
+#define uint8x16_to_8x8x2(v) ((uint8x8x2_t) { vget_low_u8(v), vget_high_u8(v) })
+#endif
 //#include <tmmintrin.h>
 
 
@@ -136,8 +139,7 @@ void BriskDescriptorExtractor::generateKernel(std::vector<float> &radiusList,
 
 	const float sigma_scale=1.3;
 
-	lookup_t=fopen("lookup.brisk","rb");
-	lookup_t = NULL;
+	lookup_t=fopen("util/brisk/lookup.brisk","rb");
 
 	if (lookup_t!=NULL)
 	{
@@ -203,7 +205,7 @@ void BriskDescriptorExtractor::generateKernel(std::vector<float> &radiusList,
 		}
 
 		/*** Open a file in binary mode and save data ***/
-		lookup_t=fopen("lookup.brisk","wb");
+		lookup_t=fopen("util/brisk/lookup.brisk","wb");
 
 		if (!lookup_t)
 		{
@@ -233,8 +235,7 @@ void BriskDescriptorExtractor::generateKernel(std::vector<float> &radiusList,
 	noShortPairs_=0;
 	noLongPairs_=0;
 
-	pairs_t=fopen("pairs.brisk","rb");
-	pairs_t = NULL;
+	pairs_t=fopen("util/brisk/pairs.brisk","rb");
 
 	if (pairs_t!=NULL)
 	{
@@ -339,47 +340,47 @@ void BriskDescriptorExtractor::generateKernel(std::vector<float> &radiusList,
 				}
 			}
 		}
-//		for(unsigned int i= 1; i<points_; i++){
-//			for(unsigned int j= 0; j<i; j++){ //(find all the pairs)
-//
-//				cn++;
-//				//check if the current pair index is in the input index list
-//				for(unsigned int cnIt=0;cnIt<pairs.size();cnIt++){
-//					if(pairs[cnIt]==cn){
-//						present=1;
-//					}
-//				}
-//
-//
-//				// point pair distance:
-//				const float dx=patternPoints_[j].x-patternPoints_[i].x;
-//				const float dy=patternPoints_[j].y-patternPoints_[i].y;
-//				const float norm_sq=(dx*dx+dy*dy);
-//
-//				if(norm_sq>dMin_sq){
-//					// save to long pairs
-//					BriskLongPair& longPair=longPairs_[noLongPairs_];
-//					longPair.weighted_dx=int((dx/(norm_sq))*2048.0+0.5);
-//					longPair.weighted_dy=int((dy/(norm_sq))*2048.0+0.5);
-//					longPair.i = i;
-//					longPair.j = j;
-//					++noLongPairs_;
-//					//std::cout << "j = " << j << " , i = " << i << std::endl;
-//				}
-//				if (present==1){
-//					// save to short pairs
-//					assert(noShortPairs_<indSize); // make sure the user passes something sensible
-//					BriskShortPair& shortPair = shortPairs_[indexChange[noShortPairs_]];
-//					shortPair.j = j;
-//					shortPair.i = i;
-//					//std::cout << i << " " << j << std::endl;
-//					//pointUsed[i] = 1;
-//					//pointUsed[j] = 1;
-//					++noShortPairs_;
-//				}
-//				present = 0;
-//			}
-//		}
+		//		for(unsigned int i= 1; i<points_; i++){
+		//			for(unsigned int j= 0; j<i; j++){ //(find all the pairs)
+		//
+		//				cn++;
+		//				//check if the current pair index is in the input index list
+		//				for(unsigned int cnIt=0;cnIt<pairs.size();cnIt++){
+		//					if(pairs[cnIt]==cn){
+		//						present=1;
+		//					}
+		//				}
+		//
+		//
+		//				// point pair distance:
+		//				const float dx=patternPoints_[j].x-patternPoints_[i].x;
+		//				const float dy=patternPoints_[j].y-patternPoints_[i].y;
+		//				const float norm_sq=(dx*dx+dy*dy);
+		//
+		//				if(norm_sq>dMin_sq){
+		//					// save to long pairs
+		//					BriskLongPair& longPair=longPairs_[noLongPairs_];
+		//					longPair.weighted_dx=int((dx/(norm_sq))*2048.0+0.5);
+		//					longPair.weighted_dy=int((dy/(norm_sq))*2048.0+0.5);
+		//					longPair.i = i;
+		//					longPair.j = j;
+		//					++noLongPairs_;
+		//					//std::cout << "j = " << j << " , i = " << i << std::endl;
+		//				}
+		//				if (present==1){
+		//					// save to short pairs
+		//					assert(noShortPairs_<indSize); // make sure the user passes something sensible
+		//					BriskShortPair& shortPair = shortPairs_[indexChange[noShortPairs_]];
+		//					shortPair.j = j;
+		//					shortPair.i = i;
+		//					//std::cout << i << " " << j << std::endl;
+		//					//pointUsed[i] = 1;
+		//					//pointUsed[j] = 1;
+		//					++noShortPairs_;
+		//				}
+		//				present = 0;
+		//			}
+		//		}
 
 		//std::cout << "-----------" << std::endl;
 		// no bits:
@@ -388,7 +389,7 @@ void BriskDescriptorExtractor::generateKernel(std::vector<float> &radiusList,
 		//strings_= noShortPairs_;
 
 		/*** Open a file in binary mode and save data ***/
-		pairs_t=fopen("pairs.brisk","wb");
+		pairs_t=fopen("util/brisk/pairs.brisk","wb");
 
 		if (!pairs_t)
 		{
@@ -779,10 +780,10 @@ void BriskDescriptorExtractor::computeImpl(const Mat& image,
 			t2=*(_values+iter->j);
 			//if(k==0){
 
-				//int ti = shortPairs_[tc].i;
-				//int tj = shortPairs_[tc].j;
+			//int ti = shortPairs_[tc].i;
+			//int tj = shortPairs_[tc].j;
 
-				/*if(t1>t2)
+			/*if(t1>t2)
 					std::cout << ti<< " " << tj << "->" << 1 << std::endl;
 					//std::cout  << 1 << std::endl;
 				else
@@ -805,11 +806,11 @@ void BriskDescriptorExtractor::computeImpl(const Mat& image,
 
 
 			/*if(t1>t2){
-				*ptr2=1;
+			 *ptr2=1;
 				ptr2++;
 			}
 			else{
-				*ptr2=0;
+			 *ptr2=0;
 				ptr2++;
 			}*/
 		}
@@ -1321,9 +1322,9 @@ __inline__ float BriskScaleSpace::refine3D(const uint8_t layer,
 			const float r0=(1.5-scale)/.5;
 			const float r1=1.0-r0;
 			x=(r0*delta_x_layer+r1*delta_x_above+float(x_layer))
-							*thisLayer.scale()+thisLayer.offset();
+											*thisLayer.scale()+thisLayer.offset();
 			y=(r0*delta_y_layer+r1*delta_y_above+float(y_layer))
-							*thisLayer.scale()+thisLayer.offset();
+											*thisLayer.scale()+thisLayer.offset();
 		}
 		else{
 			if(layer==0){
@@ -1338,9 +1339,9 @@ __inline__ float BriskScaleSpace::refine3D(const uint8_t layer,
 				const float r0=(scale-0.75)/0.25;
 				const float r_1=1.0-r0;
 				x=(r0*delta_x_layer+r_1*delta_x_below+float(x_layer))
-								*thisLayer.scale()+thisLayer.offset();
+												*thisLayer.scale()+thisLayer.offset();
 				y=(r0*delta_y_layer+r_1*delta_y_below+float(y_layer))
-								*thisLayer.scale()+thisLayer.offset();
+												*thisLayer.scale()+thisLayer.offset();
 			}
 		}
 	}
@@ -1378,18 +1379,18 @@ __inline__ float BriskScaleSpace::refine3D(const uint8_t layer,
 			const float r0=4.0-scale*3.0;
 			const float r1=1.0-r0;
 			x=(r0*delta_x_layer+r1*delta_x_above+float(x_layer))
-							*thisLayer.scale()+thisLayer.offset();
+											*thisLayer.scale()+thisLayer.offset();
 			y=(r0*delta_y_layer+r1*delta_y_above+float(y_layer))
-							*thisLayer.scale()+thisLayer.offset();
+											*thisLayer.scale()+thisLayer.offset();
 		}
 		else{
 			// interpolate the position:
 			const float r0=scale*3.0-2.0;
 			const float r_1=1.0-r0;
 			x=(r0*delta_x_layer+r_1*delta_x_below+float(x_layer))
-							*thisLayer.scale()+thisLayer.offset();
+											*thisLayer.scale()+thisLayer.offset();
 			y=(r0*delta_y_layer+r_1*delta_y_below+float(y_layer))
-							*thisLayer.scale()+thisLayer.offset();
+											*thisLayer.scale()+thisLayer.offset();
 		}
 	}
 
@@ -1615,19 +1616,19 @@ __inline__ float BriskScaleSpace::getScoreMaxBelow(const uint8_t layer,
 						+layerBelow.getAgastScore(x+1,y,1)
 						+layerBelow.getAgastScore(x,y+1,1)
 						+layerBelow.getAgastScore(x,y-1,1))
-								+(layerBelow.getAgastScore(x+1,y+1,1)
-										+layerBelow.getAgastScore(x-1,y+1,1)
-										+layerBelow.getAgastScore(x+1,y-1,1)
-										+layerBelow.getAgastScore(x-1,y-1,1));
+												+(layerBelow.getAgastScore(x+1,y+1,1)
+														+layerBelow.getAgastScore(x-1,y+1,1)
+														+layerBelow.getAgastScore(x+1,y-1,1)
+														+layerBelow.getAgastScore(x-1,y-1,1));
 				const int t2=2*(
 						layerBelow.getAgastScore(max_x-1,max_y,1)
 						+layerBelow.getAgastScore(max_x+1,max_y,1)
 						+layerBelow.getAgastScore(max_x,max_y+1,1)
 						+layerBelow.getAgastScore(max_x,max_y-1,1))
-								+(layerBelow.getAgastScore(max_x+1,max_y+1,1)
-										+layerBelow.getAgastScore(max_x-1,max_y+1,1)
-										+layerBelow.getAgastScore(max_x+1,max_y-1,1)
-										+layerBelow.getAgastScore(max_x-1,max_y-1,1));
+												+(layerBelow.getAgastScore(max_x+1,max_y+1,1)
+														+layerBelow.getAgastScore(max_x-1,max_y+1,1)
+														+layerBelow.getAgastScore(max_x+1,max_y-1,1)
+														+layerBelow.getAgastScore(max_x-1,max_y-1,1));
 				if(t1>t2){
 					max_x = x;
 					max_y = y;
@@ -2140,137 +2141,136 @@ inline void BriskLayer::halfsample(const cv::Mat& srcimg, cv::Mat& dstimg){
 	// make sure the destination image is of the right size:
 	assert(srcimg.cols/2==dstimg.cols);
 	assert(srcimg.rows/2==dstimg.rows);
+#ifdef __arm__
+	const unsigned int leftoverCols = ((srcimg.cols%16)/2);// take care with border...
+	const bool noleftover = (srcimg.cols%16)==0; // note: leftoverCols can be zero but this still false...
 
+
+
+	// mask needed later:
+	//register __m128i mask = _mm_set_epi32 (0x00FF00FF, 0x00FF00FF, 0x00FF00FF, 0x00FF00FF);
+	int32x4_t mask = vdupq_n_s32(0x00FF00FF);
+	// to be added in order to make successive averaging correct:
+	int32x4_t ones = vdupq_n_s32(0x11111111);
+	// data pointers:
+	int32_t* p1=(int32_t*)srcimg.data;
+	int32_t* p2=(int32_t*)(srcimg.data+srcimg.cols);
+	int32_t* p_dest=(int32_t*)dstimg.data;
+	unsigned char* p_dest_char;//=(unsigned char*)p_dest;
+	// size:
+	const unsigned int size = (srcimg.cols*srcimg.rows)/16;
+	const unsigned int hsize = srcimg.cols/16;
+	int32_t* p_end=p1+size*4;
+	unsigned int row=0;
+	const unsigned int end=hsize/2;
+	bool half_end;
+	if(hsize%2==0)
+		half_end=false;
+	else
+		half_end=true;
+	while(p2<p_end){
+		for(unsigned int i=0; i<end;i++){
+			// load the two blocks of memory:
+			int32x4_t upper;
+			int32x4_t lower;
+			upper=vld1q_s32(p1);
+			lower=vld1q_s32(p2);
+
+			//result1=vaddq_s32(upper, ones);
+			int32x4_t result1=vrhaddq_u8(upper, lower);
+
+			// increment the pointers:
+			p1=p1+4;
+			p2=p2+4;
+
+			// load the two blocks of memory:
+			upper=vld1q_s32(p1);
+			lower=vld1q_s32(p2);
+			//int32x4_t result2=vaddq_s32(upper, ones);
+			int32x4_t result2=vrhaddq_u8(upper, lower);
+			// calculate the shifted versions:
+			int32x4_t result1_shifted = vextq_u8(result1,vmovq_n_u8(0),1);
+
+			//if(i==1)
+			//print128_numhex(result1_shifted);
+			int32x4_t result2_shifted = vextq_u8(result2,vmovq_n_u8(0),1);
+			// pack:
+			int32x4_t result= vcombine_u8(vqmovn_u16(vandq_u32(result1, mask)),
+					vqmovn_u16(vandq_u32 (result2, mask)));
+			int32x4_t result_shifted =  vcombine_u8(vqmovn_u16(vandq_u32 (result1_shifted, mask)),
+					vqmovn_u16(vandq_u32(result2_shifted, mask)));
+			// average for the second time:
+			result=vrhaddq_u8(result,result_shifted);
+
+			// store to memory
+			vst1q_s32(p_dest, result);
+
+			// increment the pointers:
+			p1=p1+4;
+			p2=p2+4;
+			p_dest=p_dest+4;
+			//p_dest_char=(unsigned char*)p_dest;
+		}
+		// if we are not at the end of the row, do the rest:
+		if(half_end){
+			// load the two blocks of memory:
+			int32x4_t upper;
+			int32x4_t lower;
+			if(noleftover){
+				upper=vld1q_s32(p1);
+				lower=vld1q_s32(p2);
+			}
+			else{
+				upper=vld1q_s32(p1);
+				lower=vld1q_s32(p2);
+			}
+
+			int32x4_t result1=vqaddq_s32(upper, ones);
+			result1=vrhaddq_u8(upper, lower);
+
+			// increment the pointers:
+			p1=p1+4;
+			p2=p2+4;
+
+			// compute horizontal pairwise average and store
+			p_dest_char=(unsigned char*)p_dest;
+			const UCHAR_ALIAS* result=(UCHAR_ALIAS*)&result1;
+			for(unsigned int j=0; j<8; j++){
+				*(p_dest_char++)=(*(result+2*j)+*(result+2*j+1))/2;
+			}
+			//p_dest_char=(unsigned char*)p_dest;
+		}
+		else{
+			p_dest_char=(unsigned char*)p_dest;
+		}
+
+		if(noleftover){
+			row++;
+			p_dest=(int32_t*)(dstimg.data+row*dstimg.cols);
+			p1=(int32_t*)(srcimg.data+2*row*srcimg.cols);
+			//p2=(__m128i*)(srcimg.data+(2*row+1)*srcimg.cols);
+			//p1+=hsize;
+			p2=p1+hsize*4;
+		}
+		else{
+			//std::cout<<"entra nell'else" << std::endl;
+			const unsigned char* p1_src_char=(unsigned char*)(p1);
+			const unsigned char* p2_src_char=(unsigned char*)(p2);
+			for(unsigned int k=0; k<leftoverCols; k++){
+				unsigned int tmp = p1_src_char[k]+p1_src_char[k+1]+
+						p2_src_char[k]+p2_src_char[k+1];
+				*(p_dest_char++)=(unsigned char)(tmp/4);
+			}
+			// done with the two rows:
+			row++;
+			p_dest=(int32_t*)(dstimg.data+row*dstimg.cols);
+			p1=(int32_t*)(srcimg.data+2*row*srcimg.cols);
+			p2=(int32_t*)(srcimg.data+(2*row+1)*srcimg.cols);
+		}
+	}
+#else
 	resize(srcimg, dstimg, dstimg.size(), 0, 0, INTER_LINEAR);
-
-	/*const unsigned int leftoverCols = ((srcimg.cols%16)/2);// take care with border...
-	    const bool noleftover = (srcimg.cols%16)==0; // note: leftoverCols can be zero but this still false...
-
-
-
-	    // mask needed later:
-	    //register __m128i mask = _mm_set_epi32 (0x00FF00FF, 0x00FF00FF, 0x00FF00FF, 0x00FF00FF);
-	    int32x4_t mask = vdupq_n_s32(0x00FF00FF);
-	    // to be added in order to make successive averaging correct:
-	    int32x4_t ones = vdupq_n_s32(0x11111111);
-	    // data pointers:
-	    int32_t* p1=(int32_t*)srcimg.data;
-	    int32_t* p2=(int32_t*)(srcimg.data+srcimg.cols);
-	    int32_t* p_dest=(int32_t*)dstimg.data;
-	    unsigned char* p_dest_char;//=(unsigned char*)p_dest;
-	    // size:
-	    const unsigned int size = (srcimg.cols*srcimg.rows)/16;
-	    const unsigned int hsize = srcimg.cols/16;
-	    int32_t* p_end=p1+size*4;
-	    unsigned int row=0;
-	    const unsigned int end=hsize/2;
-	    bool half_end;
-	    if(hsize%2==0)
-	        half_end=false;
-	    else
-	        half_end=true;
-	    while(p2<p_end){
-	        for(unsigned int i=0; i<end;i++){
-	            // load the two blocks of memory:
-	            int32x4_t upper;
-	            int32x4_t lower;
-	                upper=vld1q_s32(p1);
-	                lower=vld1q_s32(p2);
-
-	            //result1=vaddq_s32(upper, ones);
-	            int32x4_t result1=vrhaddq_u8(upper, lower);
-
-	            // increment the pointers:
-	            p1=p1+4;
-	            p2=p2+4;
-
-	            // load the two blocks of memory:
-	            upper=vld1q_s32(p1);
-	            lower=vld1q_s32(p2);
-	            //int32x4_t result2=vaddq_s32(upper, ones);
-	            int32x4_t result2=vrhaddq_u8(upper, lower);
-	            // calculate the shifted versions:
-	            int32x4_t result1_shifted = vextq_u8(result1,vmovq_n_u8(0),1);
-
-	            //if(i==1)
-	                        //print128_numhex(result1_shifted);
-	            int32x4_t result2_shifted = vextq_u8(result2,vmovq_n_u8(0),1);
-	            // pack:
-	            int32x4_t result= vcombine_u8(vqmovn_u16(vandq_u32(result1, mask)),
-	                    vqmovn_u16(vandq_u32 (result2, mask)));
-	            int32x4_t result_shifted =  vcombine_u8(vqmovn_u16(vandq_u32 (result1_shifted, mask)),
-	                    vqmovn_u16(vandq_u32(result2_shifted, mask)));
-	            // average for the second time:
-	            result=vrhaddq_u8(result,result_shifted);
-
-	            // store to memory
-	            vst1q_s32(p_dest, result);
-
-	            // increment the pointers:
-	            p1=p1+4;
-	            p2=p2+4;
-	            p_dest=p_dest+4;
-	            //p_dest_char=(unsigned char*)p_dest;
-	        }
-	        // if we are not at the end of the row, do the rest:
-	        if(half_end){
-	            // load the two blocks of memory:
-	            int32x4_t upper;
-	            int32x4_t lower;
-	            if(noleftover){
-	                upper=vld1q_s32(p1);
-	                lower=vld1q_s32(p2);
-	            }
-	            else{
-	                upper=vld1q_s32(p1);
-	                lower=vld1q_s32(p2);
-	            }
-
-	            int32x4_t result1=vqaddq_s32(upper, ones);
-	            result1=vrhaddq_u8(upper, lower);
-
-	            // increment the pointers:
-	            p1=p1+4;
-	            p2=p2+4;
-
-	            // compute horizontal pairwise average and store
-	            p_dest_char=(unsigned char*)p_dest;
-	            const UCHAR_ALIAS* result=(UCHAR_ALIAS*)&result1;
-	            for(unsigned int j=0; j<8; j++){
-	 *(p_dest_char++)=(*(result+2*j)+*(result+2*j+1))/2;
-	            }
-	            //p_dest_char=(unsigned char*)p_dest;
-	        }
-	        else{
-	            p_dest_char=(unsigned char*)p_dest;
-	        }
-
-	        if(noleftover){
-	            row++;
-	            p_dest=(int32_t*)(dstimg.data+row*dstimg.cols);
-	            p1=(int32_t*)(srcimg.data+2*row*srcimg.cols);
-	            //p2=(__m128i*)(srcimg.data+(2*row+1)*srcimg.cols);
-	            //p1+=hsize;
-	            p2=p1+hsize*4;
-	        }
-	        else{
-	            //std::cout<<"entra nell'else" << std::endl;
-	            const unsigned char* p1_src_char=(unsigned char*)(p1);
-	            const unsigned char* p2_src_char=(unsigned char*)(p2);
-	            for(unsigned int k=0; k<leftoverCols; k++){
-	                unsigned int tmp = p1_src_char[k]+p1_src_char[k+1]+
-	                        p2_src_char[k]+p2_src_char[k+1];
-	 *(p_dest_char++)=(unsigned char)(tmp/4);
-	            }
-	            // done with the two rows:
-	            row++;
-	            p_dest=(int32_t*)(dstimg.data+row*dstimg.cols);
-	            p1=(int32_t*)(srcimg.data+2*row*srcimg.cols);
-	            p2=(int32_t*)(srcimg.data+(2*row+1)*srcimg.cols);
-	        }
-	    }*/
-
-
+#endif
 
 }
 
@@ -2280,117 +2280,119 @@ inline void BriskLayer::twothirdsample(const cv::Mat& srcimg, cv::Mat& dstimg){
 	assert((srcimg.cols/3)*2==dstimg.cols);
 	assert((srcimg.rows/3)*2==dstimg.rows);
 
-	resize(srcimg, dstimg, dstimg.size(), 0, 0, INTER_LINEAR);
 
-	/*
+
+#ifdef __arm__
 	const unsigned short leftoverCols = ((srcimg.cols/3)*3)%15;// take care with border...
 
 
-	    uint8x16_t mask1 =  {0x80,0x80,0x80,0x80,0x80,0x80,0x80,12,0x80,10,0x80,7,0x80,4,0x80,1};
-	    uint8x16_t mask2 =  {0x80,0x80,0x80,0x80,0x80,0x80,12,0x80,10,0x80,7,0x80,4,0x80,1,0x80};
-	    uint8x16_t mask =  {0x80,0x80,0x80,0x80,0x80,0x80,14,12,11,9,8,6,5,3,2,0};
-	    uint8x16_t store_mask = {0,0,0,0,0,0,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80};
+	uint8x16_t mask1 =  {0x80,0x80,0x80,0x80,0x80,0x80,0x80,12,0x80,10,0x80,7,0x80,4,0x80,1};
+	uint8x16_t mask2 =  {0x80,0x80,0x80,0x80,0x80,0x80,12,0x80,10,0x80,7,0x80,4,0x80,1,0x80};
+	uint8x16_t mask =  {0x80,0x80,0x80,0x80,0x80,0x80,14,12,11,9,8,6,5,3,2,0};
+	uint8x16_t store_mask = {0,0,0,0,0,0,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80};
 
-	    // data pointers:
-	    unsigned char* p1=srcimg.data;
-	    unsigned char* p2=p1+srcimg.cols;
-	    unsigned char* p3=p2+srcimg.cols;
-	    unsigned char* p_dest1 = dstimg.data;
-	    unsigned char* p_dest2 = p_dest1+dstimg.cols;
-	    unsigned char* p_end=p1+(srcimg.cols*srcimg.rows);
+	// data pointers:
+	unsigned char* p1=srcimg.data;
+	unsigned char* p2=p1+srcimg.cols;
+	unsigned char* p3=p2+srcimg.cols;
+	unsigned char* p_dest1 = dstimg.data;
+	unsigned char* p_dest2 = p_dest1+dstimg.cols;
+	unsigned char* p_end=p1+(srcimg.cols*srcimg.rows);
 
-	    unsigned int row=0;
-	    unsigned int row_dest=0;
-	    int hsize = srcimg.cols/15;
-	    while(p3<p_end){
-	        for(int i=0; i<hsize; i++){
-	            // load three rows
-	            uint8x16_t first = vld1q_u8((uint8_t*)p1);
-	            uint8x16_t second = vld1q_u8((uint8_t*)p2);
-	            uint8x16_t third = vld1q_u8((uint8_t*)p3);
-
-
-	            // upper row:
-	            uint8x16_t upper = vrhaddq_u8(vrhaddq_u8(first,second),first);
-
-	            uint8x16_t temp1_upper = vorrq_u16(
-	                    vcombine_u8(
-	                      vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(upper), vget_high_u8(mask1))), vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(upper),vget_low_u8(mask1)))
-	                           ),
-	                    vcombine_u8(
-	                      vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(upper), vget_high_u8(mask2))), vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(upper), vget_low_u8(mask2)))
-	                           )
-	                         );
-	            uint8x16_t temp2_upper=vcombine_u8(vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(upper), vget_high_u8(mask))), vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(upper), vget_low_u8(mask))));
-	            uint8x16_t result_upper = vrhaddq_u8(vrhaddq_u8(temp2_upper,temp1_upper),temp2_upper);
+	unsigned int row=0;
+	unsigned int row_dest=0;
+	int hsize = srcimg.cols/15;
+	while(p3<p_end){
+		for(int i=0; i<hsize; i++){
+			// load three rows
+			uint8x16_t first = vld1q_u8((uint8_t*)p1);
+			uint8x16_t second = vld1q_u8((uint8_t*)p2);
+			uint8x16_t third = vld1q_u8((uint8_t*)p3);
 
 
-	            // lower row:
-	            uint8x16_t lower = vrhaddq_u8(vrhaddq_u8(third,second),third);
-	            uint8x16_t temp1_lower = vorrq_u16(
-	                    vcombine_u8(
-	                      vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(lower), vget_high_u8(mask1))), vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(lower),vget_low_u8(mask1)))
-	                           ),
-	                    vcombine_u8(
-	                      vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(lower), vget_high_u8(mask2))), vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(lower), vget_low_u8(mask2)))
-	                           )
-	                         );
-	            uint8x16_t temp2_lower=vcombine_u8(vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(lower), vget_high_u8(mask))), vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(lower), vget_low_u8(mask))));
-	            uint8x16_t result_lower = vrhaddq_u8(vrhaddq_u8(temp2_lower,temp1_lower),temp2_lower);
+			// upper row:
+			uint8x16_t upper = vrhaddq_u8(vrhaddq_u8(first,second),first);
 
-	            // store:
-	            if(i*10+16>dstimg.cols){
-	                uint8x16_t tmp_dest1 = vld1q_u8((uint8_t*)p_dest1);
-	                vbslq_u8(tmp_dest1,result_upper,store_mask);
-	                vst1q_u8((uint8_t*)p_dest1,tmp_dest1);
-	                uint8x16_t tmp_dest2 = vld1q_u8((uint8_t*)p_dest2);
-	                vbslq_u8(tmp_dest2,result_lower,store_mask);
-	                vst1q_u8((uint8_t*)p_dest2,tmp_dest2);
-	            }
-	            else{
-	                                vst1q_u8((uint8_t*)p_dest1,result_upper);
-	                vst1q_u8((uint8_t*)p_dest2,result_lower);
-	            }
-
-	            // shift pointers:
-	            p1+=15;
-	            p2+=15;
-	            p3+=15;
-	            p_dest1+=10;
-	            p_dest2+=10;
-	        }
-
-	        // fill the remainder:
-	        for(unsigned int j = 0; j<leftoverCols;j+=3){
-	            const unsigned short A1=*(p1++);
-	            const unsigned short A2=*(p1++);
-	            const unsigned short A3=*(p1++);
-	            const unsigned short B1=*(p2++);
-	            const unsigned short B2=*(p2++);
-	            const unsigned short B3=*(p2++);
-	            const unsigned short C1=*(p3++);
-	            const unsigned short C2=*(p3++);
-	            const unsigned short C3=*(p3++);
-
-	 *(p_dest1++)=(unsigned char)(((4*A1+2*(A2+B1)+B2)/9)&0x00FF);
-	 *(p_dest1++)=(unsigned char)(((4*A3+2*(A2+B3)+B2)/9)&0x00FF);
-	 *(p_dest2++)=(unsigned char)(((4*C1+2*(C2+B1)+B2)/9)&0x00FF);
-	 *(p_dest2++)=(unsigned char)(((4*C3+2*(C2+B3)+B2)/9)&0x00FF);
-	        }
+			uint8x16_t temp1_upper = vorrq_u16(
+					vcombine_u8(
+							vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(upper), vget_high_u8(mask1))), vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(upper),vget_low_u8(mask1)))
+					),
+					vcombine_u8(
+							vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(upper), vget_high_u8(mask2))), vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(upper), vget_low_u8(mask2)))
+					)
+			);
+			uint8x16_t temp2_upper=vcombine_u8(vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(upper), vget_high_u8(mask))), vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(upper), vget_low_u8(mask))));
+			uint8x16_t result_upper = vrhaddq_u8(vrhaddq_u8(temp2_upper,temp1_upper),temp2_upper);
 
 
-	        // increment row counter:
-	        row+=3;
-	        row_dest+=2;
+			// lower row:
+			uint8x16_t lower = vrhaddq_u8(vrhaddq_u8(third,second),third);
+			uint8x16_t temp1_lower = vorrq_u16(
+					vcombine_u8(
+							vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(lower), vget_high_u8(mask1))), vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(lower),vget_low_u8(mask1)))
+					),
+					vcombine_u8(
+							vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(lower), vget_high_u8(mask2))), vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(lower), vget_low_u8(mask2)))
+					)
+			);
+			uint8x16_t temp2_lower=vcombine_u8(vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(lower), vget_high_u8(mask))), vrev64_u8(vtbl2_u8(uint8x16_to_8x8x2(lower), vget_low_u8(mask))));
+			uint8x16_t result_lower = vrhaddq_u8(vrhaddq_u8(temp2_lower,temp1_lower),temp2_lower);
 
-	        // reset pointers
-	        p1=srcimg.data+row*srcimg.cols;
-	        p2=p1+srcimg.cols;
-	        p3=p2+srcimg.cols;
-	        p_dest1 = dstimg.data+row_dest*dstimg.cols;
-	        p_dest2 = p_dest1+dstimg.cols;
-	    }
+			// store:
+			if(i*10+16>dstimg.cols){
+				uint8x16_t tmp_dest1 = vld1q_u8((uint8_t*)p_dest1);
+				vbslq_u8(tmp_dest1,result_upper,store_mask);
+				vst1q_u8((uint8_t*)p_dest1,tmp_dest1);
+				uint8x16_t tmp_dest2 = vld1q_u8((uint8_t*)p_dest2);
+				vbslq_u8(tmp_dest2,result_lower,store_mask);
+				vst1q_u8((uint8_t*)p_dest2,tmp_dest2);
+			}
+			else{
+				vst1q_u8((uint8_t*)p_dest1,result_upper);
+				vst1q_u8((uint8_t*)p_dest2,result_lower);
+			}
 
-	 */
+			// shift pointers:
+			p1+=15;
+			p2+=15;
+			p3+=15;
+			p_dest1+=10;
+			p_dest2+=10;
+		}
+
+		// fill the remainder:
+		for(unsigned int j = 0; j<leftoverCols;j+=3){
+			const unsigned short A1=*(p1++);
+			const unsigned short A2=*(p1++);
+			const unsigned short A3=*(p1++);
+			const unsigned short B1=*(p2++);
+			const unsigned short B2=*(p2++);
+			const unsigned short B3=*(p2++);
+			const unsigned short C1=*(p3++);
+			const unsigned short C2=*(p3++);
+			const unsigned short C3=*(p3++);
+
+			*(p_dest1++)=(unsigned char)(((4*A1+2*(A2+B1)+B2)/9)&0x00FF);
+			*(p_dest1++)=(unsigned char)(((4*A3+2*(A2+B3)+B2)/9)&0x00FF);
+			*(p_dest2++)=(unsigned char)(((4*C1+2*(C2+B1)+B2)/9)&0x00FF);
+			*(p_dest2++)=(unsigned char)(((4*C3+2*(C2+B3)+B2)/9)&0x00FF);
+		}
+
+
+		// increment row counter:
+		row+=3;
+		row_dest+=2;
+
+		// reset pointers
+		p1=srcimg.data+row*srcimg.cols;
+		p2=p1+srcimg.cols;
+		p3=p2+srcimg.cols;
+		p_dest1 = dstimg.data+row_dest*dstimg.cols;
+		p_dest2 = p_dest1+dstimg.cols;
+	}
+
+#else
+	resize(srcimg, dstimg, dstimg.size(), 0, 0, INTER_LINEAR);
+#endif
 
 }
