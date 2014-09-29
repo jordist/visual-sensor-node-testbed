@@ -6,7 +6,10 @@
 
 using namespace std;
 
-RadioSystem::RadioSystem(NodeManager* nm, MessageParser* m){
+
+
+
+RadioSystem::RadioSystem(NodeManager* nm, MessageParser* m, string ip_address, string port){
 	nodeManager_ptr = nm;
 	msg_parser = m;
 	incoming_message_queue_ptr = new IncomingMessageQueue(this,msg_parser);
@@ -25,7 +28,7 @@ RadioSystem::RadioSystem(NodeManager* nm, MessageParser* m){
 		telosbRadioSystem_ptr->setIncomingMessageQueue(incoming_message_queue_ptr);
 
 #ifdef __arm__
-		tcp::resolver::query query("10.42.0.3", "2345");
+		tcp::resolver::query query(ip_address, port);
 #else
 		tcp::resolver::query query("localhost", "2345");
 #endif
@@ -35,7 +38,7 @@ RadioSystem::RadioSystem(NodeManager* nm, MessageParser* m){
 	case COOPERATOR:
 	{
 #ifdef __arm__
-		tcp::resolver::query query("10.42.0.3", "2345");
+		tcp::resolver::query query(ip_address, port);
 #else
 		tcp::resolver::query query("localhost", "2345");
 #endif

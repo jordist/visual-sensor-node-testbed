@@ -16,6 +16,7 @@ using namespace std;
 
 int main(int argc, char ** argv){
 
+
 	NodeType type;
 	if(strcmp(argv[1],"sink")==0){
 		type = SINK;
@@ -40,7 +41,7 @@ int main(int argc, char ** argv){
 		//create the main components
 		nodeMng  = new NodeManager(SINK);
 		msg_parser = new MessageParser();
-		radioSys = new RadioSystem(nodeMng, msg_parser);
+		radioSys = new RadioSystem(nodeMng, msg_parser,argv[3],argv[4]);
 		taskMng  = new TaskManager(nodeMng);
 
 
@@ -68,7 +69,7 @@ int main(int argc, char ** argv){
 	case CAMERA:{
 		nodeMng  = new NodeManager(CAMERA);
 		msg_parser = new MessageParser();
-		radioSys = new RadioSystem(nodeMng,msg_parser);
+		radioSys = new RadioSystem(nodeMng,msg_parser,argv[3],argv[4]);
 		taskMng  = new TaskManager(nodeMng);
 		//connMng = new ConnectionManager();
 
@@ -93,7 +94,7 @@ int main(int argc, char ** argv){
 	case COOPERATOR:{
 		nodeMng  = new NodeManager(COOPERATOR);
 		msg_parser = new MessageParser();
-		radioSys = new RadioSystem(nodeMng,msg_parser);
+		radioSys = new RadioSystem(nodeMng,msg_parser,argv[3],argv[4]);
 		taskMng  = new TaskManager(nodeMng);
 		//connMng = new ConnectionManager();
 

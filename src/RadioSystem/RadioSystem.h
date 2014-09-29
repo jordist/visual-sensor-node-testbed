@@ -18,7 +18,7 @@ using boost::asio::ip::tcp;
 class RadioSystem{
 
 public:
-	RadioSystem(NodeManager *nm, MessageParser* m);
+	RadioSystem(NodeManager *nm, MessageParser* m, string ip_address, string port);
 	/*void set_nodeManager(NodeManager *nm){
 		nodeManager_ptr = nm;
 		cout << "RS node manager set " << nm << endl;
