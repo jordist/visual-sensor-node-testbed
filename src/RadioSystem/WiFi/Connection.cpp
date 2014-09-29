@@ -46,7 +46,7 @@ void Connection::readHeader()
 {
 	cout << "Ready to read from client..." << endl;
 	//read wifi packet header and then read the rest of the message
-	socket_.async_read_some(
+	async_read(socket_,
 			boost::asio::buffer(header_, sizeof(header_)),
 			boost::bind(&Connection::handleReadMessage, this, boost::asio::placeholders::error));
 }
@@ -62,7 +62,7 @@ void Connection::handleReadMessage(const boost::system::error_code& ec)
 	{
 		cout << "Received new message header" << endl;
 
-		Header* h = message_parser->parseHeader(header_);
+		h = message_parser->parseHeader(header_);
 		//Header h = parseHeader(header_);
 		cout << h << endl;
 
@@ -71,29 +71,45 @@ void Connection::handleReadMessage(const boost::system::error_code& ec)
 			stop();
 		}
 
-		uchar data[h->getPayloadSize()];
+		//uchar data[h->getPayloadSize()];
+		readBuffer_.clear();
+		readBuffer_.resize(h->getPayloadSize());
 		boost::system::error_code ec;
 
 		//read the payload
-		socket_.read_some(
-				boost::asio::buffer(data, h->getPayloadSize()), ec);
+		/*socket_.read_some(
+				boost::asio::buffer(data, h->getPayloadSize()), ec);*/
 
-		Message* msg;
+		async_read(socket_,boost::asio::buffer(readBuffer_, h->getPayloadSize()),
+				boost::bind(&Connection::parseMessage, this,
+						boost::asio::placeholders::error,
+						boost::asio::placeholders::bytes_transferred));
 
-		if(!ec){
+		/*if(!ec){
 			Message* msg = message_parser->parseMessage(h,data,this);
 			node_manager->notify_msg(msg);
 			readHeader();
 		}
 		else{
 			connection_manager_.stop(this);
-		}
+		}*/
 	}
 	else{
 		connection_manager_.stop(this);
 	}
 }
 
+void Connection::parseMessage(const boost::system::error_code& error, size_t bytes_transferred){
+	if(!error){
+		Message* msg = message_parser->parseMessage(h,&readBuffer_[0],this);
+		node_manager->notify_msg(msg);
+		//delete(h);
+		readHeader();
+	}
+	else{
+		connection_manager_.stop(this);
+	}
+}
 
 
 void Connection::handle_write(const boost::system::error_code& e)
@@ -115,6 +131,7 @@ void Connection::handle_write(const boost::system::error_code& e)
 
 void Connection::writeMsg(Message* msg){
 
+
 	vector<uchar> temp1;
 	vector<uchar> temp2;
 
@@ -132,15 +149,38 @@ void Connection::writeMsg(Message* msg){
 	//write payload
 	out.insert( out.end(), temp1.begin(), temp1.end() );
 
-	boost::asio::write(socket_, boost::asio::buffer(out, out.size()));
+	size_t out_length = out.size();
+	boost::asio::write(socket_, boost::asio::buffer(out, out_length));
 	std::cout << "writing to: " << socket_.remote_endpoint().address().to_string() << std::endl;
 	std::cout << "writing to: " << socket_.remote_endpoint().port() << std::endl;
 	std::cout << out.size() << std::endl;
 
+	/*boost::asio::async_write(socket_,
+				boost::asio::buffer(out),
+				boost::bind(&Connection::data_sent_handler, this, boost::asio::placeholders::error));
+
+	std::cout << "writing to: " << socket_.remote_endpoint().address().to_string() << std::endl;
+	std::cout << "writing to: " << socket_.remote_endpoint().port() << std::endl;
+	std::cout << out.size() << std::endl;*/
 	//if(ignored_error!=0){
 	//	std::cout << "tx error" << std::endl;
 	//}
 }
 
+void Connection::data_sent_handler(const boost::system::error_code& ec){
+
+	cout << "data written..." << endl;
+	if (!ec){
+		//		  heartbeat_timer_.expires_from_now(boost::posix_time::seconds(1));
+		// heartbeat_timer_.async_wait(boost::bind(&client::start_processing, this));
+	}
+	else{
+		std::cout << "Error on sending data: " << ec.message() << "\n";
+		stop();
+	}
+
+	cout << "ok" << endl;
+
+}
 
 

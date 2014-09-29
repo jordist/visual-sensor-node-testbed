@@ -620,10 +620,10 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	}
 	slice = imdecode(jpeg_bitstream,CV_LOAD_IMAGE_GRAYSCALE);
 
-	//namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
-	//imshow( "Display window", slice );                   // Show our image inside it.
+	/*namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
+	imshow( "Display window", slice );                   // Show our image inside it.
 
-	//waitKey(0);                                          // Wait for a keystroke in the window*/
+	waitKey(0);                                          // Wait for a keystroke in the window*/
 
 	// Extract the keypoints
 	cur_task = new ExtractKeypointsTask(extractor,slice,datc_param.detection_threshold);

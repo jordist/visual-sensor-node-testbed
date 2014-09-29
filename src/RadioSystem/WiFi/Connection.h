@@ -51,12 +51,16 @@ public:
 private:
 	/// Handle completion of a read operation.
 
+	void data_sent_handler(const boost::system::error_code& ec);
 
 	void handleReadMessage(const boost::system::error_code& ec);
 	Header parseHeader(uchar data[]);
 
 	/// Handle completion of a write operation.
 	void handle_write(const boost::system::error_code& e);
+
+	void parseMessage(const boost::system::error_code& error, size_t bytes_transferred);
+
 
 	/// Socket for the connection.
 	boost::asio::ip::tcp::socket socket_;
@@ -70,10 +74,13 @@ private:
 
 	uchar header_[HEADER_SIZE];
 	vector<uchar> out;
+	vector<uchar> readBuffer_;
+	Header* h;
 
 
 	NodeManager* node_manager;
 	MessageParser* message_parser;
+
 
 	/// The incoming request.
 	//request request_;

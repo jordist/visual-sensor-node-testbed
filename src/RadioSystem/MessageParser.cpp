@@ -67,8 +67,8 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 					(long)rval.consumed);
 			exit(65); /* better, EX_DATAERR */
 		} else {
-			fprintf(stdout,"Printing msg as XML...\n");
-			xer_fprint(stdout, &asn_DEF_StartCTAMessage, internal_message);
+			//fprintf(stdout,"Printing msg as XML...\n");
+			//xer_fprint(stdout, &asn_DEF_StartCTAMessage, internal_message);
 		}
 
 		break;
