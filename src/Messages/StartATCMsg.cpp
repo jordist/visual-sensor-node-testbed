@@ -28,7 +28,7 @@ StartATCMsg::StartATCMsg(int fps, DetectorTypes_t det, double det_thr, Descripto
 	internal_msg->transferScale = transfer_scale;
 	internal_msg->transferOrientation = transfer_orientation;
     internal_msg->numFeaturesPerBlock = num_feat_per_block;
-	xer_fprint(stdout, &asn_DEF_StartATCMessage, internal_msg);
+	//xer_fprint(stdout, &asn_DEF_StartATCMessage, internal_msg);
 }
 StartATCMsg::StartATCMsg(StartATCMessage_t* internal_message){
 	msg_type = START_ATC_MESSAGE;

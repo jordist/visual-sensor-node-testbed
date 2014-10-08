@@ -51,6 +51,7 @@ NodeManager::NodeManager(NodeType nt){
 	default:
 		break;
 	}
+	cur_state = IDLE;
 	received_notifications = 0;
 	outgoing_msg_seq_num = 255;
 }
@@ -93,10 +94,13 @@ void NodeManager::notify_msg(Message *msg){
 			//update system state and start cta processing
 			cta_param.quality_factor = ((StartCTAMsg*)msg)->getQualityFactor();
 			cta_param.num_slices = ((StartCTAMsg*)msg)->getNumSlices();
-			cur_state = ACTIVE;
 
 			//m_thread = boost::thread(&NodeManager::CTA_processing_thread, this);
-			CTA_processing_thread();
+
+			if(cur_state==IDLE){
+				cur_state = ACTIVE;
+				CTA_processing_thread();
+			}
 			delete(msg);
 			break;
 		}
@@ -134,11 +138,13 @@ void NodeManager::notify_msg(Message *msg){
 			atc_param.transmit_scale = ((StartATCMsg*)msg)->getTransferScale();
 
 			atc_param.num_feat_per_block = ((StartATCMsg*)msg)->getNumFeatPerBlock();
-			cur_state = ACTIVE;
 
 			//if camera, start ATC processing with ATC params
 			//m_thread = boost::thread(&NodeManager::ATC_processing_thread, this);
-			ATC_processing_thread();
+			if(cur_state == IDLE){
+				cur_state = ACTIVE;
+				ATC_processing_thread();
+			}
 			delete(msg);
 			break;
 		}
@@ -174,10 +180,13 @@ void NodeManager::notify_msg(Message *msg){
 
 			datc_param.num_feat_per_block = ((StartDATCMsg*)msg)->getNumFeatPerBlock();
 			datc_param.num_cooperators = ((StartDATCMsg*)msg)->getNumCooperators();
-			cur_state = ACTIVE;
 
-			offloading_manager->transmitStartDATC((StartDATCMsg*)msg);
-			DATC_processing_thread();
+
+			if(cur_state==IDLE){
+				cur_state = ACTIVE;
+				offloading_manager->transmitStartDATC((StartDATCMsg*)msg);
+				DATC_processing_thread();
+			}
 			break;
 		}
 		case COOPERATOR:
@@ -195,7 +204,9 @@ void NodeManager::notify_msg(Message *msg){
 
 			datc_param.num_feat_per_block = ((StartDATCMsg*)msg)->getNumFeatPerBlock();
 			datc_param.num_cooperators = ((StartDATCMsg*)msg)->getNumCooperators();
-			cur_state = WAITING_LOAD;
+			if(cur_state == IDLE){
+				cur_state = ACTIVE;
+			}
 			delete(msg);
 		}
 		}
@@ -381,6 +392,7 @@ void NodeManager::CTA_processing_thread(){
 		msg->setSource(1);
 		msg->setDestination(0);
 		sendMessage(msg);
+		cur_state = IDLE;
 
 	}
 	cout << "NM: exiting the CTA thread TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT" << endl;
@@ -492,7 +504,7 @@ void NodeManager::ATC_processing_thread(){
 			}
 
 			vector<KeyPoint> sub_kpts(&kpts[beg],&kpts[end]);
-			cur_task = new EncodeKeypointsTask(encoder,sub_kpts,640,480,true);
+			cur_task = new EncodeKeypointsTask(encoder,sub_kpts,640,480,true,1);
 			taskManager_ptr->addTask(cur_task);
 			//cout << "NM: Waiting the end of the encode_kpts_task" << endl;
 			while(!cur_task->completed){
@@ -516,6 +528,7 @@ void NodeManager::ATC_processing_thread(){
 
 		}
 	}
+	cur_state = IDLE;
 	cout << "NM: exiting the ATC thread QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ" << endl;
 
 
@@ -527,8 +540,6 @@ void NodeManager::DATC_processing_thread(){
 	boost::mutex monitor;
 	boost::mutex::scoped_lock lk(monitor);
 	Task *cur_task;
-
-	//first of all broadcast the start datc to cooperators
 
 
 	// Acquire the image
@@ -555,16 +566,37 @@ void NodeManager::DATC_processing_thread(){
 
 	//create offloading task
 	offloading_manager->createOffloadingTask(datc_param.num_cooperators);
-	//probe links (should become a task)
-	offloading_manager->probeLinks();
-	//sort cooperators in descending order of bandwidth (should become a task?)
-	offloading_manager->sortCooperators();
+
+	cur_task = new ProbeAndSortLinkTask(offloading_manager);
+	taskManager_ptr->addTask(cur_task);
+	cout << "NM: Waiting the end of the probe_link_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	cout << "NM: ended probe_link_task" << endl;
+	delete((ProbeAndSortLinkTask*)cur_task);
+
 	//compute loads (should become a task)
-	//here one should check what king of offloading algorithm should be called
-	Mat myLoad = offloading_manager->computeLoads(image);
+	//here one should check what kind of offloading algorithm should be called
+	cur_task = new ComputeLoadsTask(offloading_manager,image);
+	taskManager_ptr->addTask(cur_task);
+	cout << "NM: Waiting the end of the compute_loads_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	cout << "NM: ended compute_loads_task" << endl;
+	Mat myLoad = ((ComputeLoadsTask*)cur_task)->getMyLoad();
+	delete((ComputeLoadsTask*)cur_task);
 
 	//transmit loads (should become a task)
-	offloading_manager->transmitLoads();
+	cur_task = new TransmitLoadsTask(offloading_manager);
+	taskManager_ptr->addTask(cur_task);
+	cout << "NM: Waiting the end of the transmit_loads_task" << endl;
+	while(!cur_task->completed){
+		cur_task_finished.wait(lk);
+	}
+	cout << "NM: ended transmit_loads_task" << endl;
+	delete((TransmitLoadsTask*)cur_task);
 
 	// Extract the keypoints of own load
 	cur_task = new ExtractKeypointsTask(extractor,myLoad,atc_param.detection_threshold);
@@ -652,7 +684,7 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	Mat features = ((ExtractFeaturesTask*)cur_task)->getFeatures();
 	kpts = ((ExtractFeaturesTask*)cur_task)->getKeypoints();
 	double descTime = ((ExtractFeaturesTask*)cur_task)->getDescTime();
-	cout << "now extracted " << (int)kpts.size() << "keypoints" << endl;
+	cout << "now extracted " << (int)kpts.size() << " keypoints" << endl;
 	delete((ExtractFeaturesTask*)cur_task);
 
 	//features serialization
@@ -669,7 +701,7 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	double fencTime = ((EncodeFeaturesTask*)cur_task)->getEncodingTime();
 	delete((EncodeFeaturesTask*)cur_task);
 
-	cur_task = new EncodeKeypointsTask(encoder,kpts,640,480,true);
+	cur_task = new EncodeKeypointsTask(encoder,kpts,640,480,true,0);
 	taskManager_ptr->addTask(cur_task);
 	//cout << "NM: Waiting the end of the encode_kpts_task" << endl;
 	while(!cur_task->completed){
@@ -728,7 +760,7 @@ void NodeManager::DATC_store_features(DataATCMsg* msg){
 		kp_bitstream.push_back(kpbuf[i]);
 	}
 
-	cur_task = new DecodeKeypointsTask(decoder,kp_bitstream,640,480,true);
+	cur_task = new DecodeKeypointsTask(decoder,kp_bitstream,640,480,true,0);
 	taskManager_ptr->addTask(cur_task);
 	cout << "NM: Waiting the end of the decode_kpts_task" << endl;
 	while(!cur_task->completed){
@@ -749,8 +781,10 @@ void NodeManager::DATC_store_features(DataATCMsg* msg){
 	delete((DecodeFeaturesTask*)cur_task);
 
 	//put the features somewhere
+
 	offloading_manager->addKeypointsAndFeatures(keypoints,features,msg->getTcpConnection(),
 			msg->getDetTime(),msg->getDescTime(),msg->getKptsEncodingTime(),msg->getFeatEncodingTime());
+
 }
 
 void NodeManager::notifyCooperatorOnline(Connection* cn){
@@ -780,6 +814,7 @@ void NodeManager::notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features
 	Task *cur_task;
 	//prepare the ATC_DATA message and sends it to the SINK
 	//ugly... put into a task!
+	cout << "cutting: kpts size "<< kpts.size() << "feat size" << features.rows << endl;
 	extractor->cutFeatures(kpts,features,atc_param.max_features);
 	if(kpts.size()>0){
 
@@ -796,6 +831,7 @@ void NodeManager::notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features
 			beg = i*atc_param.num_feat_per_block;
 			end = min((int)(unsigned int)kpts.size(), (int)(beg+atc_param.num_feat_per_block));
 
+			cout << "here" << beg << " "<< end << endl;
 			Mat features_sub = features.rowRange(beg,end);
 
 			if(atc_param.coding == CodingChoices_none){
@@ -822,7 +858,7 @@ void NodeManager::notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features
 			}
 
 			vector<KeyPoint> sub_kpts(&kpts[beg],&kpts[end]);
-			cur_task = new EncodeKeypointsTask(encoder,sub_kpts,640,480,true);
+			cur_task = new EncodeKeypointsTask(encoder,sub_kpts,640,480,true,1);
 			taskManager_ptr->addTask(cur_task);
 			//cout << "NM: Waiting the end of the encode_kpts_task" << endl;
 			while(!cur_task->completed){
@@ -845,5 +881,5 @@ void NodeManager::notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features
 
 		}
 	}
-
+	cur_state = IDLE;
 }

@@ -104,7 +104,7 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 			exit(65); /* better, EX_DATAERR */
 		} else {
 			fprintf(stdout,"Printing msg as XML...\n");
-			xer_fprint(stdout, &asn_DEF_StartATCMessage, internal_message);
+			//xer_fprint(stdout, &asn_DEF_StartATCMessage, internal_message);
 		}
 
 		break;
@@ -139,8 +139,8 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 					(long)rval.consumed);
 			exit(65); /* better, EX_DATAERR */
 		} else {
-			fprintf(stdout,"Printing msg as XML...\n");
-			xer_fprint(stdout, &asn_DEF_StartDATCMessage, internal_message);
+			//fprintf(stdout,"Printing msg as XML...\n");
+			//xer_fprint(stdout, &asn_DEF_StartDATCMessage, internal_message);
 		}
 
 		break;
@@ -175,8 +175,8 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 					(long)rval.consumed);
 			exit(65); /* better, EX_DATAERR */
 		} else {
-			fprintf(stdout,"Printing msg as XML...\n");
-			xer_fprint(stdout, &asn_DEF_DataCTAMessage, internal_message);
+			//fprintf(stdout,"Printing msg as XML...\n");
+			//xer_fprint(stdout, &asn_DEF_DataCTAMessage, internal_message);
 		}
 
 		break;
@@ -211,8 +211,8 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 					(long)rval.consumed);
 			exit(65); /* better, EX_DATAERR */
 		} else {
-			fprintf(stdout,"Printing msg as XML...\n");
-			xer_fprint(stdout, &asn_DEF_DataATCMessage, internal_message);
+			//fprintf(stdout,"Printing msg as XML...\n");
+			//xer_fprint(stdout, &asn_DEF_DataATCMessage, internal_message);
 		}
 
 		break;
@@ -246,8 +246,8 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 					(long)rval.consumed);
 			exit(65); /* better, EX_DATAERR */
 		} else {
-			fprintf(stdout,"Printing msg as XML...\n");
-			xer_fprint(stdout, &asn_DEF_CooperatorInfo, internal_message);
+			//fprintf(stdout,"Printing msg as XML...\n");
+			//xer_fprint(stdout, &asn_DEF_CooperatorInfo, internal_message);
 		}
 		break;
 	}

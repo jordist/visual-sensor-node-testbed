@@ -149,8 +149,8 @@ int VisualFeatureDecoding::dummy_decodeKeyPoints(vector<uchar> bitstream, vector
 	int nFloats = (nBytes/sizeof(float)); // total number of floats
 
 	// fill the vector of decoded keypoints
-	for(int i=0; i<nFloats; i=i+3){
-		kpts.push_back( KeyPoint(float_kpts_bitstream[i],float_kpts_bitstream[i+1],float_kpts_bitstream[i+2]) );
+	for(int i=0; i<nFloats; i=i+5){
+		kpts.push_back( KeyPoint(float_kpts_bitstream[i],float_kpts_bitstream[i+1],float_kpts_bitstream[i+2],float_kpts_bitstream[i+3],float_kpts_bitstream[i+4]) );
 	}
 
 	return 0;

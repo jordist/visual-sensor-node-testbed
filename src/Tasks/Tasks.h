@@ -12,35 +12,38 @@
 #include <RadioSystem/WiFi/WiFiRadioSystem.h>
 
 
-
 using namespace std;
 using namespace cv;
 
 enum taskType {ACQUIRE_IMAGE_TASK,
-               SLICE_IMAGE_TASK,
-               ENCODE_SLICE_TASK,
-               DECODE_SLICE_TASK,
-               EXTRACT_KEYPOINTS_TASK,
-               EXTRACT_FEATURES_TASK,
-               ENCODE_KEYPOINTS_TASK,
-               ENCODE_FEATURES_TASK,
-               DECODE_KEYPOINTS_TASK,
-               DECODE_FEATURES_TASK,
-               SUBTRACT_BACKGROUND_TASK,
-               CONVERT_COLORSPACE_TASK,
-               SEND_MESSAGE_TASK,
-               SEND_WIFI_MESSAGE_TASK,
-               PROBE_LINK_TASK,
-               };
+	SLICE_IMAGE_TASK,
+	ENCODE_SLICE_TASK,
+	DECODE_SLICE_TASK,
+	EXTRACT_KEYPOINTS_TASK,
+	EXTRACT_FEATURES_TASK,
+	ENCODE_KEYPOINTS_TASK,
+	ENCODE_FEATURES_TASK,
+	DECODE_KEYPOINTS_TASK,
+	DECODE_FEATURES_TASK,
+	SUBTRACT_BACKGROUND_TASK,
+	CONVERT_COLORSPACE_TASK,
+	SEND_MESSAGE_TASK,
+	SEND_WIFI_MESSAGE_TASK,
+	PROBE_AND_SORT_LINK_TASK,
+	COMPUTE_LOADS_TASK,
+	TRANSMIT_LOADS_TASK,
+};
+
+class OffloadingManager;
 
 class Task{
 
 public:
 	virtual ~Task(){};
-	virtual void execute() = 0;
-	taskType type;
-	bool completed;
-	boost::mutex task_monitor;
+virtual void execute() = 0;
+taskType type;
+bool completed;
+boost::mutex task_monitor;
 };
 
 
@@ -153,9 +156,9 @@ private:
 
 public:
 	ExtractFeaturesTask(VisualFeatureExtraction *extractor_,
-			                 Mat &image_,
-			                 vector<KeyPoint> &keypoints_,
-			                 int max_features_){
+			Mat &image_,
+			vector<KeyPoint> &keypoints_,
+			int max_features_){
 		extractor = extractor_;
 		image = image_;
 		keypoints = keypoints_;
@@ -183,17 +186,19 @@ private:
 	bool encodeAngles;
 	vector<uchar> kptsBitstream;
 	double kencTime;
+	int method;
 public:
 	EncodeKeypointsTask(VisualFeatureEncoding *encoder_,
-			                 vector<KeyPoint> &keypoints_,
-			                 int imWidth_, int imHeight_,
-			                 bool encodeAngles_){
+			vector<KeyPoint> &keypoints_,
+			int imWidth_, int imHeight_,
+			bool encodeAngles_, int method_){
 		encoder = encoder_;
 		keypoints = keypoints_;
 		imWidth = imWidth_;
 		imHeight = imHeight_;
 		encodeAngles = encodeAngles_;
 		type = ENCODE_KEYPOINTS_TASK;
+		method = method_; // 0-> dummy, 1-> entropy coding
 		completed = false;
 	}
 	void execute();
@@ -215,9 +220,9 @@ private:
 	double fencTime;
 public:
 	EncodeFeaturesTask(VisualFeatureEncoding *encoder_,
-			                string descName_,
-							Mat &features_,
-							int method_){
+			string descName_,
+			Mat &features_,
+			int method_){
 		encoder = encoder_;
 		descName = descName_;
 		features = features_;
@@ -242,17 +247,19 @@ private:
 	int imWidth, imHeight;
 	bool decodeAngles;
 	vector<KeyPoint> keypoints;
+	int method;
 public:
 	DecodeKeypointsTask(VisualFeatureDecoding *decoder_,
-					      vector<uchar> &kptsBitstream_,
-					      int imWidth_, int imHeight_,
-						  bool decodeAngles_){
+			vector<uchar> &kptsBitstream_,
+			int imWidth_, int imHeight_,
+			bool decodeAngles_, int method_){
 		decoder = decoder_;
 		kptsBitstream = kptsBitstream_;
 		imWidth = imWidth_;
 		imHeight = imHeight_;
 		decodeAngles = decodeAngles_;
 		type = DECODE_KEYPOINTS_TASK;
+		method = method_; // 0-> dummy, 1-> entropy coding
 		completed = false;
 	}
 	void execute();
@@ -272,10 +279,10 @@ private:
 	Mat features;
 public:
 	DecodeFeaturesTask(VisualFeatureDecoding *decoder_,
-			                string descName_,
-			                vector<uchar> &featsBitstream_,
-							int method_,
-							int numFeatures_){
+			string descName_,
+			vector<uchar> &featsBitstream_,
+			int method_,
+			int numFeatures_){
 		decoder = decoder_;
 		descName = descName_;
 		featsBitstream = featsBitstream_;
@@ -298,7 +305,7 @@ private:
 	Mat croppedImage;
 public:
 	SubtractBackgroundTask(Mat &sourceImage_,
-			                    Mat &backgroundImage_){
+			Mat &backgroundImage_){
 		sourceImage = sourceImage_;
 		backgroundImage = backgroundImage_;
 		type = SUBTRACT_BACKGROUND_TASK;
@@ -350,11 +357,43 @@ public:
 	void execute();
 };
 
-class ProbeLinkTask : public Task{
+class ProbeAndSortLinkTask : public Task{
 private:
+	OffloadingManager* offloading_mng;
 public:
-	ProbeLinkTask(){
-		type = PROBE_LINK_TASK;
+	ProbeAndSortLinkTask(OffloadingManager* om){
+		offloading_mng = om;
+		type = PROBE_AND_SORT_LINK_TASK;
+		completed = false;
+	}
+	void execute();
+};
+
+class ComputeLoadsTask : public Task{
+private:
+	OffloadingManager* offloading_mng;
+	Mat img;
+	Mat myLoad;
+public:
+	ComputeLoadsTask(OffloadingManager* om, Mat& image){
+		offloading_mng = om;
+		img = image;
+		type = COMPUTE_LOADS_TASK;
+		completed = false;
+	}
+	Mat getMyLoad(){
+		return myLoad;
+	}
+	void execute();
+};
+
+class TransmitLoadsTask : public Task{
+private:
+	OffloadingManager* offloading_mng;
+public:
+	TransmitLoadsTask(OffloadingManager* om){
+		offloading_mng = om;
+		type = TRANSMIT_LOADS_TASK;
 		completed = false;
 	}
 	void execute();

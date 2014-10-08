@@ -144,6 +144,8 @@ int VisualFeatureEncoding::dummy_encodeKeyPoints(vector<KeyPoint> kpts, vector<u
 		float x;
 		float y;
 		float size;
+		float angle;
+		float response;
 	} my_kpt;
 
 	// Array of keypoints
@@ -154,13 +156,15 @@ int VisualFeatureEncoding::dummy_encodeKeyPoints(vector<KeyPoint> kpts, vector<u
 		stream_kpts[i].x = kpts[i].pt.x;
 		stream_kpts[i].y = kpts[i].pt.y;
 		stream_kpts[i].size = kpts[i].size;
+		stream_kpts[i].angle = kpts[i].angle;
+		stream_kpts[i].response = kpts[i].response;
 	}
 
 	// Read the array as a vector of char
 	uchar *char_stream_kptsbitstream = (uchar*)&stream_kpts;
 
 	// Creation of the bitstream
-	int nBytes = kpts.size()*3*sizeof(float); // size of the bitstream (in bytes)
+	int nBytes = kpts.size()*5*sizeof(float); // size of the bitstream (in bytes)
 	for(int i=0; i<nBytes; i++){ // fill the bitstream
 		bitstream.push_back(char_stream_kptsbitstream[i]);
 	}

@@ -9,6 +9,7 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
+#include "RadioSystem/OffloadingManager.h"
 
 void AcquireImageTask::execute(){
 	cout << "executing the acquire_image_task" << endl;
@@ -78,13 +79,23 @@ void ExtractFeaturesTask::execute(){
 }
 
 void EncodeKeypointsTask::execute(){
-	kencTime = getTickCount();
-	encoder->encodeKeyPoints(keypoints,kptsBitstream,imWidth,imHeight,encodeAngles);
-	kencTime = (getTickCount()-kencTime)/getTickFrequency();
+	if(method==0){ // dummy
+		kencTime = getTickCount();
+		encoder->dummy_encodeKeyPoints(keypoints,kptsBitstream);
+		kencTime = (getTickCount()-kencTime)/getTickFrequency();
+
+	}
+	else{
+		kencTime = getTickCount();
+		encoder->encodeKeyPoints(keypoints,kptsBitstream,imWidth,imHeight,encodeAngles);
+		kencTime = (getTickCount()-kencTime)/getTickFrequency();
+	}
+
 	boost::mutex::scoped_lock lk(task_monitor);
 
 	cout << "TM: task executed" << endl;
 	completed = true;
+
 }
 
 void EncodeFeaturesTask::execute(){
@@ -113,7 +124,15 @@ void EncodeFeaturesTask::execute(){
 }
 
 void DecodeKeypointsTask::execute(){
-	decoder->decodeKeyPoints(kptsBitstream, keypoints,imWidth,imHeight,decodeAngles);
+	if(method == 0){
+		decoder->dummy_decodeKeyPoints(kptsBitstream, keypoints);
+		cout << "decoded " << keypoints.size() << " kpts cazzo" << endl;
+	}
+	else{
+		decoder->decodeKeyPoints(kptsBitstream, keypoints,imWidth,imHeight,decodeAngles);
+		cout << "decoded " << keypoints.size() << " kpts figa" << endl;
+
+	}
 	boost::mutex::scoped_lock lk(task_monitor);
 
 	cout << "TM: task executed" << endl;
@@ -291,26 +310,9 @@ void SendWiFiMessageTask::execute(){
 
 	Connection* dest = msg_to_send->getTcpConnection();
 	dest->writeMsg(msg_to_send);
+	boost::mutex::scoped_lock lk(task_monitor);
 	completed = true;
 
-	/*vector<uchar> out;
-		vector<uchar> temp1;
-		vector<uchar> temp2;
-
-		msg_to_send->getBitStream(temp1);
-
-		Header h(msg_to_send->getSource(), msg_to_send->getDestination(), msg_to_send->msg_type, 0, 1, msg_to_send->getSeqNum(), temp1.size());
-
-		temp2 = h.serialization();
-
-		out.reserve( temp1.size() + temp2.size() ); // preallocate memory
-		//write header
-		out.insert( out.end(), temp2.begin(), temp2.end() );
-		//write payload
-		out.insert( out.end(), temp1.begin(), temp1.end() );
-
-		boost::system::error_code ignored_error;
-		boost::asio::write(*msg_to_send->getSocket(),boost::asio::buffer(out),boost::asio::transfer_all(),  ignored_error);*/
 }
 
 void SendMessageTask::execute(){
@@ -436,5 +438,25 @@ void SendMessageTask::execute(){
 	completed = true;
 }
 
+void ProbeAndSortLinkTask::execute(){
+	offloading_mng->probeLinks();
+	offloading_mng->sortCooperators();
+	boost::mutex::scoped_lock lk(task_monitor);
+	cout << "TM: task executed" << endl;
+	completed = true;
+}
 
+void ComputeLoadsTask::execute(){
+	myLoad = offloading_mng->computeLoads(img);
+	boost::mutex::scoped_lock lk(task_monitor);
+	cout << "TM: task executed" << endl;
+	completed = true;
+}
+
+void TransmitLoadsTask::execute(){
+	offloading_mng->transmitLoads();
+	boost::mutex::scoped_lock lk(task_monitor);
+	cout << "TM: task executed" << endl;
+	completed = true;
+}
 

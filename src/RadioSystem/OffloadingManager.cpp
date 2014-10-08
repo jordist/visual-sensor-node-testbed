@@ -166,11 +166,12 @@ void OffloadingManager::transmitLoads(){
 	vector<uchar> bitstream;
 	vector<int> param = vector<int>(2);
 	param[0] = CV_IMWRITE_JPEG_QUALITY;
-	param[1] = 100;
+	param[1] = 70;
 
 	for(int i=0;i<cooperators_to_use;i++){
 		double enc_time = getTickCount();
 		imencode(".jpg",cooperatorList[i].image_slice,bitstream,param);
+		//imencode(".bmp",cooperatorList[i].image_slice,bitstream);
 		enc_time = (getTickCount()-enc_time)/getTickFrequency();
 		Coordinate_t top_left;
 		top_left.xCoordinate = cooperatorList[i].col_offset;
@@ -220,11 +221,15 @@ void OffloadingManager::createOffloadingTask(int num_cooperators){
 	cooperators_to_use = num_cooperators;
 	features_buffer.release();
 	keypoint_buffer.clear();
+	//here we should start a timer that will check if data is received from cooperators
+	//if it expires, it should notify the node_manager anyway to prevent deadlocks.
 }
 
 void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& features, Connection* cn,
 		double detTime, double descTime, double kencTime, double fencTime){
 	features_buffer.push_back(features);
+
+	cout << "Adding " << kpts.size() << "keypoints to the buffer" << endl;
 
 	if(cn){
 		for(int i=0;i<cooperatorList.size();i++){
@@ -254,9 +259,6 @@ void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& feat
 			keypoint_buffer.push_back(kpts[j]);
 		}
 	}
-
-	//add
-
 
 	received_cooperators++;
 	if(received_cooperators == cooperators_to_use+1){

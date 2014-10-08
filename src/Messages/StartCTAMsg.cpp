@@ -31,7 +31,7 @@ StartCTAMsg::StartCTAMsg(int fps, int qf, int h, int w, int num_slices){
 	internal_msg->frameHeight = h;
 	internal_msg->frameWidth = w;
     internal_msg->numSlices = num_slices;
-	xer_fprint(stdout, &asn_DEF_StartCTAMessage, internal_msg);
+	//xer_fprint(stdout, &asn_DEF_StartCTAMessage, internal_msg);
 }
 StartCTAMsg::StartCTAMsg(StartCTAMessage_t* internal_message){
 	msg_type = START_CTA_MESSAGE;

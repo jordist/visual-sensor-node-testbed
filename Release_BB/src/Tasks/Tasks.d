@@ -1365,7 +1365,26 @@ src/Tasks/Tasks.d: ../src/Tasks/Tasks.cpp ../src/Tasks/Tasks.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/WiFiRadioSystem.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/ConnectionManager.h \
  /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/Connection.h \
- /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/Header.h
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/Header.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/OffloadingManager.h \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/opencv.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/imgproc/imgproc_c.h \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/photo/photo.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/photo/photo_c.h \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/video/video.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/video/tracking.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/video/background_segm.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/objdetect/objdetect.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/calib3d/calib3d.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/ml/ml.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/contrib/contrib.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/contrib/retina.hpp \
+ /home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/contrib/openfabmap.hpp \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/NodeManager/NodeManager.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/TaskManager/TaskManager.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/TaskManager/TaskQueue.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Tasks/Tasks.h \
+ /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/S2GInterface/S2GInterface.h
 
 ../src/Tasks/Tasks.h:
 
@@ -4102,3 +4121,41 @@ src/Tasks/Tasks.d: ../src/Tasks/Tasks.cpp ../src/Tasks/Tasks.h \
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/WiFi/Connection.h:
 
 /home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Messages/Header.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/RadioSystem/OffloadingManager.h:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/opencv.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/imgproc/imgproc_c.h:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/photo/photo.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/photo/photo_c.h:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/video/video.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/video/tracking.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/video/background_segm.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/objdetect/objdetect.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/calib3d/calib3d.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/ml/ml.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/contrib/contrib.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/contrib/retina.hpp:
+
+/home/greeneyes/OpenCV-Install/2.4.9-arm/include/opencv2/contrib/openfabmap.hpp:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/NodeManager/NodeManager.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/TaskManager/TaskManager.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/TaskManager/TaskQueue.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/Tasks/Tasks.h:
+
+/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/S2GInterface/S2GInterface.h:
