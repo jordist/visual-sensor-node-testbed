@@ -104,7 +104,9 @@ void S2GInterface::handle_read_message(const boost::system::error_code& ec)
 
 		if(!ec){
 			Message* msg = msg_parser->parseMessage(h,data);
-			node_manager->notify_msg(msg);
+			if(msg!=NULL)
+				node_manager->notify_msg(msg);
+
 			start_read_header();
 
 		}

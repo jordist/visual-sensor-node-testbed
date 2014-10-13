@@ -102,7 +102,8 @@ void Connection::handleReadMessage(const boost::system::error_code& ec)
 void Connection::parseMessage(const boost::system::error_code& error, size_t bytes_transferred){
 	if(!error){
 		Message* msg = message_parser->parseMessage(h,&readBuffer_[0],this);
-		node_manager->notify_msg(msg);
+		if(msg!=NULL)
+			node_manager->notify_msg(msg);
 		//delete(h);
 		readHeader();
 	}

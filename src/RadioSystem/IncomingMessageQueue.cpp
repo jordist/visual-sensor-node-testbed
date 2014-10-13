@@ -91,7 +91,7 @@ void IncomingMessageQueue::addPacketToQueue(int src_addr, int dst_addr, MessageT
 			if(packet_id > last_packet_id+1){
 				cout << "packet out of order" << endl;
 			}
-			//todo: delete entry
+
 		}
 
 
@@ -109,10 +109,14 @@ void IncomingMessageQueue::deserializeAndNotify(int cur_pos){
 
 	Header* h = new Header(src_addr,dst_addr,message_queue[cur_pos].message_type,0,0,0,message_queue[cur_pos].bitstream.size());
 	msg = msg_parser->parseMessage(h,&message_queue[cur_pos].bitstream[0]);
-	radio_system_ptr->notifyMsg(msg);
 
 	//erase the entry from the message queue once notified
+	cout << "IMQ: erasing entry" << endl;
 	message_queue.erase(message_queue.begin()+cur_pos);
+	cout << "IMQ: entry erased" << endl;
+
+	if(msg!=NULL)
+		radio_system_ptr->notifyMsg(msg);
 }
 
 

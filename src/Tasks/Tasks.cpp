@@ -375,12 +375,12 @@ void SendMessageTask::execute(){
 		serial_packet[7] = 0x47;
 
 		//src address
-		serial_packet[9] = (uchar)(msg_to_send->getSource()/256);
-		serial_packet[8] = (uchar)(msg_to_send->getSource()-serial_packet[9]*256);
+		serial_packet[8] = (uchar)(msg_to_send->getSource()/256);
+		serial_packet[9] = (uchar)(msg_to_send->getSource()-serial_packet[8]*256);
 
 		//dest address
-		serial_packet[11] = (uchar)(msg_to_send->getDestination()/256);
-		serial_packet[10] = (uchar)(msg_to_send->getDestination()-serial_packet[11]*256);
+		serial_packet[10] = (uchar)(msg_to_send->getDestination()/256);
+		serial_packet[11] = (uchar)(msg_to_send->getDestination()-serial_packet[10]*256);
 
 		serial_packet[12]  = msg_to_send->getSeqNum();
 
@@ -414,16 +414,13 @@ void SendMessageTask::execute(){
 		int count_resend = 0;
 
 		while(ret!=0 && count_resend<max_resend){
-			if(count_resend>0){
-				//cout << "Resending frame" << endl;
-			}
 			ret = write_serial_packet(telosb, serial_packet, radio_header_length+app_header_length + curFrameLength);
 			if (ret!=0 ){ //should be !=0 for certainty
 				//cout << "ERROR SENDING FRAME TO RADIO SUBSYSTEM!" << endl;
 				//cout << "RET " << ret << endl;
 				count_resend++;
 			}
-			//usleep(9500);
+			usleep(9500);
 		}
 
 		cout << "SMT: packet sent!" << endl;

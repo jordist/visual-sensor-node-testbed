@@ -33,6 +33,7 @@ public:
 	  return connections_;
   }
 
+
 private:
   /// The managed connections.
   std::set<Connection*> connections_;

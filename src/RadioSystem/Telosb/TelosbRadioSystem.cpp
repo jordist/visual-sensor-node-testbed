@@ -55,8 +55,8 @@ void TelosbRadioSystem::receiverThread(){
 		//READ PACKET HEADER
 		cout << "TRS: message received!" << endl;
 
-		int src_addr = *(unsigned short*)&packet[8];
-		int dst_addr = *(unsigned short*)&packet[10];
+		int src_addr = packet[8]*256+packet[9];
+		int dst_addr = packet[10]*256+packet[11];
 		MessageType message_type = static_cast<MessageType>(packet[17]);
 		int seq_num = static_cast<int>(packet[12]);
 		int num_packets = *(unsigned short*)&packet[13];
@@ -71,6 +71,9 @@ void TelosbRadioSystem::receiverThread(){
 		}
 
 		incoming_message_queue_ptr->addPacketToQueue(src_addr, dst_addr,message_type,seq_num,num_packets,packet_id,bitstream);
+
+		if(packet!=NULL)
+			free(packet);
 
 
 //		switch(message_type){

@@ -19,8 +19,8 @@ DataATCMsg::~DataATCMsg(){
 }
 
 DataATCMsg::DataATCMsg(int frameID, int blockNumber, int numBlocks, double detTime,
-		double descTime, double kptsEncTime, double featEncTime, vector<uchar>& features_data,
-		vector<uchar>& keypoints_data){
+		double descTime, double kptsEncTime, double featEncTime, int numFeat, int  numKpts,
+		vector<uchar>& features_data, vector<uchar>& keypoints_data){
 	msg_type = DATA_ATC_MESSAGE;
 	internal_msg = (DataATCMessage_t*) calloc(1, sizeof(*internal_msg));
 	assert(internal_msg);
@@ -31,6 +31,8 @@ DataATCMsg::DataATCMsg(int frameID, int blockNumber, int numBlocks, double detTi
 	internal_msg->descTime = descTime;
 	internal_msg->kencTime = kptsEncTime;
 	internal_msg->fencTime = featEncTime;
+	internal_msg->numFeat = numFeat;
+	internal_msg->numKpts = numKpts;
 	OCTET_STRING_t ft_data;
 	OCTET_STRING_t kp_data;
 
@@ -49,6 +51,14 @@ DataATCMsg::DataATCMsg(int frameID, int blockNumber, int numBlocks, double detTi
 DataATCMsg::DataATCMsg(DataATCMessage_t *internal_message){
 	msg_type = DATA_ATC_MESSAGE;
 	internal_msg = internal_message;
+}
+
+int DataATCMsg::getNumFeat(){
+	return internal_msg->numFeat;
+}
+
+int DataATCMsg::getNumKpts(){
+	return internal_msg->numKpts;
 }
 
 int DataATCMsg::getFrameId(){

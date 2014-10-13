@@ -73,8 +73,26 @@ static asn_TYPE_member_t asn_MBR_DataATCMessage_1[] = {
 		0,
 		"fencTime"
 		},
-	{ ATF_NOFLAGS, 0, offsetof(struct DataATCMessage, featuresData),
+	{ ATF_NOFLAGS, 0, offsetof(struct DataATCMessage, numFeat),
 		(ASN_TAG_CLASS_CONTEXT | (7 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_NativeInteger,
+		0,	/* Defer constraints checking to the member type */
+		0,	/* No PER visible constraints */
+		0,
+		"numFeat"
+		},
+	{ ATF_NOFLAGS, 0, offsetof(struct DataATCMessage, numKpts),
+		(ASN_TAG_CLASS_CONTEXT | (8 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_NativeInteger,
+		0,	/* Defer constraints checking to the member type */
+		0,	/* No PER visible constraints */
+		0,
+		"numKpts"
+		},
+	{ ATF_NOFLAGS, 0, offsetof(struct DataATCMessage, featuresData),
+		(ASN_TAG_CLASS_CONTEXT | (9 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_OCTET_STRING,
 		0,	/* Defer constraints checking to the member type */
@@ -83,7 +101,7 @@ static asn_TYPE_member_t asn_MBR_DataATCMessage_1[] = {
 		"featuresData"
 		},
 	{ ATF_NOFLAGS, 0, offsetof(struct DataATCMessage, kptsData),
-		(ASN_TAG_CLASS_CONTEXT | (8 << 2)),
+		(ASN_TAG_CLASS_CONTEXT | (10 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_OCTET_STRING,
 		0,	/* Defer constraints checking to the member type */
@@ -103,14 +121,16 @@ static asn_TYPE_tag2member_t asn_MAP_DataATCMessage_tag2el_1[] = {
     { (ASN_TAG_CLASS_CONTEXT | (4 << 2)), 4, 0, 0 }, /* descTime at 15 */
     { (ASN_TAG_CLASS_CONTEXT | (5 << 2)), 5, 0, 0 }, /* kencTime at 16 */
     { (ASN_TAG_CLASS_CONTEXT | (6 << 2)), 6, 0, 0 }, /* fencTime at 17 */
-    { (ASN_TAG_CLASS_CONTEXT | (7 << 2)), 7, 0, 0 }, /* featuresData at 18 */
-    { (ASN_TAG_CLASS_CONTEXT | (8 << 2)), 8, 0, 0 } /* kptsData at 19 */
+    { (ASN_TAG_CLASS_CONTEXT | (7 << 2)), 7, 0, 0 }, /* numFeat at 18 */
+    { (ASN_TAG_CLASS_CONTEXT | (8 << 2)), 8, 0, 0 }, /* numKpts at 19 */
+    { (ASN_TAG_CLASS_CONTEXT | (9 << 2)), 9, 0, 0 }, /* featuresData at 20 */
+    { (ASN_TAG_CLASS_CONTEXT | (10 << 2)), 10, 0, 0 } /* kptsData at 21 */
 };
 static asn_SEQUENCE_specifics_t asn_SPC_DataATCMessage_specs_1 = {
 	sizeof(struct DataATCMessage),
 	offsetof(struct DataATCMessage, _asn_ctx),
 	asn_MAP_DataATCMessage_tag2el_1,
-	9,	/* Count of tags in the map */
+	11,	/* Count of tags in the map */
 	0, 0, 0,	/* Optional elements (not needed) */
 	-1,	/* Start extensions */
 	-1	/* Stop extensions */
@@ -136,7 +156,7 @@ asn_TYPE_descriptor_t asn_DEF_DataATCMessage = {
 		/sizeof(asn_DEF_DataATCMessage_tags_1[0]), /* 1 */
 	0,	/* No PER visible constraints */
 	asn_MBR_DataATCMessage_1,
-	9,	/* Elements count */
+	11,	/* Elements count */
 	&asn_SPC_DataATCMessage_specs_1	/* Additional specs */
 };
 

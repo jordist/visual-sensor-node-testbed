@@ -54,6 +54,7 @@ NodeManager::NodeManager(NodeType nt){
 	cur_state = IDLE;
 	received_notifications = 0;
 	outgoing_msg_seq_num = 255;
+	frame_id = -1;
 }
 
 NodeType NodeManager::getNodeType(){
@@ -181,8 +182,8 @@ void NodeManager::notify_msg(Message *msg){
 			datc_param.num_feat_per_block = ((StartDATCMsg*)msg)->getNumFeatPerBlock();
 			datc_param.num_cooperators = ((StartDATCMsg*)msg)->getNumCooperators();
 
-
-			if(cur_state==IDLE){
+			int num_available_coop = offloading_manager->getNumAvailableCoop();
+			if(cur_state==IDLE && num_available_coop == ((StartDATCMsg*)msg)->getNumCooperators()){
 				cur_state = ACTIVE;
 				offloading_manager->transmitStartDATC((StartDATCMsg*)msg);
 				DATC_processing_thread();
@@ -204,9 +205,7 @@ void NodeManager::notify_msg(Message *msg){
 
 			datc_param.num_feat_per_block = ((StartDATCMsg*)msg)->getNumFeatPerBlock();
 			datc_param.num_cooperators = ((StartDATCMsg*)msg)->getNumCooperators();
-			if(cur_state == IDLE){
-				cur_state = ACTIVE;
-			}
+
 			delete(msg);
 		}
 		}
@@ -223,7 +222,11 @@ void NodeManager::notify_msg(Message *msg){
 		}
 		case COOPERATOR:{
 			cout << "it's a DATA CTA message" << endl;
-			DATC_processing_thread_cooperator((DataCTAMsg*)msg);
+
+			if(cur_state == IDLE){
+				cur_state = ACTIVE;
+				DATC_processing_thread_cooperator((DataCTAMsg*)msg);
+			}
 			delete(msg);
 			break;
 		}
@@ -326,6 +329,7 @@ void NodeManager::CTA_processing_thread(){
 	cout << "NM: ended acquire_image_task" << endl;
 	Mat image = ((AcquireImageTask*)cur_task)->getImage();
 	delete((AcquireImageTask*)cur_task);
+	frame_id++;
 
 
 	// Convert to gray-scale
@@ -387,7 +391,7 @@ void NodeManager::CTA_processing_thread(){
 		Coordinate_t top_left;
 		top_left.xCoordinate = 0;
 		top_left.yCoordinate = (480/cta_param.num_slices)*i;
-		DataCTAMsg *msg = new DataCTAMsg(0,i,top_left,slice_bitstream.size(),enc_time,slice_bitstream);
+		DataCTAMsg *msg = new DataCTAMsg(frame_id,i,top_left,slice_bitstream.size(),enc_time,slice_bitstream);
 
 		msg->setSource(1);
 		msg->setDestination(0);
@@ -419,6 +423,7 @@ void NodeManager::ATC_processing_thread(){
 	cout << "NM: ended acquire_image_task" << endl;
 	Mat image = ((AcquireImageTask*)cur_task)->getImage();
 	delete((AcquireImageTask*)cur_task);
+	frame_id++;
 
 	// Convert to gray-scale
 	cur_task = new ConvertColorspaceTask(image,0);
@@ -518,7 +523,7 @@ void NodeManager::ATC_processing_thread(){
 			cout << "and " << (int)(features_sub.rows) << "features" << endl;
 
 
-			DataATCMsg *msg = new DataATCMsg(0, i, num_blocks, detTime, descTime, kencTime, fencTime, block_ft_bitstream, block_kp_bitstream);
+			DataATCMsg *msg = new DataATCMsg(frame_id, i, num_blocks, detTime, descTime, kencTime, fencTime, features_sub.rows, sub_kpts.size(), block_ft_bitstream, block_kp_bitstream);
 			msg->setSource(1);
 			msg->setDestination(0);
 
@@ -552,6 +557,7 @@ void NodeManager::DATC_processing_thread(){
 	cout << "NM: ended acquire_image_task" << endl;
 	Mat image = ((AcquireImageTask*)cur_task)->getImage();
 	delete((AcquireImageTask*)cur_task);
+	frame_id++;
 
 	// Convert to gray-scale
 	cur_task = new ConvertColorspaceTask(image,0);
@@ -714,7 +720,7 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	cout << "sending " << (int)(kpts.size()) << "keypoints" << endl;
 	cout << "and " << (int)(features.rows) << "features" << endl;
 
-	DataATCMsg *atc_msg = new DataATCMsg(0, 0, 1, detTime, descTime, kencTime, fencTime, ft_bitstream, kp_bitstream);
+	DataATCMsg *atc_msg = new DataATCMsg(frame_id, 0, 1, detTime, descTime, kencTime, fencTime, features.rows, kpts.size(), ft_bitstream, kp_bitstream);
 	std::set<Connection*> connections = radioSystem_ptr->getWiFiConnections();
 	std::set<Connection*>::iterator it = connections.begin();
 	Connection* cn = *it;
@@ -730,6 +736,8 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	}
 	cout << "NM: exiting the wifi tx thread" << endl;
 	delete((SendWiFiMessageTask*)cur_task);
+
+	cur_state = IDLE;
 }
 
 void NodeManager::DATC_store_features(DataATCMsg* msg){
@@ -871,7 +879,7 @@ void NodeManager::notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features
 			cout << "and " << (int)(features_sub.rows) << "features" << endl;
 
 			//TODO: understand what to do with encoding times...
-			DataATCMsg *msg = new DataATCMsg(0, i, num_blocks, camDetTime, camDescTime, 0, 0, block_ft_bitstream, block_kp_bitstream);
+			DataATCMsg *msg = new DataATCMsg(frame_id, i, num_blocks, camDetTime, camDescTime, 0, 0, features_sub.rows, sub_kpts.size(), block_ft_bitstream, block_kp_bitstream);
 			msg->setSource(1);
 			msg->setDestination(0);
 

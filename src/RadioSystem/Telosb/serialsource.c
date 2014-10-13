@@ -726,6 +726,8 @@ static void read_and_process(serial_source src, int non_blocking)
 	  if (read_crc == computed_crc) 
 	    {
 	      process_packet(src, received, count - 2);
+	      //ALE HACK
+	      //free(received);
 	      return; /* give rest of world chance to do something */
 	    }
 	  else

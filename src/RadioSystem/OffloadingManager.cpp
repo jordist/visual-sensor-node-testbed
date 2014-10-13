@@ -12,6 +12,10 @@ bool bandwidthComp(cooperator i, cooperator j){
 	return (i.bandwidth > j.bandwidth);
 }
 
+int OffloadingManager::getNumAvailableCoop(){
+	return cooperatorList.size();
+}
+
 void OffloadingManager::addCooperator(Connection* c){
 	cooperator temp_coop;
 	temp_coop.connection = c;
@@ -87,11 +91,11 @@ Mat OffloadingManager::computeLoads(Mat& image){
 		c_2 = cooperatorList[1].bandwidth;
 		c_3 = cooperatorList[2].bandwidth;
 		camera_load = -(pow(F,2)*ovl*pow(v,2) + pow(H,2)*ovl*pow(v,2) - pow(F,2)*c_2*c_3 + 2*F*H*ovl*pow(v,2) + pow(F,2)*c_2*c_3*ovl + 2*pow(F,2)*c_2*ovl*v + pow(F,2)*c_3*ovl*v + 2*F*H*c_2*ovl*v + F*H*c_3*ovl*v)
-														/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
+																/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
 		cooperatorList[0].load = (pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*pow(F,2)*ovl*pow(v,2) + 2*pow(H,2)*ovl*pow(v,2) + 2*F*H*pow(v,2) + pow(F,2)*c_2*c_3 + pow(F,2)*c_2*v + pow(F,2)*c_3*v + 4*F*H*ovl*pow(v,2) - pow(F,2)*c_2*c_3*ovl + pow(F,2)*c_2*ovl*v + 2*pow(F,2)*c_3*ovl*v + F*H*c_2*v + F*H*c_3*v + F*H*c_2*ovl*v + 2*F*H*c_3*ovl*v)
-														/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
+																/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
 		cooperatorList[1].load = -(pow(F,2)*ovl*pow(v,2) + pow(H,2)*ovl*pow(v,2) - pow(F,2)*c_2*c_3 - pow(F,2)*c_2*v + 2*F*H*ovl*pow(v,2) + pow(F,2)*c_2*c_3*ovl - pow(F,2)*c_2*ovl*v + pow(F,2)*c_3*ovl*v - F*H*c_2*v - F*H*c_2*ovl*v + F*H*c_3*ovl*v)
-														/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
+																/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
 		cooperatorList[2].load = (pow(F,2)*c_2*c_3 + 3*pow(F,2)*c_2*c_3*ovl)/(pow(F,2)*pow(v,2) + pow(H,2)*pow(v,2) + 2*F*H*pow(v,2) + 4*pow(F,2)*c_2*c_3 + 2*pow(F,2)*c_2*v + pow(F,2)*c_3*v + 2*F*H*c_2*v + F*H*c_3*v);
 
 		s_0 = camera_load;
@@ -221,8 +225,19 @@ void OffloadingManager::createOffloadingTask(int num_cooperators){
 	cooperators_to_use = num_cooperators;
 	features_buffer.release();
 	keypoint_buffer.clear();
-	//here we should start a timer that will check if data is received from cooperators
+
+	//here we should start a timer that will check if data is received from all cooperators
 	//if it expires, it should notify the node_manager anyway to prevent deadlocks.
+	t.expires_from_now(boost::posix_time::seconds(2));
+	t.async_wait(boost::bind(&OffloadingManager::timerExpired, this, boost::asio::placeholders::error));
+}
+
+void OffloadingManager::startTimer(){
+	r_thread = boost::thread(&OffloadingManager::runThread, this);
+}
+void OffloadingManager::runThread(){
+	io.run();
+	cout << "out of io service" << endl;
 }
 
 void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& features, Connection* cn,
@@ -262,6 +277,21 @@ void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& feat
 
 	received_cooperators++;
 	if(received_cooperators == cooperators_to_use+1){
+		//data received from all cooperators: stop timer
+		t.cancel();
 		node_manager->notifyOffloadingCompleted(keypoint_buffer,features_buffer,camDetTime,camDescTime);
 	}
+
+}
+
+void OffloadingManager::timerExpired(const boost::system::error_code& error)
+{
+	//check the errorcode:
+	if(error != boost::asio::error::operation_aborted){
+		cout << "Offloading timer expired" << endl;
+		node_manager->notifyOffloadingCompleted(keypoint_buffer,features_buffer,camDetTime,camDescTime);
+	}
+	else
+		cout << "Data received, canceling timer" << endl;
+	//node_manager->notifyOffloadingCompleted(keypoint_buffer,features_buffer,camDetTime,camDescTime);
 }

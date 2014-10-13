@@ -95,6 +95,8 @@ private:
 	DATC_param_t datc_param;
 
 	unsigned short outgoing_msg_seq_num;
+	int frame_id;
+
 	RadioSystem *radioSystem_ptr;
 	TaskManager *taskManager_ptr;
 	S2GInterface *s2gInterface_ptr;

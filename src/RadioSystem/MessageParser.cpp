@@ -30,7 +30,7 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream){
 }
 
 Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn){
-	Message* msg;
+	Message* msg = 0;
 
 
 	switch(h->getMsgT()){
@@ -65,7 +65,9 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 			fprintf(stderr,
 					"Broken message encoding at byte %ld\n",
 					(long)rval.consumed);
-			exit(65); /* better, EX_DATAERR */
+			//exit(65); /* better, EX_DATAERR */
+			delete(msg);
+			msg = NULL;
 		} else {
 			//fprintf(stdout,"Printing msg as XML...\n");
 			//xer_fprint(stdout, &asn_DEF_StartCTAMessage, internal_message);
@@ -101,7 +103,9 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 			fprintf(stderr,
 					"Broken message encoding at byte %ld\n",
 					(long)rval.consumed);
-			exit(65); /* better, EX_DATAERR */
+			//exit(65); /* better, EX_DATAERR */
+			delete(msg);
+			msg = NULL;
 		} else {
 			fprintf(stdout,"Printing msg as XML...\n");
 			//xer_fprint(stdout, &asn_DEF_StartATCMessage, internal_message);
@@ -137,7 +141,9 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 			fprintf(stderr,
 					"Broken message encoding at byte %ld\n",
 					(long)rval.consumed);
-			exit(65); /* better, EX_DATAERR */
+			//exit(65); /* better, EX_DATAERR */
+			delete(msg);
+			msg = NULL;
 		} else {
 			//fprintf(stdout,"Printing msg as XML...\n");
 			//xer_fprint(stdout, &asn_DEF_StartDATCMessage, internal_message);
@@ -173,7 +179,9 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 			fprintf(stderr,
 					"Broken message encoding at byte %ld\n",
 					(long)rval.consumed);
-			exit(65); /* better, EX_DATAERR */
+			//exit(65); /* better, EX_DATAERR */
+			delete(msg);
+			msg = NULL;
 		} else {
 			//fprintf(stdout,"Printing msg as XML...\n");
 			//xer_fprint(stdout, &asn_DEF_DataCTAMessage, internal_message);
@@ -209,7 +217,9 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 			fprintf(stderr,
 					"Broken message encoding at byte %ld\n",
 					(long)rval.consumed);
-			exit(65); /* better, EX_DATAERR */
+			//exit(65); /* better, EX_DATAERR */
+			delete(msg);
+			msg = NULL;
 		} else {
 			//fprintf(stdout,"Printing msg as XML...\n");
 			//xer_fprint(stdout, &asn_DEF_DataATCMessage, internal_message);
@@ -244,7 +254,9 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 			fprintf(stderr,
 					"Broken message encoding at byte %ld\n",
 					(long)rval.consumed);
-			exit(65); /* better, EX_DATAERR */
+			//exit(65); /* better, EX_DATAERR */
+			delete(msg);
+			msg = NULL;
 		} else {
 			//fprintf(stdout,"Printing msg as XML...\n");
 			//xer_fprint(stdout, &asn_DEF_CooperatorInfo, internal_message);

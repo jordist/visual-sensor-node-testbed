@@ -10,6 +10,10 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include "NodeManager/NodeManager.h"
+#include <boost/asio.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
+
 
 using namespace std;
 using namespace cv;
@@ -38,10 +42,15 @@ typedef struct cooperator{
 
 class OffloadingManager{
 public:
-	OffloadingManager(NodeManager* nm){
+	OffloadingManager(NodeManager* nm):
+	io(),
+	t(io),
+	work(io)
+	{
 		cooperators_to_use = 0;
 		received_cooperators = 0;
 		node_manager = nm;
+		startTimer();
 	}
 
 	//add keypoints and features from cooperators
@@ -58,7 +67,10 @@ public:
 	void transmitStartDATC(StartDATCMsg* msg);
 	int probeLinks();
 	void sortCooperators();
-
+	void timerExpired(const boost::system::error_code& error);
+	void startTimer();
+	void runThread();
+	int getNumAvailableCoop();
 
 private:
 
@@ -70,8 +82,14 @@ private:
 	//used to store keypoints and features from cooperators
 	vector<KeyPoint> keypoint_buffer;
 	Mat features_buffer;
-
+	boost::thread r_thread;
 	double camDetTime, camDescTime, camkEncTime, camfEncTime;
+
+	boost::asio::io_service io;
+	//deadline timer for receiving data from all cooperators
+	boost::asio::deadline_timer t;
+	boost::asio::io_service::work work;
+
 
 };
 
