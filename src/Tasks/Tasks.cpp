@@ -410,7 +410,7 @@ void SendMessageTask::execute(){
 		cout << "SMT: packet ready" << endl;
 		//send (telosb only)
 		int ret = -1;
-		int max_resend   = 3;
+		int max_resend   = 7;
 		int count_resend = 0;
 
 		while(ret!=0 && count_resend<max_resend){
@@ -420,7 +420,7 @@ void SendMessageTask::execute(){
 				//cout << "RET " << ret << endl;
 				count_resend++;
 			}
-			usleep(9500);
+			//usleep(30000);
 		}
 
 		cout << "SMT: packet sent!" << endl;

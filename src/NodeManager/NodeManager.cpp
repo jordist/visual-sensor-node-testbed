@@ -183,7 +183,7 @@ void NodeManager::notify_msg(Message *msg){
 			datc_param.num_cooperators = ((StartDATCMsg*)msg)->getNumCooperators();
 
 			int num_available_coop = offloading_manager->getNumAvailableCoop();
-			if(cur_state==IDLE && num_available_coop == ((StartDATCMsg*)msg)->getNumCooperators()){
+			if(cur_state==IDLE && num_available_coop >= ((StartDATCMsg*)msg)->getNumCooperators()){
 				cur_state = ACTIVE;
 				offloading_manager->transmitStartDATC((StartDATCMsg*)msg);
 				DATC_processing_thread();

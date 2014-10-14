@@ -7,7 +7,9 @@
 #include "DataCTAMsg.h"
 
 DataCTAMsg::~DataCTAMsg(){
-	free(internal_msg);
+	ASN_STRUCT_FREE(asn_DEF_DataCTAMessage, internal_msg);
+	//free(internal_msg);
+	//internal_msg = NULL;
 }
 
 DataCTAMsg::DataCTAMsg(int frameID, int sliceNumber, Coordinate_t topLeft, int dataSize, double encTime, vector<uchar>& data){
