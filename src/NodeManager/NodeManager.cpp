@@ -391,7 +391,7 @@ void NodeManager::CTA_processing_thread(){
 		Coordinate_t top_left;
 		top_left.xCoordinate = 0;
 		top_left.yCoordinate = (480/cta_param.num_slices)*i;
-		DataCTAMsg *msg = new DataCTAMsg(frame_id,i,top_left,slice_bitstream.size(),enc_time,slice_bitstream);
+		DataCTAMsg *msg = new DataCTAMsg(frame_id,i,top_left,slice_bitstream.size(),enc_time,0,slice_bitstream);
 
 		msg->setSource(1);
 		msg->setDestination(0);
@@ -523,7 +523,7 @@ void NodeManager::ATC_processing_thread(){
 			cout << "and " << (int)(features_sub.rows) << "features" << endl;
 
 
-			DataATCMsg *msg = new DataATCMsg(frame_id, i, num_blocks, detTime, descTime, kencTime, fencTime, features_sub.rows, sub_kpts.size(), block_ft_bitstream, block_kp_bitstream);
+			DataATCMsg *msg = new DataATCMsg(frame_id, i, num_blocks, detTime, descTime, kencTime, fencTime, 0, features_sub.rows, sub_kpts.size(), block_ft_bitstream, block_kp_bitstream);
 			msg->setSource(1);
 			msg->setDestination(0);
 
@@ -720,7 +720,7 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	cout << "sending " << (int)(kpts.size()) << "keypoints" << endl;
 	cout << "and " << (int)(features.rows) << "features" << endl;
 
-	DataATCMsg *atc_msg = new DataATCMsg(frame_id, 0, 1, detTime, descTime, kencTime, fencTime, features.rows, kpts.size(), ft_bitstream, kp_bitstream);
+	DataATCMsg *atc_msg = new DataATCMsg(frame_id, 0, 1, detTime, descTime, kencTime, fencTime, 0, features.rows, kpts.size(), ft_bitstream, kp_bitstream);
 	std::set<Connection*> connections = radioSystem_ptr->getWiFiConnections();
 	std::set<Connection*>::iterator it = connections.begin();
 	Connection* cn = *it;
@@ -879,7 +879,7 @@ void NodeManager::notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features
 			cout << "and " << (int)(features_sub.rows) << "features" << endl;
 
 			//TODO: understand what to do with encoding times...
-			DataATCMsg *msg = new DataATCMsg(frame_id, i, num_blocks, camDetTime, camDescTime, 0, 0, features_sub.rows, sub_kpts.size(), block_ft_bitstream, block_kp_bitstream);
+			DataATCMsg *msg = new DataATCMsg(frame_id, i, num_blocks, camDetTime, camDescTime, 0, 0, 0, features_sub.rows, sub_kpts.size(), block_ft_bitstream, block_kp_bitstream);
 			msg->setSource(1);
 			msg->setDestination(0);
 

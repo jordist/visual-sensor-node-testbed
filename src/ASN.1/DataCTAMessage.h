@@ -29,6 +29,7 @@ typedef struct DataCTAMessage {
 	Coordinate_t	 topLeft;
 	long	 dataSize;
 	double	 encTime;
+	double	 txTime;
 	OCTET_STRING_t	 data;
 	
 	/* Context for parsing across buffer boundaries */

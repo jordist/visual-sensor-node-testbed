@@ -20,7 +20,8 @@ public:
 	DataCTAMessage_t* internal_msg;
 	~DataCTAMsg();
 	//DataCTAMessage_t* internal_msg;
-	DataCTAMsg(int frameID, int sliceNumber, Coordinate_t topLeft, int dataSize, double encTime, vector<uchar>& data);
+	DataCTAMsg(int frameID, int sliceNumber, Coordinate_t topLeft, int dataSize,
+			double encTime, double txTime, vector<uchar>& data);
 	DataCTAMsg(DataCTAMessage_t* internal_message);
 	int getBitStream(vector<uchar>& bitstream);
 
@@ -29,6 +30,8 @@ public:
 	Coordinate_t getTopLeft();
 	int getDataSize();
 	double getEncodingTime();
+	double getTxTime();
+	void setTxTime(double tx_time);
 	OCTET_STRING_t getData(); //may return directly the opencv Mat
 };
 

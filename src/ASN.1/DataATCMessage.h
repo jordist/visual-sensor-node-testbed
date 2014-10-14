@@ -30,6 +30,7 @@ typedef struct DataATCMessage {
 	double	 descTime;
 	double	 kencTime;
 	double	 fencTime;
+	double	 txTime;
 	long	 numFeat;
 	long	 numKpts;
 	OCTET_STRING_t	 featuresData;

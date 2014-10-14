@@ -15,13 +15,13 @@
 #include "DataATCMsg.h"
 
 DataATCMsg::~DataATCMsg(){
-	ASN_STRUCT_FREE(asn_DEF_DataATCMessage, internal_msg);
-	//free(internal_msg);
-	//internal_msg = NULL;
+	//ASN_STRUCT_FREE(asn_DEF_DataATCMessage, internal_msg);
+	free(internal_msg);
+	internal_msg = NULL;
 }
 
 DataATCMsg::DataATCMsg(int frameID, int blockNumber, int numBlocks, double detTime,
-		double descTime, double kptsEncTime, double featEncTime, int numFeat, int  numKpts,
+		double descTime, double kptsEncTime, double featEncTime, double txTime, int numFeat, int  numKpts,
 		vector<uchar>& features_data, vector<uchar>& keypoints_data){
 	msg_type = DATA_ATC_MESSAGE;
 	internal_msg = (DataATCMessage_t*) calloc(1, sizeof(*internal_msg));
@@ -33,6 +33,7 @@ DataATCMsg::DataATCMsg(int frameID, int blockNumber, int numBlocks, double detTi
 	internal_msg->descTime = descTime;
 	internal_msg->kencTime = kptsEncTime;
 	internal_msg->fencTime = featEncTime;
+	internal_msg->txTime = txTime;
 	internal_msg->numFeat = numFeat;
 	internal_msg->numKpts = numKpts;
 	OCTET_STRING_t ft_data;
@@ -80,6 +81,13 @@ double DataATCMsg::getDetTime(){
 
 double DataATCMsg::getDescTime(){
 	return internal_msg->descTime;
+}
+
+double DataATCMsg::getTxTime(){
+	return internal_msg->txTime;
+}
+void DataATCMsg::setTxTime(double tx_time){
+	internal_msg->txTime = tx_time;
 }
 
 double DataATCMsg::getFeatEncodingTime(){

@@ -50,6 +50,8 @@ private:
 	//WiFi TCP socket
 	Connection* connection;
 
+
+
 public:
 	virtual ~Message(){};
 	MessageType msg_type;

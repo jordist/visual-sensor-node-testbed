@@ -180,7 +180,7 @@ void OffloadingManager::transmitLoads(){
 		Coordinate_t top_left;
 		top_left.xCoordinate = cooperatorList[i].col_offset;
 		top_left.yCoordinate = 0;
-		DataCTAMsg *msg = new DataCTAMsg(0,1,top_left,bitstream.size(),enc_time,bitstream);
+		DataCTAMsg *msg = new DataCTAMsg(0,1,top_left,bitstream.size(),enc_time,0,bitstream);
 
 		cooperatorList[i].connection->writeMsg(msg);
 	}

@@ -39,6 +39,8 @@ struct message_queue_entry{
 	int num_packets;	//this is the number of packets that should be added
 	int last_packet_id; //this is the last packet_id added
 	vector<uchar> bitstream; //this is the complete ASN.1  bistream
+	double start_time;
+	double end_time;
 };
 
 class IncomingMessageQueue {
