@@ -281,7 +281,7 @@ void ConvertColorspaceTask::execute(){
 }
 
 SendMessageTask::~SendMessageTask(){
-	delete(msg_to_send);
+	//delete(msg_to_send);
 }
 
 SendMessageTask::SendMessageTask(Message *msg, serial_source radio_interface){
@@ -293,7 +293,7 @@ SendMessageTask::SendMessageTask(Message *msg, serial_source radio_interface){
 }
 
 SendWiFiMessageTask::~SendWiFiMessageTask(){
-	delete(msg_to_send);
+	//delete(msg_to_send);
 }
 
 SendWiFiMessageTask::SendWiFiMessageTask(Message *msg){

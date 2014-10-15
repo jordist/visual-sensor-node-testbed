@@ -16,8 +16,8 @@
 
 DataATCMsg::~DataATCMsg(){
 	//ASN_STRUCT_FREE(asn_DEF_DataATCMessage, internal_msg);
-	free(internal_msg);
-	internal_msg = NULL;
+	//free(internal_msg);
+	//internal_msg = NULL;
 }
 
 DataATCMsg::DataATCMsg(int frameID, int blockNumber, int numBlocks, double detTime,
