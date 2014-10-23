@@ -113,11 +113,14 @@ void IncomingMessageQueue::deserializeAndNotify(int cur_pos){
 	msg = msg_parser->parseMessage(h,&message_queue[cur_pos].bitstream[0]);
 
 	double tx_time = (message_queue[cur_pos].end_time - message_queue[cur_pos].start_time)/cv::getTickFrequency();
+
 	switch(message_queue[cur_pos].message_type){
 	case DATA_CTA_MESSAGE:{
+		if(msg!=NULL)
 		((DataCTAMsg*)msg)->setTxTime(tx_time);
 	}
 	case DATA_ATC_MESSAGE:{
+		if(msg!=NULL)
 		((DataATCMsg*)msg)->setTxTime(tx_time);
 	}
 	}
