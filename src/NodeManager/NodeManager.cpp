@@ -5,6 +5,7 @@
 #include "Messages/DataATCMsg.h"
 #include "Messages/StartDATCMsg.h"
 #include "Messages/CoopInfoMsg.h"
+#include "Messages/ACKsliceMsg.h"
 #include "RadioSystem/OffloadingManager.h"
 
 using namespace std;
@@ -21,6 +22,7 @@ NodeManager::NodeManager(NodeType nt){
 	}
 	case CAMERA:{
 		imgAcq = new ImageAcquisition(0);
+//		imgAcq = new ImageAcquisition(0,1024,768);
 
 		BRISK_detParams detPrms(60,4);
 		BRISK_descParams dscPrms;
@@ -183,7 +185,7 @@ void NodeManager::notify_msg(Message *msg){
 			datc_param.num_cooperators = ((StartDATCMsg*)msg)->getNumCooperators();
 
 			int num_available_coop = offloading_manager->getNumAvailableCoop();
-			if(cur_state==IDLE && num_available_coop == ((StartDATCMsg*)msg)->getNumCooperators()){
+			if(cur_state==IDLE && num_available_coop >= ((StartDATCMsg*)msg)->getNumCooperators()){
 				cur_state = ACTIVE;
 				offloading_manager->transmitStartDATC((StartDATCMsg*)msg);
 				DATC_processing_thread();
@@ -273,6 +275,16 @@ void NodeManager::notify_msg(Message *msg){
 		switch(node_type){
 		case SINK:{
 			s2gInterface_ptr->writeMsg(msg);
+			break;
+		}
+		}
+		break;
+	}
+	case ACK_SLICE_MESSAGE:
+	{
+		switch(node_type){
+		case CAMERA:{
+			offloading_manager->notifyACKslice(((ACKsliceMsg*)msg)->getFrameID(),msg->getTcpConnection());
 			break;
 		}
 		}
@@ -391,7 +403,7 @@ void NodeManager::CTA_processing_thread(){
 		Coordinate_t top_left;
 		top_left.xCoordinate = 0;
 		top_left.yCoordinate = (480/cta_param.num_slices)*i;
-		DataCTAMsg *msg = new DataCTAMsg(frame_id,i,top_left,slice_bitstream.size(),enc_time,slice_bitstream);
+		DataCTAMsg *msg = new DataCTAMsg(frame_id,i,top_left,slice_bitstream.size(),enc_time,0,slice_bitstream);
 
 		msg->setSource(1);
 		msg->setDestination(0);
@@ -523,7 +535,7 @@ void NodeManager::ATC_processing_thread(){
 			cout << "and " << (int)(features_sub.rows) << "features" << endl;
 
 
-			DataATCMsg *msg = new DataATCMsg(frame_id, i, num_blocks, detTime, descTime, kencTime, fencTime, features_sub.rows, sub_kpts.size(), block_ft_bitstream, block_kp_bitstream);
+			DataATCMsg *msg = new DataATCMsg(frame_id, i, num_blocks, detTime, descTime, kencTime, fencTime, 0, features_sub.rows, sub_kpts.size(), block_ft_bitstream, block_kp_bitstream);
 			msg->setSource(1);
 			msg->setDestination(0);
 
@@ -571,9 +583,9 @@ void NodeManager::DATC_processing_thread(){
 	delete((ConvertColorspaceTask*)cur_task);
 
 	//create offloading task
-	offloading_manager->createOffloadingTask(datc_param.num_cooperators);
+	offloading_manager->createOffloadingTask(datc_param.num_cooperators, datc_param.max_features);
 
-	cur_task = new ProbeAndSortLinkTask(offloading_manager);
+/*	cur_task = new ProbeAndSortLinkTask(offloading_manager);
 	taskManager_ptr->addTask(cur_task);
 	cout << "NM: Waiting the end of the probe_link_task" << endl;
 	while(!cur_task->completed){
@@ -581,6 +593,7 @@ void NodeManager::DATC_processing_thread(){
 	}
 	cout << "NM: ended probe_link_task" << endl;
 	delete((ProbeAndSortLinkTask*)cur_task);
+	*/
 
 	//compute loads (should become a task)
 	//here one should check what kind of offloading algorithm should be called
@@ -636,7 +649,6 @@ void NodeManager::DATC_processing_thread(){
 	//put the unencoded features somewhere...
 	//todo: understand what to do with encoding times
 	offloading_manager->addKeypointsAndFeatures(kpts,features,null,detTime,descTime,0,0);
-
 }
 
 void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
@@ -646,6 +658,25 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	boost::mutex monitor;
 	boost::mutex::scoped_lock lk(monitor);
 	Task *cur_task;
+
+	//send ACK_SLICE_MESSAGE
+	ACKsliceMsg *ackslice_msg = new ACKsliceMsg(frame_id);
+	std::set<Connection*> connections1 = radioSystem_ptr->getWiFiConnections();
+	std::set<Connection*>::iterator it1 = connections1.begin();
+	Connection* cn1 = *it1;
+	ackslice_msg->setTcpConnection(cn1);
+	cur_task = new SendWiFiMessageTask(ackslice_msg);
+	taskManager_ptr->addTask(cur_task);
+	cout << "NM: Waiting the end of the send_wifi_message_task" << endl;
+	{
+		boost::mutex::scoped_lock lk(cur_task->task_monitor);
+		while(!cur_task->completed){
+			cur_task_finished.wait(lk);
+		}
+	}
+	cout << "NM: exiting the wifi tx thread" << endl;
+	delete((SendWiFiMessageTask*)cur_task);
+
 
 	//decode the image (should become a task)
 	cv::Mat slice;
@@ -675,6 +706,7 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	vector<KeyPoint> kpts = ((ExtractKeypointsTask*)cur_task)->getKeypoints();
 	double detTime = ((ExtractKeypointsTask*)cur_task)->getDetTime();
 	cout << "extracted " << (int)kpts.size() << "keypoints" << endl;
+cerr << "extracted " << (int)kpts.size() << "keypoints\tDetThreshold=" << datc_param.detection_threshold << endl;
 
 	delete((ExtractKeypointsTask*)cur_task);
 
@@ -720,7 +752,7 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	cout << "sending " << (int)(kpts.size()) << "keypoints" << endl;
 	cout << "and " << (int)(features.rows) << "features" << endl;
 
-	DataATCMsg *atc_msg = new DataATCMsg(frame_id, 0, 1, detTime, descTime, kencTime, fencTime, features.rows, kpts.size(), ft_bitstream, kp_bitstream);
+	DataATCMsg *atc_msg = new DataATCMsg(frame_id, 0, 1, detTime, descTime, kencTime, fencTime, 0, features.rows, kpts.size(), ft_bitstream, kp_bitstream);
 	std::set<Connection*> connections = radioSystem_ptr->getWiFiConnections();
 	std::set<Connection*>::iterator it = connections.begin();
 	Connection* cn = *it;
@@ -879,7 +911,7 @@ void NodeManager::notifyOffloadingCompleted(vector<KeyPoint>& kpts,Mat& features
 			cout << "and " << (int)(features_sub.rows) << "features" << endl;
 
 			//TODO: understand what to do with encoding times...
-			DataATCMsg *msg = new DataATCMsg(frame_id, i, num_blocks, camDetTime, camDescTime, 0, 0, features_sub.rows, sub_kpts.size(), block_ft_bitstream, block_kp_bitstream);
+			DataATCMsg *msg = new DataATCMsg(frame_id, i, num_blocks, camDetTime, camDescTime, 0, 0, 0, features_sub.rows, sub_kpts.size(), block_ft_bitstream, block_kp_bitstream);
 			msg->setSource(1);
 			msg->setDestination(0);
 

@@ -72,8 +72,10 @@ void TelosbRadioSystem::receiverThread(){
 
 		incoming_message_queue_ptr->addPacketToQueue(src_addr, dst_addr,message_type,seq_num,num_packets,packet_id,bitstream);
 
-		if(packet!=NULL)
+		if(packet!=NULL){
 			free(packet);
+			packet = NULL;
+		}
 
 
 //		switch(message_type){

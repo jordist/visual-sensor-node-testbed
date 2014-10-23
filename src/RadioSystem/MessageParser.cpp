@@ -14,6 +14,7 @@
 #include "Messages/CoopInfoMsg.h"
 #include "Messages/StopMsg.h"
 #include "Messages/Header.h"
+#include "Messages/ACKsliceMsg.h"
 
 Header* MessageParser::parseHeader(uchar* bitstream){
 	vector<unsigned char> vec;
@@ -66,7 +67,6 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 					"Broken message encoding at byte %ld\n",
 					(long)rval.consumed);
 			//exit(65); /* better, EX_DATAERR */
-			delete(msg);
 			msg = NULL;
 		} else {
 			//fprintf(stdout,"Printing msg as XML...\n");
@@ -104,7 +104,6 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 					"Broken message encoding at byte %ld\n",
 					(long)rval.consumed);
 			//exit(65); /* better, EX_DATAERR */
-			delete(msg);
 			msg = NULL;
 		} else {
 			fprintf(stdout,"Printing msg as XML...\n");
@@ -142,7 +141,6 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 					"Broken message encoding at byte %ld\n",
 					(long)rval.consumed);
 			//exit(65); /* better, EX_DATAERR */
-			delete(msg);
 			msg = NULL;
 		} else {
 			//fprintf(stdout,"Printing msg as XML...\n");
@@ -180,7 +178,6 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 					"Broken message encoding at byte %ld\n",
 					(long)rval.consumed);
 			//exit(65); /* better, EX_DATAERR */
-			delete(msg);
 			msg = NULL;
 		} else {
 			//fprintf(stdout,"Printing msg as XML...\n");
@@ -218,7 +215,6 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 					"Broken message encoding at byte %ld\n",
 					(long)rval.consumed);
 			//exit(65); /* better, EX_DATAERR */
-			delete(msg);
 			msg = NULL;
 		} else {
 			//fprintf(stdout,"Printing msg as XML...\n");
@@ -255,7 +251,6 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 					"Broken message encoding at byte %ld\n",
 					(long)rval.consumed);
 			//exit(65); /* better, EX_DATAERR */
-			delete(msg);
 			msg = NULL;
 		} else {
 			//fprintf(stdout,"Printing msg as XML...\n");
@@ -271,6 +266,42 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 		msg->setSource(h->getSrcAddr());
 		msg->setDestination(h->getDstAddr());
 		msg->setTcpConnection(cn);
+		break;
+	}
+
+	case ACK_SLICE_MESSAGE:
+	{
+		cout << "Message is ACK_SLICE" << endl;
+
+		char buf[MAX_ACK_SLICE_MESSAGE_SIZE];
+
+		int bitstream_size =  h->getPayloadSize();
+		cout << "Bitstream size is " << bitstream_size << endl;
+
+		//copy the bitstream (MAYBE REMOVED)
+		for(int i=0;i<bitstream_size;i++){
+			buf[i] = bitstream[i];
+		}
+
+		ACKsliceMessage_t* internal_message = (ACKsliceMessage_t*) calloc(1, sizeof(*internal_message));
+		asn_dec_rval_t rval;
+		rval = uper_decode_complete(0, &asn_DEF_ACKsliceMessage,(void **)&internal_message, buf, MAX_ACK_SLICE_MESSAGE_SIZE);
+		msg = new ACKsliceMsg(internal_message);
+		msg->setSource(h->getSrcAddr());
+		msg->setDestination(h->getDstAddr());
+		msg->setTcpConnection(cn);
+
+		if(rval.code != RC_OK) {
+			fprintf(stderr,
+					"Broken message encoding at byte %ld\n",
+					(long)rval.consumed);
+			//exit(65); /* better, EX_DATAERR */
+			msg = NULL;
+		} else {
+			//fprintf(stdout,"Printing msg as XML...\n");
+			//xer_fprint(stdout, &asn_DEF_CooperatorInfo, internal_message);
+		}
+
 		break;
 	}
 

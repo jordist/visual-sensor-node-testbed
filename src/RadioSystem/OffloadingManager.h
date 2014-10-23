@@ -10,16 +10,16 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include "NodeManager/NodeManager.h"
+#include "LoadBalancing.h"
+#include "ProcessingSpeedEstimator.h"
 #include <boost/asio.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-
-
 
 using namespace std;
 using namespace cv;
 
-#define F 1514
-#define H 66
+#define COMPRESS_IMAGE 1
+#define INITIAL_DETECTION_THRESHOLD 30
 
 
 class Connection;
@@ -29,6 +29,14 @@ typedef struct cooperator{
 
 	double bandwidth;
 	double CPUspeed;
+	double Pdpx;
+	double Pdip;
+	double Pe;
+	int Nkeypoints;
+	int Npixels;
+	ProcessingSpeedEstimator* processing_speed_estimator;
+	double txTime;
+	double completionTime;
 
 	double load;
 	Mat image_slice;
@@ -50,6 +58,7 @@ public:
 		cooperators_to_use = 0;
 		received_cooperators = 0;
 		node_manager = nm;
+		next_detection_threshold = 0;
 		startTimer();
 	}
 
@@ -58,19 +67,26 @@ public:
 			double detTime, double descTime, double kencTime, double fencTime);
 
 	//reset variables and keep track of progresses
-	void createOffloadingTask(int num_cooperators);
+//	void createOffloadingTask(int num_cooperators);
+	void createOffloadingTask(int num_cooperators, int target_num_keypoints);
 
 	void addCooperator(Connection* c);
 	void removeCooperator(Connection* c);
 	Mat computeLoads(Mat& image);
+	double getNextDetectionThreshold();
+	void estimate_parameters(cooperator* coop);
 	void transmitLoads();
 	void transmitStartDATC(StartDATCMsg* msg);
 	int probeLinks();
 	void sortCooperators();
+
 	void timerExpired(const boost::system::error_code& error);
 	void startTimer();
 	void runThread();
 	int getNumAvailableCoop();
+	void transmitNextCoop();
+	void notifyACKslice(int frameID, Connection* cn);
+	//void printKeypoints(vector<KeyPoint>& kpts); //Debug
 
 private:
 
@@ -82,14 +98,19 @@ private:
 	//used to store keypoints and features from cooperators
 	vector<KeyPoint> keypoint_buffer;
 	Mat features_buffer;
-	boost::thread r_thread;
+
 	double camDetTime, camDescTime, camkEncTime, camfEncTime;
 
+	LoadBalancing loadbalancing;
+	double next_detection_threshold;
+	double start_time;
+	int next_coop;
+
+	boost::thread r_thread;
 	boost::asio::io_service io;
 	//deadline timer for receiving data from all cooperators
 	boost::asio::deadline_timer t;
 	boost::asio::io_service::work work;
-
 
 };
 

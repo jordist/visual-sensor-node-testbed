@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../src/ASN.1/ACKsliceMessage.c \
 ../src/ASN.1/BIT_STRING.c \
 ../src/ASN.1/BOOLEAN.c \
 ../src/ASN.1/CodingChoices.c \
@@ -41,6 +42,7 @@ C_SRCS += \
 ../src/ASN.1/xer_support.c 
 
 OBJS += \
+./src/ASN.1/ACKsliceMessage.o \
 ./src/ASN.1/BIT_STRING.o \
 ./src/ASN.1/BOOLEAN.o \
 ./src/ASN.1/CodingChoices.o \
@@ -78,6 +80,7 @@ OBJS += \
 ./src/ASN.1/xer_support.o 
 
 C_DEPS += \
+./src/ASN.1/ACKsliceMessage.d \
 ./src/ASN.1/BIT_STRING.d \
 ./src/ASN.1/BOOLEAN.d \
 ./src/ASN.1/CodingChoices.d \
@@ -119,7 +122,7 @@ C_DEPS += \
 src/ASN.1/%.o: ../src/ASN.1/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C Compiler'
-	arm-linux-gnueabihf-gcc -I/home/greeneyes/OpenCV-Install/2.4.4/include -I"/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/ASN.1" -I"/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src" -I"/home/greeneyes/Scrivania/TESTBEDV2/visual-sensor-node-testbed/src/MultimediaSystem/includes" -I/usr/include -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	arm-linux-gnueabihf-gcc -I/home/greeneyes/OpenCV-Install/2.4.4/include -I"/home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/ASN.1" -I"/home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src" -I"/home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/MultimediaSystem/includes" -I/usr/include -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

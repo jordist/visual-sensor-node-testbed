@@ -4,8 +4,11 @@ ASN_MODULE_SOURCES=	\
 	DataCTAMessage.c	\
 	StartCTAMessage.c	\
 	StartATCMessage.c	\
+	StartDATCMessage.c	\
+	ACKsliceMessage.c	\
 	CoopStatus.c	\
 	CodingChoices.c	\
+	OffloadingChoices.c	\
 	Coordinate.c	\
 	DescriptorTypes.c	\
 	DetectorTypes.c
@@ -16,8 +19,11 @@ ASN_MODULE_HEADERS=	\
 	DataCTAMessage.h	\
 	StartCTAMessage.h	\
 	StartATCMessage.h	\
+	StartDATCMessage.h	\
+	ACKsliceMessage.h	\
 	CoopStatus.h	\
 	CodingChoices.h	\
+	OffloadingChoices.h	\
 	Coordinate.h	\
 	DescriptorTypes.h	\
 	DetectorTypes.h
@@ -102,5 +108,5 @@ clean:
 regen: regenerate-from-asn1-source
 
 regenerate-from-asn1-source:
-	asn1c -S/skeletons -fnative-types -gen-PER Messages.asn1
+	asn1c -fnative-types -gen-PER Messages.asn1
 

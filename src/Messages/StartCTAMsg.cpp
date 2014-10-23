@@ -19,7 +19,9 @@ ostream& operator <<(ostream& os, StartCTAMsg mex){
 }
 
 StartCTAMsg::~StartCTAMsg(){
-	free(internal_msg);
+	ASN_STRUCT_FREE(asn_DEF_StartCTAMessage, internal_msg);
+	//free(internal_msg);
+	//internal_msg = NULL;
 }
 
 StartCTAMsg::StartCTAMsg(int fps, int qf, int h, int w, int num_slices){

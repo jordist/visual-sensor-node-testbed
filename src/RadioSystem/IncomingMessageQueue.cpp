@@ -55,6 +55,7 @@ void IncomingMessageQueue::addPacketToQueue(int src_addr, int dst_addr, MessageT
 		new_entry.num_packets = num_packets;
 		new_entry.last_packet_id = packet_id;
 		new_entry.bitstream.insert(new_entry.bitstream.begin(),packet_bitstream.begin(),packet_bitstream.end());
+		new_entry.start_time = cv::getTickCount();
 		if(new_entry.last_packet_id == 0){
 			cout << "IMQ: a new entry is created..." << endl;
 			message_queue.push_back(new_entry);
@@ -80,6 +81,7 @@ void IncomingMessageQueue::addPacketToQueue(int src_addr, int dst_addr, MessageT
 			message_queue[cur_pos].last_packet_id++;
 			//deserialize if it was the last packet!
 			if(packet_id == num_packets-1){
+				message_queue[cur_pos].end_time = cv::getTickCount();
 				deserializeAndNotify(cur_pos);
 			}
 		}
@@ -109,6 +111,19 @@ void IncomingMessageQueue::deserializeAndNotify(int cur_pos){
 
 	Header* h = new Header(src_addr,dst_addr,message_queue[cur_pos].message_type,0,0,0,message_queue[cur_pos].bitstream.size());
 	msg = msg_parser->parseMessage(h,&message_queue[cur_pos].bitstream[0]);
+
+	double tx_time = (message_queue[cur_pos].end_time - message_queue[cur_pos].start_time)/cv::getTickFrequency();
+
+	switch(message_queue[cur_pos].message_type){
+	case DATA_CTA_MESSAGE:{
+		if(msg!=NULL)
+		((DataCTAMsg*)msg)->setTxTime(tx_time);
+	}
+	case DATA_ATC_MESSAGE:{
+		if(msg!=NULL)
+		((DataATCMsg*)msg)->setTxTime(tx_time);
+	}
+	}
 
 	//erase the entry from the message queue once notified
 	cout << "IMQ: erasing entry" << endl;

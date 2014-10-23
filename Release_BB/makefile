@@ -21,19 +21,6 @@ RM := rm -rf
 -include src/Messages/subdir.mk
 -include src/ASN.1/subdir.mk
 -include src/subdir.mk
--include Release_BBW/src/Tasks/subdir.mk
--include Release_BBW/src/TaskManager/subdir.mk
--include Release_BBW/src/S2GInterface/subdir.mk
--include Release_BBW/src/RadioSystem/WiFi/subdir.mk
--include Release_BBW/src/RadioSystem/Telosb/subdir.mk
--include Release_BBW/src/RadioSystem/subdir.mk
--include Release_BBW/src/NodeManager/subdir.mk
--include Release_BBW/src/MultimediaSystem/thirdparty/coder/subdir.mk
--include Release_BBW/src/MultimediaSystem/thirdparty/agast/src/subdir.mk
--include Release_BBW/src/MultimediaSystem/subdir.mk
--include Release_BBW/src/Messages/subdir.mk
--include Release_BBW/src/ASN.1/subdir.mk
--include Release_BBW/src/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -69,7 +56,7 @@ all: testbed-v2
 testbed-v2: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MacOS X C++ Linker'
-	arm-linux-gnueabihf-g++ -L/home/greeneyes/OpenCV-Install/2.4.9-arm/lib -L/home/greeneyes/boost-arm/lib -Xlinker -rpath='/home/debian/boost-arm/lib' -Xlinker -rpath='/home/debian/opencv-arm/lib' -o "testbed-v2" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-linux-gnueabihf-g++ -L/home/jordi/opencv-arm/lib -L/home/jordi/lpsolve-arm -L/home/jordi/gsl-arm/lib -L/home/jordi/boost-arm/lib -Xlinker -rpath='/home/debian/boost-arm/lib' -Xlinker -rpath='/home/debian/opencv-arm/lib' -o "testbed-v2" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

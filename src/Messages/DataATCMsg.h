@@ -19,7 +19,7 @@ private:
 public:
 	~DataATCMsg();
 	DataATCMsg(int frameID, int blockNumber, int numBlocks, double detTime,
-			double descTime, double kptsEncTime, double featEncTime, int numFeat, int numKpts, vector<uchar>& features_data,
+			double descTime, double kptsEncTime, double featEncTime, double txTime, int numFeat, int numKpts, vector<uchar>& features_data,
 			vector<uchar>& keypoints_data);
 	DataATCMsg(DataATCMessage_t* internal_message);
 	int getBitStream(vector<uchar>& bitstream);
@@ -29,6 +29,8 @@ public:
 	int getNumBlocks();
 	double getDetTime();
 	double getDescTime();
+	double getTxTime();
+	void setTxTime(double tx_time);
 	int getNumFeat();
 	int getNumKpts();
 	double getKptsEncodingTime();

@@ -7,10 +7,13 @@
 #include "DataCTAMsg.h"
 
 DataCTAMsg::~DataCTAMsg(){
-	free(internal_msg);
+	//ASN_STRUCT_FREE(asn_DEF_DataCTAMessage, internal_msg);
+	//free(internal_msg);
+	//internal_msg = NULL;
 }
 
-DataCTAMsg::DataCTAMsg(int frameID, int sliceNumber, Coordinate_t topLeft, int dataSize, double encTime, vector<uchar>& data){
+DataCTAMsg::DataCTAMsg(int frameID, int sliceNumber, Coordinate_t topLeft, int dataSize,
+		double encTime, double txTime, vector<uchar>& data){
 	msg_type = DATA_CTA_MESSAGE;
 	internal_msg = (DataCTAMessage_t*) calloc(1, sizeof(*internal_msg));
 	assert(internal_msg);
@@ -19,6 +22,7 @@ DataCTAMsg::DataCTAMsg(int frameID, int sliceNumber, Coordinate_t topLeft, int d
 	internal_msg->topLeft = topLeft;
 	internal_msg->dataSize = dataSize;
 	internal_msg->encTime = encTime;
+	internal_msg->txTime = txTime;
 	OCTET_STRING_t data_str;
 
 	data_str.size = data.size();
@@ -46,6 +50,13 @@ int DataCTAMsg::getDataSize(){
 double DataCTAMsg::getEncodingTime(){
 	return internal_msg->encTime;
 }
+double DataCTAMsg::getTxTime(){
+	return internal_msg->txTime;
+}
+void DataCTAMsg::setTxTime(double tx_time){
+	internal_msg->txTime = tx_time;
+}
+
 OCTET_STRING_t DataCTAMsg::getData(){
 	return internal_msg->data;
 }

@@ -25,7 +25,9 @@
 #include "CoopInfoMsg.h"
 
 CoopInfoMsg::~CoopInfoMsg(){
-	free(internal_msg);
+	ASN_STRUCT_FREE(asn_DEF_CooperatorInfo, internal_msg);
+	//free(internal_msg);
+	//internal_msg = NULL;
 }
 
 CoopInfoMsg::CoopInfoMsg(std::string ip_address, int port, CoopStatus_t status){

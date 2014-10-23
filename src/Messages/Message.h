@@ -13,6 +13,7 @@
 #include "ASN.1/DataCTAMessage.h"
 #include "ASN.1/DataATCMessage.h"
 #include "ASN.1/CooperatorInfo.h"
+#include "ASN.1/ACKsliceMessage.h"
 #include <boost/asio.hpp>
 
 
@@ -25,6 +26,7 @@ using boost::asio::ip::tcp;
 #define MAX_START_DATC_MESSAGE_SIZE 1024
 #define MAX_DATA_CTA_MESSAGE_SIZE 1024000 //1MB... a LOT!!
 #define MAX_DATA_ATC_MESSAGE_SIZE 1024000
+#define MAX_ACK_SLICE_MESSAGE_SIZE 1024
 
 enum MessageType{
 	START_CTA_MESSAGE,
@@ -33,7 +35,8 @@ enum MessageType{
 	DATA_CTA_MESSAGE,
 	DATA_ATC_MESSAGE,
 	STOP_MESSAGE,
-	COOP_INFO_MESSAGE
+	COOP_INFO_MESSAGE,
+	ACK_SLICE_MESSAGE
 };
 
 class Connection;
@@ -49,6 +52,8 @@ private:
 
 	//WiFi TCP socket
 	Connection* connection;
+
+
 
 public:
 	virtual ~Message(){};

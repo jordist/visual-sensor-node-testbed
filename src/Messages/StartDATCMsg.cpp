@@ -7,7 +7,9 @@
 #include"StartDATCMsg.h"
 
 StartDATCMsg::~StartDATCMsg(){
-	free(internal_msg);
+	ASN_STRUCT_FREE(asn_DEF_StartDATCMessage, internal_msg);
+	//free(internal_msg);
+	//internal_msg = NULL;
 }
 
 StartDATCMsg::StartDATCMsg(int fps, DetectorTypes_t det, double det_thr, DescriptorTypes_t desc, int desc_length,

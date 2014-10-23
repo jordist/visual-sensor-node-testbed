@@ -34,7 +34,7 @@
 #undef	ADVANCE
 #define	ADVANCE(num_bytes)	do {		\
 		size_t num = num_bytes;		\
-		ptr = ((const char *)ptr) + num;\
+		ptr = ((const char *)ptr) + num; \
 		size -= num;			\
 		if(ctx->left >= 0)		\
 			ctx->left -= num;	\
@@ -667,8 +667,7 @@ SEQUENCE_decode_xer(asn_codec_ctx_t *opt_codec_ctx, asn_TYPE_descriptor_t *td,
 
 			if(elm->flags & ATF_POINTER) {
 				/* Member is a pointer to another structure */
-				memb_ptr2 = (void **)((char *)st
-					+ elm->memb_offset);
+				memb_ptr2 = (void **)((char *)st + elm->memb_offset);
 			} else {
 				memb_ptr = (char *)st + elm->memb_offset;
 				memb_ptr2 = &memb_ptr;
@@ -1143,7 +1142,7 @@ SEQUENCE_decode_uper(asn_codec_ctx_t *opt_codec_ctx, asn_TYPE_descriptor_t *td,
 		bmlength = uper_get_nslength(pd);
 		if(bmlength < 0) _ASN_DECODE_STARVED;
 
-		ASN_DEBUG("Extensions %d present in %s", bmlength, td->name);
+		ASN_DEBUG("Extensions %ld present in %s", (long)bmlength, td->name);
 
 		epres = (uint8_t *)MALLOC((bmlength + 15) >> 3);
 		if(!epres) _ASN_DECODE_STARVED;
@@ -1155,8 +1154,8 @@ SEQUENCE_decode_uper(asn_codec_ctx_t *opt_codec_ctx, asn_TYPE_descriptor_t *td,
 		memset(&epmd, 0, sizeof(epmd));
 		epmd.buffer = epres;
 		epmd.nbits = bmlength;
-		ASN_DEBUG("Read in extensions bitmap for %s of %d bits (%x..)",
-			td->name, bmlength, *epres);
+		ASN_DEBUG("Read in extensions bitmap for %s of %ld bits (%x..)",
+			td->name, (long)bmlength, *epres);
 
 	    /* Go over extensions and read them in */
 	    for(edx = specs->ext_after + 1; edx < td->elements_count; edx++) {

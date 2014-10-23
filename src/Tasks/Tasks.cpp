@@ -281,7 +281,7 @@ void ConvertColorspaceTask::execute(){
 }
 
 SendMessageTask::~SendMessageTask(){
-	delete(msg_to_send);
+	//delete(msg_to_send);
 }
 
 SendMessageTask::SendMessageTask(Message *msg, serial_source radio_interface){
@@ -293,7 +293,7 @@ SendMessageTask::SendMessageTask(Message *msg, serial_source radio_interface){
 }
 
 SendWiFiMessageTask::~SendWiFiMessageTask(){
-	delete(msg_to_send);
+	//delete(msg_to_send);
 }
 
 SendWiFiMessageTask::SendWiFiMessageTask(Message *msg){
@@ -410,7 +410,7 @@ void SendMessageTask::execute(){
 		cout << "SMT: packet ready" << endl;
 		//send (telosb only)
 		int ret = -1;
-		int max_resend   = 3;
+		int max_resend   = 7;
 		int count_resend = 0;
 
 		while(ret!=0 && count_resend<max_resend){
@@ -420,7 +420,7 @@ void SendMessageTask::execute(){
 				//cout << "RET " << ret << endl;
 				count_resend++;
 			}
-			usleep(9500);
+			//usleep(30000);
 		}
 
 		cout << "SMT: packet sent!" << endl;
