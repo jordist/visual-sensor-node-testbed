@@ -18,6 +18,7 @@ void OffloadingManager::addCooperator(Connection* c){
 	temp_coop.processing_speed_estimator = new ProcessingSpeedEstimator();
 	temp_coop.tx_speed_estimator = new TxSpeedEstimator();
 	//Set initial values for the parameters:
+	temp_coop.bandwidth = 20e6;
 	temp_coop.Pdpx = 3.2e6;
 	temp_coop.Pdip = 10000;
 	temp_coop.Pe = 1000;
