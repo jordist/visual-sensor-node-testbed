@@ -659,6 +659,23 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	boost::mutex::scoped_lock lk(monitor);
 	Task *cur_task;
 
+	//decode the image (should become a task)
+	cv::Mat slice;
+	OCTET_STRING_t oct_data = msg->getData();
+	uint8_t* imbuf = oct_data.buf;
+	int data_size = oct_data.size;
+	vector<uchar> jpeg_bitstream;
+	for(int i=0;i<data_size;i++){
+		jpeg_bitstream.push_back(imbuf[i]);
+	}
+	slice = imdecode(jpeg_bitstream,CV_LOAD_IMAGE_GRAYSCALE);
+
+	/*namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
+	imshow( "Display window", slice );                   // Show our image inside it.
+
+	waitKey(0);                                          // Wait for a keystroke in the window*/
+
+
 	//send ACK_SLICE_MESSAGE
 	ACKsliceMsg *ackslice_msg = new ACKsliceMsg(frame_id);
 	std::set<Connection*> connections1 = radioSystem_ptr->getWiFiConnections();
@@ -676,23 +693,6 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	}
 	cout << "NM: exiting the wifi tx thread" << endl;
 	delete((SendWiFiMessageTask*)cur_task);
-
-
-	//decode the image (should become a task)
-	cv::Mat slice;
-	OCTET_STRING_t oct_data = msg->getData();
-	uint8_t* imbuf = oct_data.buf;
-	int data_size = oct_data.size;
-	vector<uchar> jpeg_bitstream;
-	for(int i=0;i<data_size;i++){
-		jpeg_bitstream.push_back(imbuf[i]);
-	}
-	slice = imdecode(jpeg_bitstream,CV_LOAD_IMAGE_GRAYSCALE);
-
-	/*namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
-	imshow( "Display window", slice );                   // Show our image inside it.
-
-	waitKey(0);                                          // Wait for a keystroke in the window*/
 
 	// Extract the keypoints
 	cur_task = new ExtractKeypointsTask(extractor,slice,datc_param.detection_threshold);

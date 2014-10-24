@@ -201,6 +201,7 @@ void LoadBalancing::CutVectorOptimization(int num_cooperators,
 	if(num_cooperators == 1){
 		optimal_cutvector_.resize(1);
 		optimal_cutvector_[0] = width_;
+		est_completion_time_=height_*width_*c[0] + height_*width_/pdpx[0] + Mopt_/pdip[0] + Mopt_/pe[0];
 	}
 	else{
 		if(use_fixed_uniform_cuts_ == 1){

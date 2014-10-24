@@ -12,13 +12,14 @@
 #include "NodeManager/NodeManager.h"
 #include "LoadBalancing.h"
 #include "ProcessingSpeedEstimator.h"
+#include "TxSpeedEstimator.h"
 #include <boost/asio.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 using namespace std;
 using namespace cv;
 
-#define COMPRESS_IMAGE 1
+#define COMPRESS_IMAGE 0
 #define INITIAL_DETECTION_THRESHOLD 30
 
 
@@ -29,12 +30,15 @@ typedef struct cooperator{
 
 	double bandwidth;
 	double CPUspeed;
+
 	double Pdpx;
 	double Pdip;
 	double Pe;
 	int Nkeypoints;
 	int Npixels;
 	ProcessingSpeedEstimator* processing_speed_estimator;
+	TxSpeedEstimator* tx_speed_estimator;
+	double idleTime;
 	double txTime;
 	double completionTime;
 

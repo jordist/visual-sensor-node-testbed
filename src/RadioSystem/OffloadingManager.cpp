@@ -16,8 +16,8 @@ void OffloadingManager::addCooperator(Connection* c){
 	cooperator temp_coop;
 	temp_coop.connection = c;
 	temp_coop.processing_speed_estimator = new ProcessingSpeedEstimator();
+	temp_coop.tx_speed_estimator = new TxSpeedEstimator();
 	//Set initial values for the parameters:
-	temp_coop.bandwidth = 20e6;
 	temp_coop.Pdpx = 3.2e6;
 	temp_coop.Pdip = 10000;
 	temp_coop.Pe = 1000;
@@ -30,6 +30,7 @@ void OffloadingManager::removeCooperator(Connection* c){
 		cooperator temp_coop = cooperatorList[i];
 		if(temp_coop.connection == c){
 			delete temp_coop.processing_speed_estimator;
+			delete temp_coop.tx_speed_estimator;
 			cooperatorList.erase(cooperatorList.begin()+i);
 		}
 	}
@@ -53,7 +54,11 @@ Mat OffloadingManager::computeLoads(Mat& image){
 	//double overlap = OVERLAP;
 	double overlap = (double)168.0/(2*image.cols);
 	loadbalancing.SetImageParameters(image.cols, image.rows, overlap);
+	//Solve:
+	double lpsolveTime = getTickCount();
 	loadbalancing.CutVectorOptimization(cooperators_to_use, c, pdpx, pdip, pe);
+	lpsolveTime = (getTickCount()-lpsolveTime)/getTickFrequency();
+	std::cerr << "lpsolveTime = " << lpsolveTime << "sec\n";
 	vector<int> cutvector = loadbalancing.getCutVector();
 
 	for(size_t j=0; j<cutvector.size(); j++){
@@ -142,6 +147,7 @@ void OffloadingManager::transmitStartDATC(StartDATCMsg* msg){
 
 void OffloadingManager::transmitLoads(){
 	next_coop = 0;
+	start_time = getTickCount();
 	transmitNextCoop();
 }
 
@@ -202,13 +208,16 @@ void OffloadingManager::estimate_parameters(cooperator* coop) {
 	}
 
 	//Bandwidth
-	coop->bandwidth = 8*coop->Npixels/coop->txTime; //FIXME Only for bmp encoding, 8bits per pixel
+	coop->tx_speed_estimator->AddObservation(coop->txTime, coop->Npixels);
+	coop->bandwidth = coop->tx_speed_estimator->getBandwidth();
+	//coop->bandwidth = 8*coop->Npixels/coop->txTime; //FIXME Only for bmp encoding, 8bits per pixel
 
 	std::cerr << " Node: " << coop << std::endl;
 	std::cerr << "estimate_processing_parameters: detTime=" << coop->detTime << "\tdescTime=" << coop->descTime << "\tNpix=" << coop->Npixels << "\tNkp=" << coop->Nkeypoints << "\n";
 	std::cerr << "estimate_processing_parameters: Pdpx=" << coop->Pdpx << "\tPdip=" << coop->Pdip << "\tPe=" << coop->Pe << "\n";
 	std::cerr << "txTime: " << coop->txTime << "\testimated_bandwidth: " << coop->bandwidth << "bits/sec" << std::endl;
 	std::cerr << "cooperator completion time:" << coop->completionTime << std::endl;
+	std::cerr << "idleTime + txTime + detTime + descTime = " << coop->idleTime + coop->txTime + coop->detTime + coop->descTime  << std::endl;
 }
 
 void OffloadingManager::sortCooperators()
@@ -224,11 +233,11 @@ void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& feat
 		for(int i=0;i<cooperatorList.size();i++){
 			if(cn == cooperatorList[i].connection){
 				//add time measurements
+				cooperatorList[i].completionTime = (getTickCount()-start_time)/getTickFrequency();
 				cooperatorList[i].detTime = detTime;
 				cooperatorList[i].descTime = descTime;
 				cooperatorList[i].kencTime = kencTime;
 				cooperatorList[i].fencTime = fencTime;
-				cooperatorList[i].completionTime = (getTickCount()-start_time)/getTickFrequency();
 				//compensate for slicing if keypoints come from a cooperator
 				for(int j=0;j<kpts.size();j++){
 					kpts[j].pt.x = kpts[j].pt.x + cooperatorList[i].col_offset;
@@ -302,6 +311,8 @@ void OffloadingManager::transmitNextCoop() {
 		param[0] = CV_IMWRITE_JPEG_QUALITY;
 		param[1] = 100;
 
+		cooperatorList[i].idleTime = (getTickCount()-start_time)/getTickFrequency();
+		cooperatorList[i].txTime = getTickCount();
 		double enc_time = getTickCount();
 		if(COMPRESS_IMAGE == 1){
 			imencode(".jpg",cooperatorList[i].image_slice,bitstream,param);
@@ -313,12 +324,7 @@ void OffloadingManager::transmitNextCoop() {
 		top_left.xCoordinate = cooperatorList[i].col_offset;
 		top_left.yCoordinate = 0;
 
-		if(i==0){
-			start_time = getTickCount();
-		}
-
 		DataCTAMsg *msg = new DataCTAMsg(0,1,top_left,bitstream.size(),enc_time,0,bitstream);
-		cooperatorList[i].txTime = getTickCount();
 		cooperatorList[i].connection->writeMsg(msg);
 
 		next_coop++;
