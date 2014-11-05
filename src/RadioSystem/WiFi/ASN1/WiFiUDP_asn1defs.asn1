@@ -1,0 +1,66 @@
+VSNTestBed DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+  --PACKET HEADER
+
+  --This is present in every packet
+  PacketHeader ::= SEQUENCE {
+    sourceAddress       Address,       -- Original source address.
+    destinationAddress  Address,       -- Final destination address.
+    destinationAddress2 Address,	   -- To multicast to two nodes
+    messageID           INTEGER (0..65535),       -- Identifies the packets belonging to a 
+                                       -- particular message.
+    messageType         INTEGER (0..255),  -- Identifies the message type, see 
+                                       -- below. 
+    numberOfPackets     INTEGER (0..65535),       -- Could move these 2 fields to 
+    packetSeqNumber     INTEGER (0..65535)        -- multi-frame message types, as control 
+                                       -- messages should fit within a single 
+                                       -- packet.
+  }
+
+	--PACKET
+	--Contains the PacketHeader and packet data
+	Packet ::= SEQUENCE {
+		header		PacketHeader,
+		data		OCTET STRING
+	}
+
+
+  --OTHER MESSAGES WE MIGHT NEED 
+  
+  --FOR RELIABLE TRANSFER OF DATA (DATA RE-TRANSMISSION REQUESTS)
+  
+  --Sent from a receiver of data to the transmitter of same data. Describes 
+  --which packets, if any, of a message are missing after reception.
+  --Lists all dropped packets, either by specifying each sequence number or 
+  --specifying intervals of dropped packets, whichever requires less data at 
+  --any time.
+  --We talked about merging this with the AckInfoMessage.
+  ReceptionReportMessage ::= SEQUENCE {
+    mode            ReceptionReportModes,  -- Specify each or intervals.
+    droppedPackets  SEQUENCE OF INTEGER    -- List of dropped packets.
+  }
+  
+  --Sent from a transmitter of data to the receiver of same data. If the 
+  --ReceptionReportMessage is not received before a timeout, assume it lost and 
+  --send a request for a re-transmission of the message.
+  ReceptionReportRequestMessage ::= SEQUENCE {
+    messageID  INTEGER  -- The message for which we want a reception report.
+  }
+  
+  --SUPPORT TYPES
+
+  Address ::= INTEGER(0..4294967295)
+
+  MessageTypes ::= ENUMERATED {
+    receptionReport,
+    receptionReportRequest,
+	dataMsg,
+	connectMsg	
+  }
+  
+  ReceptionReportModes ::= ENUMERATED {
+    specifyEach,
+    specifyIntervals
+  }
+
+END

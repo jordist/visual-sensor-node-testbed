@@ -79,12 +79,12 @@ void S2GInterface::start_read_header()
 void S2GInterface::handle_read_message(const boost::system::error_code& ec)
 {
 
-	cout << "Header received" << endl;
+//	cout << "Header received" << endl;
 
 
 	if (!ec)
 	{
-		cout << "Received new message header" << endl;
+//		cout << "Received new message header" << endl;
 
 		//Header h = parseHeader(header_);
 		//cout << h << endl;

@@ -107,7 +107,7 @@ VSNTestBed DEFINITIONS AUTOMATIC TAGS ::= BEGIN
   
   OffloadingChoices ::= ENUMERATED {
   	polimi,
-  	kth
+  	kth,
   }
 
   Coordinate ::= SEQUENCE {

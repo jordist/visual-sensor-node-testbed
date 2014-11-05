@@ -49,6 +49,30 @@ src/RadioSystem/WiFi/WiFiRadioSystem.d: \
  /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/ASN.1/ACKsliceMessage.h \
  /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/Messages/Header.h \
  /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/Messages/Message.h \
+ ../src/RadioSystem/WiFi/ASN1/PacketHeader.h \
+ ../src/RadioSystem/WiFi/ASN1/Address.h \
+ ../src/RadioSystem/WiFi/ASN1/Address.h \
+ ../src/RadioSystem/WiFi/ASN1/MessageTypes.h \
+ ../src/RadioSystem/WiFi/ASN1/ReceptionReportModes.h \
+ ../src/RadioSystem/WiFi/Receiver.h \
+ ../src/RadioSystem/WiFi/asn1includes.h \
+ ../src/RadioSystem/WiFi/ASN1/ReceptionReportMessage.h \
+ ../src/RadioSystem/WiFi/ASN1/ReceptionReportModes.h \
+ ../src/RadioSystem/WiFi/ASN1/asn_SEQUENCE_OF.h \
+ ../src/RadioSystem/WiFi/ASN1/asn_SET_OF.h \
+ ../src/RadioSystem/WiFi/ASN1/constr_SEQUENCE_OF.h \
+ ../src/RadioSystem/WiFi/ASN1/constr_SET_OF.h \
+ ../src/RadioSystem/WiFi/ASN1/ReceptionReportRequestMessage.h \
+ ../src/RadioSystem/WiFi/ASN1/Packet.h \
+ ../src/RadioSystem/WiFi/ASN1/PacketHeader.h \
+ ../src/RadioSystem/WiFi/Encoder.h ../src/RadioSystem/WiFi/ThreadedQue.h \
+ ../src/RadioSystem/WiFi/ThreadClass.h ../src/RadioSystem/WiFi/debug.h \
+ ../src/RadioSystem/WiFi/uncopyable.h \
+ ../src/RadioSystem/WiFi/ReceiveItem.h \
+ ../src/RadioSystem/WiFi/TimingInfo.h \
+ ../src/RadioSystem/WiFi/retransmission_handler.h \
+ ../src/RadioSystem/WiFi/SendItem.h ../src/RadioSystem/WiFi/Sender.h \
+ ../src/RadioSystem/WiFi/Listener.h \
  /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/NodeManager/NodeManager.h \
  /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/RadioSystem/RadioSystem.h \
  /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/RadioSystem/Telosb/serialsource.h \
@@ -190,6 +214,60 @@ src/RadioSystem/WiFi/WiFiRadioSystem.d: \
 /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/Messages/Header.h:
 
 /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/Messages/Message.h:
+
+../src/RadioSystem/WiFi/ASN1/PacketHeader.h:
+
+../src/RadioSystem/WiFi/ASN1/Address.h:
+
+../src/RadioSystem/WiFi/ASN1/Address.h:
+
+../src/RadioSystem/WiFi/ASN1/MessageTypes.h:
+
+../src/RadioSystem/WiFi/ASN1/ReceptionReportModes.h:
+
+../src/RadioSystem/WiFi/Receiver.h:
+
+../src/RadioSystem/WiFi/asn1includes.h:
+
+../src/RadioSystem/WiFi/ASN1/ReceptionReportMessage.h:
+
+../src/RadioSystem/WiFi/ASN1/ReceptionReportModes.h:
+
+../src/RadioSystem/WiFi/ASN1/asn_SEQUENCE_OF.h:
+
+../src/RadioSystem/WiFi/ASN1/asn_SET_OF.h:
+
+../src/RadioSystem/WiFi/ASN1/constr_SEQUENCE_OF.h:
+
+../src/RadioSystem/WiFi/ASN1/constr_SET_OF.h:
+
+../src/RadioSystem/WiFi/ASN1/ReceptionReportRequestMessage.h:
+
+../src/RadioSystem/WiFi/ASN1/Packet.h:
+
+../src/RadioSystem/WiFi/ASN1/PacketHeader.h:
+
+../src/RadioSystem/WiFi/Encoder.h:
+
+../src/RadioSystem/WiFi/ThreadedQue.h:
+
+../src/RadioSystem/WiFi/ThreadClass.h:
+
+../src/RadioSystem/WiFi/debug.h:
+
+../src/RadioSystem/WiFi/uncopyable.h:
+
+../src/RadioSystem/WiFi/ReceiveItem.h:
+
+../src/RadioSystem/WiFi/TimingInfo.h:
+
+../src/RadioSystem/WiFi/retransmission_handler.h:
+
+../src/RadioSystem/WiFi/SendItem.h:
+
+../src/RadioSystem/WiFi/Sender.h:
+
+../src/RadioSystem/WiFi/Listener.h:
 
 /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/NodeManager/NodeManager.h:
 

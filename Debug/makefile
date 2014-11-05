@@ -11,6 +11,7 @@ RM := rm -rf
 -include src/Tasks/subdir.mk
 -include src/TaskManager/subdir.mk
 -include src/S2GInterface/subdir.mk
+-include src/RadioSystem/WiFi/ASN1/subdir.mk
 -include src/RadioSystem/WiFi/subdir.mk
 -include src/RadioSystem/Telosb/subdir.mk
 -include src/RadioSystem/subdir.mk
@@ -56,7 +57,7 @@ all: testbed-v2
 testbed-v2: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MacOS X C++ Linker'
-	g++ -L/home/jordi/Desktop/Thesis/dev/Milano/opencv-2.4.9/lib -o "testbed-v2" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L/home/jordi/Desktop/Thesis/dev/Milano/opencv-2.4.9/lib -pthread -o "testbed-v2" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

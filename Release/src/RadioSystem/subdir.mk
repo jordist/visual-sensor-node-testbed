@@ -10,7 +10,8 @@ CPP_SRCS += \
 ../src/RadioSystem/MessageParser.cpp \
 ../src/RadioSystem/OffloadingManager.cpp \
 ../src/RadioSystem/ProcessingSpeedEstimator.cpp \
-../src/RadioSystem/RadioSystem.cpp 
+../src/RadioSystem/RadioSystem.cpp \
+../src/RadioSystem/TxSpeedEstimator.cpp 
 
 OBJS += \
 ./src/RadioSystem/IncomingMessageQueue.o \
@@ -19,7 +20,8 @@ OBJS += \
 ./src/RadioSystem/MessageParser.o \
 ./src/RadioSystem/OffloadingManager.o \
 ./src/RadioSystem/ProcessingSpeedEstimator.o \
-./src/RadioSystem/RadioSystem.o 
+./src/RadioSystem/RadioSystem.o \
+./src/RadioSystem/TxSpeedEstimator.o 
 
 CPP_DEPS += \
 ./src/RadioSystem/IncomingMessageQueue.d \
@@ -28,7 +30,8 @@ CPP_DEPS += \
 ./src/RadioSystem/MessageParser.d \
 ./src/RadioSystem/OffloadingManager.d \
 ./src/RadioSystem/ProcessingSpeedEstimator.d \
-./src/RadioSystem/RadioSystem.d 
+./src/RadioSystem/RadioSystem.d \
+./src/RadioSystem/TxSpeedEstimator.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

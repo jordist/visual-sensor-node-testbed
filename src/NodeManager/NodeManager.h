@@ -114,6 +114,8 @@ private:
 	VisualFeatureEncoding *encoder;
 	VisualFeatureDecoding *decoder;
 	OffloadingManager *offloading_manager;
+
+	vector<Mat> imgs;
 };
 
 #endif

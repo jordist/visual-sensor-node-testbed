@@ -9,7 +9,7 @@ using namespace std;
 
 
 
-RadioSystem::RadioSystem(NodeManager* nm, MessageParser* m, string ip_address, string port){
+RadioSystem::RadioSystem(NodeManager* nm, MessageParser* m, string ip_address, string port, string ip_address2, string port2){
 	nodeManager_ptr = nm;
 	msg_parser = m;
 	incoming_message_queue_ptr = new IncomingMessageQueue(this,msg_parser);
@@ -28,13 +28,13 @@ RadioSystem::RadioSystem(NodeManager* nm, MessageParser* m, string ip_address, s
 		telosbRadioSystem_ptr->setIncomingMessageQueue(incoming_message_queue_ptr);
 
 		tcp::resolver::query query(ip_address, port);
-		wifiRadioSystem_ptr = new WiFiRadioSystem(query,std::string("server"),nodeManager_ptr);
+		wifiRadioSystem_ptr = new WiFiRadioSystem(ip_address, port, ip_address2, port2, std::string("server"),nodeManager_ptr);
 		break;
 	}
 	case COOPERATOR:
 	{
 		tcp::resolver::query query(ip_address, port);
-		wifiRadioSystem_ptr = new WiFiRadioSystem(query,std::string("client"),nodeManager_ptr);
+		wifiRadioSystem_ptr = new WiFiRadioSystem(ip_address, port, ip_address2, port2, std::string("client"),nodeManager_ptr);
 		break;
 	}
 	default:

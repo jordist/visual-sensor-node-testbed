@@ -207,7 +207,7 @@ void NodeManager::notify_msg(Message *msg){
 
 			datc_param.num_feat_per_block = ((StartDATCMsg*)msg)->getNumFeatPerBlock();
 			datc_param.num_cooperators = ((StartDATCMsg*)msg)->getNumCooperators();
-
+			imgs.clear();
 			delete(msg);
 		}
 		}
@@ -675,6 +675,34 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 
 	waitKey(0);                                          // Wait for a keystroke in the window*/
 
+	bool overlap_multicasted=true;
+	if(overlap_multicasted && datc_param.num_cooperators > 1){
+		//std::cout << "num_coop=" << datc_param.num_cooperators << "\tsliceNum=" << msg->getSliceNumber() << "imgs.size()=" << imgs.size() << std::endl;
+		if(msg->getSliceNumber()==1){
+			imgs.push_back(slice);
+			if(imgs.size()<2){
+				cur_state = IDLE;
+				return; //Wait for more slices
+			}
+		}
+		if(msg->getSliceNumber()==datc_param.num_cooperators){
+			imgs.push_back(slice);
+			if(imgs.size()<2){
+				cur_state = IDLE;
+				return; //Wait for more slices
+			}
+		}
+		else{
+			imgs.push_back(slice);
+			if(imgs.size()<3){
+				cur_state = IDLE;
+				return; //Wait for more slices
+			}
+		}
+		cv::hconcat(imgs, slice);
+
+	}
+
 
 	//send ACK_SLICE_MESSAGE
 	ACKsliceMsg *ackslice_msg = new ACKsliceMsg(frame_id);
@@ -706,8 +734,6 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	vector<KeyPoint> kpts = ((ExtractKeypointsTask*)cur_task)->getKeypoints();
 	double detTime = ((ExtractKeypointsTask*)cur_task)->getDetTime();
 	cout << "extracted " << (int)kpts.size() << "keypoints" << endl;
-cerr << "extracted " << (int)kpts.size() << "keypoints\tDetThreshold=" << datc_param.detection_threshold << endl;
-
 	delete((ExtractKeypointsTask*)cur_task);
 
 	//Extract features
@@ -829,8 +855,8 @@ void NodeManager::DATC_store_features(DataATCMsg* msg){
 
 void NodeManager::notifyCooperatorOnline(Connection* cn){
 	offloading_manager->addCooperator(cn);
-	std::string ip_addr = cn->socket().remote_endpoint().address().to_string();
-	int port = cn->socket().remote_endpoint().port();
+	std::string ip_addr = cn->getRemoteIP();
+	int port = cn->getRemotePort();
 	CoopInfoMsg *msg = new CoopInfoMsg(ip_addr,port,CoopStatus_online);
 	msg->setSource(1);
 	msg->setDestination(0);
@@ -839,8 +865,8 @@ void NodeManager::notifyCooperatorOnline(Connection* cn){
 
 void NodeManager::notifyCooperatorOffline(Connection* cn){
 	offloading_manager->removeCooperator(cn);
-	std::string ip_addr = cn->socket().remote_endpoint().address().to_string();
-	int port = cn->socket().remote_endpoint().port();
+	std::string ip_addr = cn->getRemoteIP();
+	int port = cn->getRemotePort();
 	CoopInfoMsg *msg = new CoopInfoMsg(ip_addr,port,CoopStatus_offline);
 	msg->setSource(1);
 	msg->setDestination(0);

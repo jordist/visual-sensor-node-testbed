@@ -13,8 +13,8 @@
 
 void AcquireImageTask::execute(){
 	cout << "executing the acquire_image_task" << endl;
-	imgAcq->takePicture(image);
-	//image = imread("util/sample_VGA_1.jpg");
+//	imgAcq->takePicture(image);
+	image = imread("util/sample_VGA_1.jpg");
 	cout << "ok!" << endl;
 	boost::mutex::scoped_lock lk(task_monitor);
 
@@ -341,12 +341,12 @@ void SendMessageTask::execute(){
 	//retrieve tot number of packets to send
 	vector<uchar> bitstream;
 	msg_to_send->getBitStream(bitstream);
-	cout << "SMT: bitstream size: " << bitstream.size() << endl;
+//	cout << "SMT: bitstream size: " << bitstream.size() << endl;
 	bool header_only_packet = false;
 
 
 	int num_packets_to_send = ceil(double(bitstream.size())/ (double) (max_radio_payload_length-app_header_length) );
-	cout << "SMT: total packets to send " << num_packets_to_send << endl;
+//	cout << "SMT: total packets to send " << num_packets_to_send << endl;
 	int remainingBytes = bitstream.size();
 
 	if(remainingBytes == 0){
@@ -407,7 +407,7 @@ void SendMessageTask::execute(){
 			serial_packet[j+radio_header_length+app_header_length] = bitstream[dataIdx];
 			dataIdx++;
 		}
-		cout << "SMT: packet ready" << endl;
+//		cout << "SMT: packet ready" << endl;
 		//send (telosb only)
 		int ret = -1;
 		int max_resend   = 7;
@@ -423,7 +423,7 @@ void SendMessageTask::execute(){
 			//usleep(30000);
 		}
 
-		cout << "SMT: packet sent!" << endl;
+//		cout << "SMT: packet sent!" << endl;
 
 		//usleep(30000);
 		remainingBytes-=curFrameLength;

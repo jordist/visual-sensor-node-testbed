@@ -19,8 +19,9 @@
 using namespace std;
 using namespace cv;
 
-#define COMPRESS_IMAGE 0
-#define INITIAL_DETECTION_THRESHOLD 50
+#define OVERLAP_MULTICASTED true
+#define COMPRESS_IMAGE 1
+#define INITIAL_DETECTION_THRESHOLD 90
 
 
 class Connection;
@@ -38,12 +39,14 @@ typedef struct cooperator{
 	int Npixels;
 	ProcessingSpeedEstimator* processing_speed_estimator;
 	TxSpeedEstimator* tx_speed_estimator;
-	double idleTime;
+//	double idleTime;
 	double txTime;
+	double time_to_processing_start;
 	double completionTime;
 
 	double load;
 	Mat image_slice;
+	Mat overlap_slice;
 	int col_offset;
 
 	double detTime;
@@ -116,6 +119,7 @@ private:
 	boost::asio::deadline_timer t;
 	boost::asio::io_service::work work;
 
+	boost::mutex mut;
 };
 
 

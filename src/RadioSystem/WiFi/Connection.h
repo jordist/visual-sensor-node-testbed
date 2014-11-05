@@ -1,10 +1,3 @@
-/*
- * Connection.h
- *
- *  Created on: 16/set/2014
- *      Author: greeneyes
- */
-
 #ifndef CONNECTION_H_
 #define CONNECTION_H_
 
@@ -17,38 +10,74 @@
 #include "Messages/Message.h"
 #include "Messages/Header.h"
 
-//#include "reply.hpp"
-//#include "request.hpp"
-//#include "MessageHandler.h"
-//#include "request_parser.hpp"
+#include "ASN1/PacketHeader.h"
+#include "ASN1/Address.h"
+#include "ASN1/MessageTypes.h"
+#include "ASN1/ReceptionReportModes.h"
+//#include "ASN1/ReceptionReportMessage.h"
+//#include "ASN1/ReceptionReportRequestMessage.h"
+
+#define CONN_UNICAST	0
+#define CONN_BROADCAST	1
+
 class NodeManager;
 class ConnectionManager;
 class Message;
 class MessageParser;
+class Sender;
 
 class Connection
 {
 public:
-	/// Construct a connection with the given io_service.
-	explicit Connection(boost::asio::io_service& io_service,
-			ConnectionManager& manager/*, MessageHandler& handler*/);
+	explicit Connection(ConnectionManager& manager);
 
-	/// Get the socket associated with the connection.
-	boost::asio::ip::tcp::socket& socket();
+	std::string getRemoteIP();
+	int getRemotePort();
 
-	/// Start the first asynchronous operation for the connection.
+/*	/// Start the first asynchronous operation for the connection.
 	//void start();
 	void readHeader();
+*/
 
 	/// Stop all asynchronous operations associated with the connection.
 	void stop();
 
 	void writeMsg(Message* msg);
+	void writeMsgBroadcast(Message* msg, Connection* cn2);
 	void setNodeManager(NodeManager* nm);
 	void setMessageParser(MessageParser* m);
+	void setSender(Sender* s);
+	void notifyMsgReceived(uchar* msg, int msg_len);
+
+//Connection(sockaddr_in *address, Address_t *source_address, Address_t *destination_address, int conn_type);
+	void setConnection(sockaddr_in *address, Address_t *source_address, Address_t *destination_address, int conn_type);
+	void setConnectionBroadcast(sockaddr_in *address, Address_t *source_address);
+	int getLastMessageID(); //Returns msgID
+	int getNextMessageID(); //Increments msgID and returns the new msgID
+	int getLastReceivedMessageID();
+	void setLastReceivedMessageID(int messageID);
+	int isBroadcast();
+	int getNumBroadcastNodes();
+	void setNumBroadcastNodes(int n);
+	void setTxTime(double t);
+	double getTxTime();
+
+	struct sockaddr_in addr;
+	Address_t srcAddress;
+	Address_t dstAddress;
+	Address_t dstAddress2;
 
 
 private:
+	int msgID; //Last used msgID
+	int LastReceivedMessageID_;
+	int is_broadcast_;
+	int num_broadcast_nodes_;
+	double txTime;
+
+
+/*
+
 	/// Handle completion of a read operation.
 
 	void data_sent_handler(const boost::system::error_code& ec);
@@ -64,12 +93,10 @@ private:
 
 	/// Socket for the connection.
 	boost::asio::ip::tcp::socket socket_;
+*/
 
 	/// The manager for this connection.
 	ConnectionManager& connection_manager_;
-
-	/// The handler used to process the incoming request.
-	//MessageHandler& message_handler_;
 
 
 	uchar header_[HEADER_SIZE];
@@ -80,15 +107,7 @@ private:
 
 	NodeManager* node_manager;
 	MessageParser* message_parser;
-
-
-	/// The incoming request.
-	//request request_;
-	//Message message_;
-
-	/// The parser for the incoming request.
-	//request_parser request_parser_;
-	//MessageParser message_parser;
+	Sender* sender;
 
 };
 

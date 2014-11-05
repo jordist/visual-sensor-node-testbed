@@ -6,7 +6,6 @@
  */
 
 #include "OffloadingManager.h"
-//#include <algorithm>
 
 bool bandwidthComp(cooperator i, cooperator j){
 	return (i.bandwidth > j.bandwidth);
@@ -68,6 +67,7 @@ Mat OffloadingManager::computeLoads(Mat& image){
 	std::cerr << "Estimated completion time: " << loadbalancing.getCompletionTime() << "sec\n";
 
 	//Set loads in cooperatorList
+	bool overlap_multicasted = OVERLAP_MULTICASTED;
 	int s1, s2;
 	if(cooperators_to_use == 1){
 		s1 = 0;
@@ -77,28 +77,57 @@ Mat OffloadingManager::computeLoads(Mat& image){
 		cooperatorList[0].Npixels = cooperatorList[0].image_slice.rows * cooperatorList[0].image_slice.cols;
 	}
 	else{
-		//First cooperator
-		s1 = 0;
-		s2 = min(image.cols, (int)ceil(cutvector[0]+overlap*image.cols));
-		cooperatorList[0].image_slice = Mat(image, Range(0,image.rows), Range(s1,s2)).clone();
-		cooperatorList[0].col_offset = s1;
-		cooperatorList[0].Npixels = cooperatorList[0].image_slice.rows * cooperatorList[0].image_slice.cols;
+		if(!overlap_multicasted){
+			//First cooperator
+			s1 = 0;
+			s2 = min(image.cols, (int)ceil(cutvector[0]+overlap*image.cols));
+			cooperatorList[0].image_slice = Mat(image, Range(0,image.rows), Range(s1,s2)).clone();
+			cooperatorList[0].col_offset = s1;
+			cooperatorList[0].Npixels = cooperatorList[0].image_slice.rows * cooperatorList[0].image_slice.cols;
 
-		//Middle cooperators
-		for(int i=1; i<cooperators_to_use-1; i++){
-			s1 = max(0, (int)floor(cutvector[i-1]-overlap*image.cols));
-			s2 = min(image.cols, (int)ceil(cutvector[i]+overlap*image.cols));
-			cooperatorList[i].image_slice = Mat(image, Range(0,image.rows), Range(s1,s2)).clone();
-			cooperatorList[i].col_offset = s1;
-			cooperatorList[i].Npixels = cooperatorList[i].image_slice.rows * cooperatorList[i].image_slice.cols;
+			//Middle cooperators
+			for(int i=1; i<cooperators_to_use-1; i++){
+				s1 = max(0, (int)floor(cutvector[i-1]-overlap*image.cols));
+				s2 = min(image.cols, (int)ceil(cutvector[i]+overlap*image.cols));
+				cooperatorList[i].image_slice = Mat(image, Range(0,image.rows), Range(s1,s2)).clone();
+				cooperatorList[i].col_offset = s1;
+				cooperatorList[i].Npixels = cooperatorList[i].image_slice.rows * cooperatorList[i].image_slice.cols;
+			}
+
+			//Last cooperator
+			s1 = max(0, (int)floor(cutvector[cooperators_to_use-2]-overlap*image.cols));
+			s2 = image.cols;
+			cooperatorList[cooperators_to_use-1].image_slice = Mat(image, Range(0,image.rows), Range(s1,s2)).clone();
+			cooperatorList[cooperators_to_use-1].col_offset = s1;
+			cooperatorList[cooperators_to_use-1].Npixels = cooperatorList[cooperators_to_use-1].image_slice.rows * cooperatorList[cooperators_to_use-1].image_slice.cols;
 		}
+		else{ //Overlap multicasted
+			//First cooperator
+			s1 = 0;
+			s2 = min(image.cols, (int)ceil(cutvector[0]));
+			cooperatorList[0].image_slice = Mat(image, Range(0,image.rows), Range(s1,s2-overlap*image.cols)).clone();
+			cooperatorList[0].overlap_slice = Mat(image, Range(0,image.rows), Range(s2-overlap*image.cols,s2+overlap*image.cols)).clone();
+			cooperatorList[0].col_offset = s1;
+			cooperatorList[0].Npixels = image.rows*((s2+overlap*image.cols)-(s1));
 
-		//Last cooperator
-		s1 = max(0, (int)floor(cutvector[cooperators_to_use-2]-overlap*image.cols));
-		s2 = image.cols;
-		cooperatorList[cooperators_to_use-1].image_slice = Mat(image, Range(0,image.rows), Range(s1,s2)).clone();
-		cooperatorList[cooperators_to_use-1].col_offset = s1;
-		cooperatorList[cooperators_to_use-1].Npixels = cooperatorList[cooperators_to_use-1].image_slice.rows * cooperatorList[cooperators_to_use-1].image_slice.cols;
+			//Middle cooperators
+			for(int i=1; i<cooperators_to_use-1; i++){
+				s1 = max(0, (int)floor(cutvector[i-1]));
+				s2 = min(image.cols, (int)ceil(cutvector[i]));
+				cooperatorList[i].image_slice = Mat(image, Range(0,image.rows), Range(s1+overlap*image.cols,s2-overlap*image.cols)).clone();
+				cooperatorList[0].overlap_slice = Mat(image, Range(0,image.rows), Range(s2-overlap*image.cols,s2+overlap*image.cols)).clone();
+				cooperatorList[i].col_offset = max(0, (int)ceil(s1 - overlap*image.cols));
+				cooperatorList[i].Npixels = image.rows*((s2+overlap*image.cols)-(s1-overlap*image.cols));
+			}
+
+			//Last cooperator
+			s1 = max(0, (int)floor(cutvector[cooperators_to_use-2]));
+			s2 = image.cols;
+			cooperatorList[cooperators_to_use-1].image_slice = Mat(image, Range(0,image.rows), Range(s1+overlap*image.cols,s2)).clone();
+			cooperatorList[cooperators_to_use-1].col_offset = max(0, (int)ceil(s1 - overlap*image.cols));
+			cooperatorList[cooperators_to_use-1].Npixels = image.rows*((s2)-(s1-overlap*image.cols));
+
+		}
 	}
 
 	//No load for camera
@@ -115,6 +144,10 @@ void OffloadingManager::transmitStartDATC(StartDATCMsg* msg){
 	msg->setDetectorThreshold(next_detection_threshold);
 	msg->setMaxNumFeat((msg->getMaxNumFeat())*1.1);
 
+/*if(cooperators_to_use==2){
+	cooperatorList[0].connection->writeMsgBroadcast(msg, cooperatorList[1].connection);
+	return;
+}*/
 	for(int i=0;i<cooperatorList.size();i++){
 		cooperatorList[i].connection->writeMsg(msg);
 	}
@@ -153,13 +186,12 @@ void OffloadingManager::transmitLoads(){
 }
 
 int OffloadingManager::probeLinks(){
-	return 0;
-	/*for(int i=0;i < cooperatorList.size();i++){
+	for(int i=0;i < cooperatorList.size();i++){
 		//DUMMY BANDWIDTH - REPLACE WITH ACTUAL PROBING
 		cooperatorList[i].bandwidth = 24000000;
 		cooperatorList[i].CPUspeed = 1480000;
 	}
-	return 0;*/
+	return 0;
 
 	/*char command[60];
 	for(int i=0;i<cooperatorList.size();i++){
@@ -210,16 +242,15 @@ void OffloadingManager::estimate_parameters(cooperator* coop) {
 	}
 
 	//Bandwidth
-	coop->tx_speed_estimator->AddObservation(coop->txTime, coop->Npixels);
+	coop->tx_speed_estimator->AddObservation(coop->txTime, coop->image_slice.cols * coop->image_slice.rows);
 	coop->bandwidth = coop->tx_speed_estimator->getBandwidth();
-	//coop->bandwidth = 8*coop->Npixels/coop->txTime; //FIXME Only for bmp encoding, 8bits per pixel
 
 	std::cerr << " Node: " << coop << std::endl;
 	std::cerr << "estimate_processing_parameters: detTime=" << coop->detTime << "\tdescTime=" << coop->descTime << "\tNpix=" << coop->Npixels << "\tNkp=" << coop->Nkeypoints << "\n";
 	std::cerr << "estimate_processing_parameters: Pdpx=" << coop->Pdpx << "\tPdip=" << coop->Pdip << "\tPe=" << coop->Pe << "\n";
 	std::cerr << "txTime: " << coop->txTime << "\testimated_bandwidth: " << coop->bandwidth << "bits/sec" << std::endl;
 	std::cerr << "cooperator completion time:" << coop->completionTime << std::endl;
-	std::cerr << "idleTime + txTime + detTime + descTime = " << coop->idleTime + coop->txTime + coop->detTime + coop->descTime  << std::endl;
+	std::cerr << "idleTime + txTime + detTime + descTime = " << coop->time_to_processing_start + coop->detTime + coop->descTime  << std::endl;
 }
 
 void OffloadingManager::sortCooperators()
@@ -229,6 +260,8 @@ void OffloadingManager::sortCooperators()
 
 void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& features, Connection* cn,
 		double detTime, double descTime, double kencTime, double fencTime){
+	mut.lock();
+
 	features_buffer.push_back(features);
 
 	if(cn){
@@ -274,12 +307,13 @@ void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& feat
 		//get next detection threshold
 		next_detection_threshold = loadbalancing.GetNextDetectionThreshold();
 
-std::cerr << "Next detection threshold: " << next_detection_threshold << "\n";
-std::cerr << "Added " << keypoint_buffer.size() << " keypoints\n";
-//printKeypoints(keypoint_buffer);
+	std::cerr << "Next detection threshold: " << next_detection_threshold << "\n";
+	std::cerr << "Added " << keypoint_buffer.size() << " keypoints\n";
+	//printKeypoints(keypoint_buffer);
 
 		node_manager->notifyOffloadingCompleted(keypoint_buffer,features_buffer,camDetTime,camDescTime);
 	}
+	mut.unlock();
 }
 
 void OffloadingManager::timerExpired(const boost::system::error_code& error) {
@@ -306,30 +340,48 @@ int OffloadingManager::getNumAvailableCoop() {
 }
 
 void OffloadingManager::transmitNextCoop() {
+	bool is_last_coop = false;
 	if(next_coop < cooperators_to_use){
 		int i = next_coop;
+		if(i+1 == cooperators_to_use){
+			is_last_coop = true;
+		}
 		vector<uchar> bitstream;
+		vector<uchar> bitstream_overlap;
 		vector<int> param = vector<int>(2);
 		param[0] = CV_IMWRITE_JPEG_QUALITY;
-		param[1] = 100;
+		param[1] = 70;
 
-		cooperatorList[i].idleTime = (getTickCount()-start_time)/getTickFrequency();
-		cooperatorList[i].txTime = getTickCount();
+//		cooperatorList[i].idleTime = (getTickCount()-start_time)/getTickFrequency();
+//		cooperatorList[i].txTime = getTickCount();
 		double enc_time = getTickCount();
 		if(COMPRESS_IMAGE == 1){
 			imencode(".jpg",cooperatorList[i].image_slice,bitstream,param);
+			if(OVERLAP_MULTICASTED && cooperators_to_use>1 && !is_last_coop) imencode(".jpg",cooperatorList[i].overlap_slice,bitstream_overlap,param);
 		}else{
 			imencode(".bmp", cooperatorList[i].image_slice,bitstream);
+			if(OVERLAP_MULTICASTED && cooperators_to_use>1 && !is_last_coop) imencode(".bmp", cooperatorList[i].overlap_slice,bitstream_overlap);
 		}
 		enc_time = (getTickCount()-enc_time)/getTickFrequency();
 		Coordinate_t top_left;
 		top_left.xCoordinate = cooperatorList[i].col_offset;
 		top_left.yCoordinate = 0;
 
-		DataCTAMsg *msg = new DataCTAMsg(0,1,top_left,bitstream.size(),enc_time,0,bitstream);
-		cooperatorList[i].connection->writeMsg(msg);
+		if((!OVERLAP_MULTICASTED) || cooperators_to_use==1){
+			DataCTAMsg *msg = new DataCTAMsg(0,1+i,top_left,bitstream.size(),enc_time,0,bitstream);
+			cooperatorList[i].connection->writeMsg(msg);
+		}
+		else if(OVERLAP_MULTICASTED){
+			DataCTAMsg *msg = new DataCTAMsg(0,1+i,top_left,bitstream.size(),enc_time,0,bitstream);
+			cooperatorList[i].connection->writeMsg(msg);
+			if(!is_last_coop){
+				DataCTAMsg *msg2 = new DataCTAMsg(0,1+i,top_left,bitstream_overlap.size(),enc_time,0,bitstream_overlap);
+				cooperatorList[i].connection->writeMsgBroadcast(msg2, cooperatorList[i+1].connection);
+			}
+		}
 
 		next_coop++;
+		transmitNextCoop();
 	}
 }
 
@@ -342,10 +394,16 @@ void OffloadingManager::transmitNextCoop() {
  }*/
 
 void OffloadingManager::notifyACKslice(int frameID, Connection* cn) {
+//	std::cout << "OffloadingManager::notifyACKslice\n";
+
+	mut.lock();
 	for(int i=0;i<cooperatorList.size();i++){
 		if(cn == cooperatorList[i].connection){
-			cooperatorList[i].txTime = (getTickCount()-cooperatorList[i].txTime)/getTickFrequency();
+			//cooperatorList[i].txTime = (getTickCount()-cooperatorList[i].txTime)/getTickFrequency();
+			cooperatorList[i].txTime = cooperatorList[i].connection->getTxTime();
+			cooperatorList[i].time_to_processing_start = (getTickCount()-start_time)/getTickFrequency();
 		}
 	}
-	transmitNextCoop();
+//	transmitNextCoop();
+	mut.unlock();
 }

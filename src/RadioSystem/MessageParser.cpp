@@ -42,9 +42,9 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 
 		char buf[MAX_START_CTA_MESSAGE_SIZE];
 
-		cout << "Deserializing start cta message" << endl;
+//		cout << "Deserializing start cta message" << endl;
 		int bitstream_size = h->getPayloadSize();
-		cout << "Bitstream size is " << bitstream_size << endl;
+//		cout << "Bitstream size is " << bitstream_size << endl;
 
 		//copy the bitstream (MAYBE REMOVED?)
 		for(int i=0;i<bitstream_size;i++){
@@ -82,9 +82,9 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 
 		char buf[MAX_START_ATC_MESSAGE_SIZE];
 
-		cout << "Deserializing start atc message" << endl;
+//		cout << "Deserializing start atc message" << endl;
 		int bitstream_size = h->getPayloadSize();
-		cout << "Bitstream size is " << bitstream_size << endl;
+//		cout << "Bitstream size is " << bitstream_size << endl;
 
 		//copy the bitstream (MAYBE REMOVED)
 		for(int i=0;i<bitstream_size;i++){
@@ -119,9 +119,9 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 
 		char buf[MAX_START_DATC_MESSAGE_SIZE];
 
-		cout << "Deserializing start atc message" << endl;
+//		cout << "Deserializing start atc message" << endl;
 		int bitstream_size = h->getPayloadSize();
-		cout << "Bitstream size is " << bitstream_size << endl;
+//		cout << "Bitstream size is " << bitstream_size << endl;
 
 		//copy the bitstream (MAYBE REMOVED)
 		for(int i=0;i<bitstream_size;i++){
@@ -156,9 +156,9 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 
 		char buf[MAX_DATA_CTA_MESSAGE_SIZE];
 
-		cout << "Deserializing data cta message" << endl;
+//		cout << "Deserializing data cta message" << endl;
 		int bitstream_size = h->getPayloadSize();
-		cout << "Bitstream size is " << bitstream_size << endl;
+//		cout << "Bitstream size is " << bitstream_size << endl;
 
 		//copy the bitstream (MAYBE REMOVED)
 		for(int i=0;i<bitstream_size;i++){
@@ -193,9 +193,9 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 
 		char buf[MAX_DATA_ATC_MESSAGE_SIZE];
 
-		cout << "Deserializing data atc message" << endl;
+//		cout << "Deserializing data atc message" << endl;
 		int bitstream_size = h->getPayloadSize();
-		cout << "Bitstream size is " << bitstream_size << endl;
+//		cout << "Bitstream size is " << bitstream_size << endl;
 
 		//copy the bitstream (MAYBE REMOVED)
 		for(int i=0;i<bitstream_size;i++){
@@ -231,7 +231,7 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 		char buf[MAX_COOP_INFO_MESSAGE_SIZE];
 
 		int bitstream_size =  h->getPayloadSize();
-		cout << "Bitstream size is " << bitstream_size << endl;
+//		cout << "Bitstream size is " << bitstream_size << endl;
 
 		//copy the bitstream (MAYBE REMOVED)
 		for(int i=0;i<bitstream_size;i++){
@@ -276,7 +276,7 @@ Message* MessageParser::parseMessage(Header* h, uchar* bitstream, Connection* cn
 		char buf[MAX_ACK_SLICE_MESSAGE_SIZE];
 
 		int bitstream_size =  h->getPayloadSize();
-		cout << "Bitstream size is " << bitstream_size << endl;
+//		cout << "Bitstream size is " << bitstream_size << endl;
 
 		//copy the bitstream (MAYBE REMOVED)
 		for(int i=0;i<bitstream_size;i++){

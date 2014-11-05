@@ -10,8 +10,8 @@ using namespace std;
 /*
  * USAGE:
  * testbed-v2 sink 						SINK MODE
- * testbed-v2 camera port 				CAMERA MODE, LISTENING ON PORT port FOR COOP.
- * testbed-v2 cooperator address port   COOP MPDE, CONNECTING TO address:port
+ * testbed-v2 camera localIP localPort broadcastIP bcastPort	CAMERA MODE, LISTENING ON PORT port FOR COOP.
+ * testbed-v2 cooperator localIP localPort cameraIP cameraPort   COOP MPDE, CONNECTING TO address:port
  */
 
 int main(int argc, char ** argv){
@@ -41,7 +41,7 @@ int main(int argc, char ** argv){
 		//create the main components
 		nodeMng  = new NodeManager(SINK);
 		msg_parser = new MessageParser();
-		radioSys = new RadioSystem(nodeMng, msg_parser,argv[3],argv[4]);
+		radioSys = new RadioSystem(nodeMng, msg_parser,argv[3],argv[4], argv[3],argv[4]);
 		taskMng  = new TaskManager(nodeMng);
 
 
@@ -69,7 +69,7 @@ int main(int argc, char ** argv){
 	case CAMERA:{
 		nodeMng  = new NodeManager(CAMERA);
 		msg_parser = new MessageParser();
-		radioSys = new RadioSystem(nodeMng,msg_parser,argv[3],argv[4]);
+		radioSys = new RadioSystem(nodeMng,msg_parser,argv[3],argv[4],argv[5],argv[6]);
 		taskMng  = new TaskManager(nodeMng);
 		//connMng = new ConnectionManager();
 
@@ -94,7 +94,7 @@ int main(int argc, char ** argv){
 	case COOPERATOR:{
 		nodeMng  = new NodeManager(COOPERATOR);
 		msg_parser = new MessageParser();
-		radioSys = new RadioSystem(nodeMng,msg_parser,argv[3],argv[4]);
+		radioSys = new RadioSystem(nodeMng,msg_parser,argv[3],argv[4],argv[5],argv[6]);
 		taskMng  = new TaskManager(nodeMng);
 		//connMng = new ConnectionManager();
 

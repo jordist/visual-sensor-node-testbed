@@ -137,11 +137,11 @@ void LoadBalancing::AddKeypoints(vector<KeyPoint>& kpts) {
 	lastM = (int)lastIPscores_.size();
 	sort(lastIPscores_.begin(), lastIPscores_.end(), std::greater<float>()); //Sort the scores in descending order
 //for(size_t i=0; i<lastIPscores_.size(); i++){
-//	std::cerr << lastIPscores_[i] << "; ";
+//	std::cout << lastIPscores_[i] << "; ";
 //}
-//std::cerr << std::endl;
-//if(lastIPscores_.size() >0) std::cerr << "Lowest keypoint score (" << lastIPscores_.size() << "): " << lastIPscores_.back() << std::endl;
-//if(lastIPscores_.size() >= Mopt_) std::cerr << "Keypoint (M*) response =" << lastIPscores_[Mopt_-1] << std::endl;
+//std::cout << std::endl;
+//if(lastIPscores_.size() >0) std::cout << "Lowest keypoint score (" << lastIPscores_.size() << "): " << lastIPscores_.back() << std::endl;
+//if(lastIPscores_.size() >= Mopt_) std::cout << "Keypoint (M*) response =" << lastIPscores_[Mopt_-1] << std::endl;
 
 	if(lastM > Mopt_){
 		UpdateBDR();
