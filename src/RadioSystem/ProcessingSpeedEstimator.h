@@ -11,7 +11,7 @@
 #include <vector>
 
 #define NUM_PROCESSING_OBSERVATIONS_DEFAULT 50
-#define PE_EXP_COEF_DEFAULT 0.05
+#define PE_EXP_COEF_DEFAULT 0.1
 #define PE_TRAINING_PERIOD 20
 
 typedef struct ProcessingPerformanceObservation_t{

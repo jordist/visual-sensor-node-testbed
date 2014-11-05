@@ -20,7 +20,7 @@ using namespace std;
 using namespace cv;
 
 #define COMPRESS_IMAGE 0
-#define INITIAL_DETECTION_THRESHOLD 30
+#define INITIAL_DETECTION_THRESHOLD 50
 
 
 class Connection;

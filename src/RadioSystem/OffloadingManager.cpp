@@ -153,12 +153,13 @@ void OffloadingManager::transmitLoads(){
 }
 
 int OffloadingManager::probeLinks(){
-	for(int i=0;i < cooperatorList.size();i++){
+	return 0;
+	/*for(int i=0;i < cooperatorList.size();i++){
 		//DUMMY BANDWIDTH - REPLACE WITH ACTUAL PROBING
 		cooperatorList[i].bandwidth = 24000000;
 		cooperatorList[i].CPUspeed = 1480000;
 	}
-	return 0;
+	return 0;*/
 
 	/*char command[60];
 	for(int i=0;i<cooperatorList.size();i++){
