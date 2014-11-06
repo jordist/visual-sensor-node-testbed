@@ -20,8 +20,8 @@ using namespace std;
 using namespace cv;
 
 #define OVERLAP_MULTICASTED true
-#define COMPRESS_IMAGE 1
-#define INITIAL_DETECTION_THRESHOLD 90
+#define COMPRESS_IMAGE 0
+#define INITIAL_DETECTION_THRESHOLD 100
 
 
 class Connection;

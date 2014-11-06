@@ -250,7 +250,7 @@ void OffloadingManager::estimate_parameters(cooperator* coop) {
 	std::cerr << "estimate_processing_parameters: Pdpx=" << coop->Pdpx << "\tPdip=" << coop->Pdip << "\tPe=" << coop->Pe << "\n";
 	std::cerr << "txTime: " << coop->txTime << "\testimated_bandwidth: " << coop->bandwidth << "bits/sec" << std::endl;
 	std::cerr << "cooperator completion time:" << coop->completionTime << std::endl;
-	std::cerr << "idleTime + txTime + detTime + descTime = " << coop->time_to_processing_start + coop->detTime + coop->descTime  << std::endl;
+//	std::cerr << "idleTime + txTime + detTime + descTime = " << coop->time_to_processing_start + coop->detTime + coop->descTime  << std::endl;
 }
 
 void OffloadingManager::sortCooperators()
@@ -269,6 +269,7 @@ void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& feat
 			if(cn == cooperatorList[i].connection){
 				//add time measurements
 				cooperatorList[i].completionTime = (getTickCount()-start_time)/getTickFrequency();
+				cooperatorList[i].txTime = cooperatorList[i].connection->getTxTime();
 				cooperatorList[i].detTime = detTime;
 				cooperatorList[i].descTime = descTime;
 				cooperatorList[i].kencTime = kencTime;
@@ -393,7 +394,7 @@ void OffloadingManager::transmitNextCoop() {
 	}
  }*/
 
-void OffloadingManager::notifyACKslice(int frameID, Connection* cn) {
+/*void OffloadingManager::notifyACKslice(int frameID, Connection* cn) {
 //	std::cout << "OffloadingManager::notifyACKslice\n";
 
 	mut.lock();
@@ -401,9 +402,9 @@ void OffloadingManager::notifyACKslice(int frameID, Connection* cn) {
 		if(cn == cooperatorList[i].connection){
 			//cooperatorList[i].txTime = (getTickCount()-cooperatorList[i].txTime)/getTickFrequency();
 			cooperatorList[i].txTime = cooperatorList[i].connection->getTxTime();
-			cooperatorList[i].time_to_processing_start = (getTickCount()-start_time)/getTickFrequency();
+			//cooperatorList[i].time_to_processing_start = (getTickCount()-start_time)/getTickFrequency();
 		}
 	}
 //	transmitNextCoop();
 	mut.unlock();
-}
+}*/

@@ -97,7 +97,7 @@ int Receiver::DoStuffToObject(Packet_t* packet){	//Add the packet to a ReceiveIt
 			debug(printf("Full message received: We can now assemble. MessageID=%d\n", receiveItems_.at(pos)->messageID_));
 			SendReceptionReport(receiveItems_.at(pos));
 			receiveItems_.at(pos)->report_sent_=true;
-			//Deliever received data:
+			//Deliver received data:
 			Connection* cn=GetConnectionTo(receiveItems_.at(pos)->srcAddress_);
 			cn->notifyMsgReceived(data, data_length);
 
@@ -233,10 +233,10 @@ ReceptionReportMessage_t* Receiver::decodeReceptionReport(uint8_t* message, size
 SendItem* Receiver::GetSendItemToReSend(ReceptionReportMessage_t* reception_report, Connection* conn) {
 	printf("In GetSendItemToReSend!\n");
 	//Check if the Request is valid (if we have anything waiting to be resent):
-	if(retrans_->getWaitingMessageID() == -1){
+/*	if(retrans_->getWaitingMessageID() == -1){
 //		debug(printf("GetSendItemToReSend : Invalid request\n"));
 		return NULL;
-	}
+	}*/
 
 //	SendItem* si = new SendItem(retrans_->getCurrentConnection(),retrans_->getWaitingMessageID());
 	SendItem* si = new SendItem(conn,retrans_->getWaitingMessageID(), MessageTypes_dataMsg);

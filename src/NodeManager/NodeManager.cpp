@@ -284,7 +284,7 @@ void NodeManager::notify_msg(Message *msg){
 	{
 		switch(node_type){
 		case CAMERA:{
-			offloading_manager->notifyACKslice(((ACKsliceMsg*)msg)->getFrameID(),msg->getTcpConnection());
+			//offloading_manager->notifyACKslice(((ACKsliceMsg*)msg)->getFrameID(),msg->getTcpConnection());
 			break;
 		}
 		}
@@ -704,7 +704,7 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	}
 
 
-	//send ACK_SLICE_MESSAGE
+/*	//send ACK_SLICE_MESSAGE
 	ACKsliceMsg *ackslice_msg = new ACKsliceMsg(frame_id);
 	std::set<Connection*> connections1 = radioSystem_ptr->getWiFiConnections();
 	std::set<Connection*>::iterator it1 = connections1.begin();
@@ -721,6 +721,7 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 	}
 	cout << "NM: exiting the wifi tx thread" << endl;
 	delete((SendWiFiMessageTask*)cur_task);
+	*/
 
 	// Extract the keypoints
 	cur_task = new ExtractKeypointsTask(extractor,slice,datc_param.detection_threshold);
