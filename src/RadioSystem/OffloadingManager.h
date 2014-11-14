@@ -116,6 +116,8 @@ private:
 	boost::asio::deadline_timer t;
 	boost::asio::io_service::work work;
 
+	boost::mutex mut;
+
 };
 
 

@@ -229,6 +229,8 @@ void OffloadingManager::sortCooperators()
 
 void OffloadingManager::addKeypointsAndFeatures(vector<KeyPoint>& kpts,Mat& features, Connection* cn,
 		double detTime, double descTime, double kencTime, double fencTime){
+
+	mut.lock();
 	features_buffer.push_back(features);
 
 	if(cn){
@@ -280,6 +282,7 @@ std::cerr << "Added " << keypoint_buffer.size() << " keypoints\n";
 
 		node_manager->notifyOffloadingCompleted(keypoint_buffer,features_buffer,camDetTime,camDescTime);
 	}
+	mut.unlock();
 }
 
 void OffloadingManager::timerExpired(const boost::system::error_code& error) {
@@ -311,7 +314,7 @@ void OffloadingManager::transmitNextCoop() {
 		vector<uchar> bitstream;
 		vector<int> param = vector<int>(2);
 		param[0] = CV_IMWRITE_JPEG_QUALITY;
-		param[1] = 100;
+		param[1] = 70;
 
 		cooperatorList[i].idleTime = (getTickCount()-start_time)/getTickFrequency();
 		cooperatorList[i].txTime = getTickCount();
@@ -342,10 +345,12 @@ void OffloadingManager::transmitNextCoop() {
  }*/
 
 void OffloadingManager::notifyACKslice(int frameID, Connection* cn) {
+	mut.lock();
 	for(int i=0;i<cooperatorList.size();i++){
 		if(cn == cooperatorList[i].connection){
 			cooperatorList[i].txTime = (getTickCount()-cooperatorList[i].txTime)/getTickFrequency();
 		}
 	}
 	transmitNextCoop();
+	mut.unlock();
 }

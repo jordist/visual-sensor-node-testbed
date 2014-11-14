@@ -114,7 +114,8 @@ src/RadioSystem/OffloadingManager.d: \
  ../src/RadioSystem/lp_solve/lp_matrix.h \
  ../src/RadioSystem/lp_solve/lp_mipbb.h \
  ../src/RadioSystem/lp_solve/lp_SOS.h \
- ../src/RadioSystem/ProcessingSpeedEstimator.h
+ ../src/RadioSystem/ProcessingSpeedEstimator.h \
+ ../src/RadioSystem/TxSpeedEstimator.h
 
 ../src/RadioSystem/OffloadingManager.h:
 
@@ -345,3 +346,5 @@ src/RadioSystem/OffloadingManager.d: \
 ../src/RadioSystem/lp_solve/lp_SOS.h:
 
 ../src/RadioSystem/ProcessingSpeedEstimator.h:
+
+../src/RadioSystem/TxSpeedEstimator.h:

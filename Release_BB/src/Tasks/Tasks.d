@@ -113,7 +113,8 @@ src/Tasks/Tasks.d: ../src/Tasks/Tasks.cpp ../src/Tasks/Tasks.h \
  /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/RadioSystem/lp_solve/lp_matrix.h \
  /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/RadioSystem/lp_solve/lp_mipbb.h \
  /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/RadioSystem/lp_solve/lp_SOS.h \
- /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/RadioSystem/ProcessingSpeedEstimator.h
+ /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/RadioSystem/ProcessingSpeedEstimator.h \
+ /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/RadioSystem/TxSpeedEstimator.h
 
 ../src/Tasks/Tasks.h:
 
@@ -346,3 +347,5 @@ src/Tasks/Tasks.d: ../src/Tasks/Tasks.cpp ../src/Tasks/Tasks.h \
 /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/RadioSystem/lp_solve/lp_SOS.h:
 
 /home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/RadioSystem/ProcessingSpeedEstimator.h:
+
+/home/jordi/Desktop/Thesis/dev/Milano/visual-sensor-node-testbed/src/RadioSystem/TxSpeedEstimator.h:
