@@ -207,7 +207,11 @@ void NodeManager::notify_msg(Message *msg){
 
 			datc_param.num_feat_per_block = ((StartDATCMsg*)msg)->getNumFeatPerBlock();
 			datc_param.num_cooperators = ((StartDATCMsg*)msg)->getNumCooperators();
+
+			add_slice_mtx.lock();
 			imgs.clear();
+			num_slices=0;
+			add_slice_mtx.unlock();
 			delete(msg);
 		}
 		}
@@ -675,31 +679,52 @@ void NodeManager::DATC_processing_thread_cooperator(DataCTAMsg* msg){
 
 	waitKey(0);                                          // Wait for a keystroke in the window*/
 
-	bool overlap_multicasted=true;
+	bool overlap_multicasted=OVERLAP_MULTICASTED;
 	if(overlap_multicasted && datc_param.num_cooperators > 1){
-		//std::cout << "num_coop=" << datc_param.num_cooperators << "\tsliceNum=" << msg->getSliceNumber() << "imgs.size()=" << imgs.size() << std::endl;
 		if(msg->getSliceNumber()==1){
-			imgs.push_back(slice);
-			if(imgs.size()<2){
+			add_slice_mtx.lock();
+			if(slice.cols != 0){
+				imgs.push_back(slice);
+			}
+			num_slices++;
+			add_slice_mtx.unlock();
+			if(num_slices<2){
 				cur_state = IDLE;
 				return; //Wait for more slices
 			}
 		}
-		if(msg->getSliceNumber()==datc_param.num_cooperators){
-			imgs.push_back(slice);
-			if(imgs.size()<2){
+		else if(msg->getSliceNumber()==datc_param.num_cooperators){
+			add_slice_mtx.lock();
+			if(slice.cols != 0){
+				imgs.push_back(slice);
+			}
+			num_slices++;
+			add_slice_mtx.unlock();
+			if(num_slices<2){
 				cur_state = IDLE;
 				return; //Wait for more slices
 			}
 		}
 		else{
-			imgs.push_back(slice);
-			if(imgs.size()<3){
+			add_slice_mtx.lock();
+			if(slice.cols != 0){
+				imgs.push_back(slice);
+			}
+			num_slices++;
+			add_slice_mtx.unlock();
+			if(num_slices<3){
 				cur_state = IDLE;
 				return; //Wait for more slices
 			}
 		}
-		cv::hconcat(imgs, slice);
+		if(imgs.size()>1){
+			add_slice_mtx.lock();
+			cv::hconcat(imgs, slice);
+			add_slice_mtx.unlock();
+		}
+		else{
+			slice=imgs[0];
+		}
 
 	}
 

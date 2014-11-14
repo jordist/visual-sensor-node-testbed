@@ -116,6 +116,8 @@ private:
 	OffloadingManager *offloading_manager;
 
 	vector<Mat> imgs;
+	int num_slices;
+	boost::mutex add_slice_mtx;
 };
 
 #endif

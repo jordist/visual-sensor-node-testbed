@@ -115,7 +115,7 @@ Mat OffloadingManager::computeLoads(Mat& image){
 				s1 = max(0, (int)floor(cutvector[i-1]));
 				s2 = min(image.cols, (int)ceil(cutvector[i]));
 				cooperatorList[i].image_slice = Mat(image, Range(0,image.rows), Range(s1+overlap*image.cols,s2-overlap*image.cols)).clone();
-				cooperatorList[0].overlap_slice = Mat(image, Range(0,image.rows), Range(s2-overlap*image.cols,s2+overlap*image.cols)).clone();
+				cooperatorList[i].overlap_slice = Mat(image, Range(0,image.rows), Range(s2-overlap*image.cols,s2+overlap*image.cols)).clone();
 				cooperatorList[i].col_offset = max(0, (int)ceil(s1 - overlap*image.cols));
 				cooperatorList[i].Npixels = image.rows*((s2+overlap*image.cols)-(s1-overlap*image.cols));
 			}
@@ -357,8 +357,12 @@ void OffloadingManager::transmitNextCoop() {
 //		cooperatorList[i].txTime = getTickCount();
 		double enc_time = getTickCount();
 		if(COMPRESS_IMAGE == 1){
-			imencode(".jpg",cooperatorList[i].image_slice,bitstream,param);
-			if(OVERLAP_MULTICASTED && cooperators_to_use>1 && !is_last_coop) imencode(".jpg",cooperatorList[i].overlap_slice,bitstream_overlap,param);
+			if(cooperatorList[i].image_slice.cols != 0){
+				imencode(".jpg",cooperatorList[i].image_slice,bitstream,param);
+			}
+			else{
+				imencode(".bmp", cooperatorList[i].image_slice,bitstream); // jpg encoder crashes the slice is empty, bmp does not.
+			}
 		}else{
 			imencode(".bmp", cooperatorList[i].image_slice,bitstream);
 			if(OVERLAP_MULTICASTED && cooperators_to_use>1 && !is_last_coop) imencode(".bmp", cooperatorList[i].overlap_slice,bitstream_overlap);
