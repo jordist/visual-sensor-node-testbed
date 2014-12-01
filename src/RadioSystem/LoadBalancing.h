@@ -15,8 +15,8 @@
 
 #define LB_CONFIG_FILE	"./loadbalancing.conf"
 
-#define BDR_UPDATE_COEF_DEFAULT 0.01	//0 for unweighted cumulative moving average, otherwise it is the coefficient for exponential moving average
-#define FDR_UPDATE_COEF_DEFAULT 0.01	//0 for unweighted cumulative moving average, otherwise it is the coefficient for exponential moving average
+#define BDR_UPDATE_COEF_DEFAULT 0	//0 for unweighted cumulative moving average, otherwise it is the coefficient for exponential moving average
+#define FDR_UPDATE_COEF_DEFAULT 0	//0 for unweighted cumulative moving average, otherwise it is the coefficient for exponential moving average
 #define SCALING_COEF_DEFAULT	0.95
 #define RECONSTRUCTION_METHOD_DEFAULT RECONSTRUCTION_METHOD_BACKWARD
 //#define RECONSTRUCTION_METHOD_DEFAULT RECONSTRUCTION_METHOD_SCALING
@@ -30,8 +30,7 @@
 
 #define MULTICAST_ENABLED	1
 #define MULTICAST_DISABLED	0
-#define MULTICAST_DEFAULT	MULTICAST_DISABLED
-//#define MULTICAST_DEFAULT	MULTICAST_ENABLED
+#define MULTICAST_DEFAULT	MULTICAST_ENABLED
 
 #define USE_FIXED_UNIFORM_CUTS_DEFAULT	0
 
